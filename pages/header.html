@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
+    <title>Header</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">EnvironmentStatus.com</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/data/schedule">View Schedule</a>
+                      </li>
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Edit Files
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                            <li><a class="dropdown-item" href="/data/edit">Schedule</a></li>
+                            <li><a class="dropdown-item" href="/data/devresults">Dev History Results</a></li>
+                            <li><a class="dropdown-item" href="/data/testresults">Test History Results</a></li>
+                            <li><a class="dropdown-item" href="/data/stagingresults">Staging History Results</a></li>
+                        </ul>
+                    </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="http://www.environmentstatus.com/home">Support</a>
+                    </li> 
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

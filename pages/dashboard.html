@@ -1,0 +1,697 @@
+<html>
+
+  <meta http-equiv="refresh" content="60" />
+  <head>
+
+
+
+    <style>
+      #chart-wrapper {
+        display: inline-block;
+        position: relative;
+        width: 30%;
+      }
+
+      .relative {
+        position: relative;
+      }
+
+      .absolute-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      p {
+        font-size: 1.5rem;
+      }
+
+      body {
+        background-color: lightblue;
+      }
+
+      .parent {
+        display: flex;
+        flex-direction: row; /* This is the default value, so you could omit this line */
+        justify-content: center;
+      }
+
+      .child {
+        width: 75px;
+        height: 50px;
+
+        border: 1px solid black;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel2@2.1.1/dist/chartjs-plugin-doughnutlabel.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
+    <script>
+      async function fetchConfig() {
+        try {
+          const response = await fetch("/config");
+          const data = await response.json();
+          console.log(data);
+          return data;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      const pageConfig = fetchConfig();
+
+      function setTitle(data) {
+        let titlecontent = data.page_title;
+        let title = document.getElementById("pageTitle");
+        title.innerHTML = titlecontent;
+        //console.log(data);
+      }
+
+      fetchConfig()
+        .then((data) => {
+          setTitle(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      async function fetchUptimeStats(environment, days) {
+        try {
+          const response = await fetch(
+            "/getSummaryStats/" + environment + "/" + days
+          );
+          const data = await response.json();
+          console.log(data);
+          return data;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      fetchUptimeStats("dev", 7)
+        .then((data) => {
+          updateUpTimeDev7Days(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeDev7Days(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime7 = document.getElementById("DevEnvUptime7");
+        uptime7.innerHTML = "7 Days: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchUptimeStats("dev", 1)
+        .then((data) => {
+          updateUpTimeDev1Day(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeDev1Day(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime1 = document.getElementById("DevEnvUptime1");
+        uptime1.innerHTML = "24hrs: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchUptimeStats("dev", 30)
+        .then((data) => {
+          updateUpTimeDev30Day(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeDev30Day(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime30 = document.getElementById("DevEnvUptime30");
+        uptime30.innerHTML = "30 Days: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      async function fetchStats(environment) {
+        try {
+          const response = await fetch("/getSummaryStats/" + environment);
+          const data = await response.json();
+          console.log(data);
+          return data;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      fetchStats("dev")
+        .then((data) => {
+          updateUpTimeDev(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeDev(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let badges = document.getElementById("DevEnvUptime");
+        badges.innerHTML = "Total : " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchStats("test")
+        .then((data) => {
+          updateUpTimeTest(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeTest(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let badges = document.getElementById("TestEnvUptime");
+        badges.innerHTML = "Total : " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchUptimeStats("test", 7)
+        .then((data) => {
+          updateUpTimeTest7Days(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeTest7Days(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime7 = document.getElementById("TestEnvUptime7");
+        uptime7.innerHTML = "7 Days: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchUptimeStats("test", 1)
+        .then((data) => {
+          updateUpTimeTest1Day(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeTest1Day(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime1 = document.getElementById("TestEnvUptime1");
+        uptime1.innerHTML = "24hrs: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchUptimeStats("test", 30)
+        .then((data) => {
+          updateUpTimeTest30Day(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeTest30Day(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime30 = document.getElementById("TestEnvUptime30");
+        uptime30.innerHTML = "30 Days: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchStats("staging")
+        .then((data) => {
+          updateUpTimeStaging(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeStaging(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let badges = document.getElementById("StagingEnvUptime");
+        badges.innerHTML = "Total : " + uptime.toFixed(2) + " %";
+        console.log("Stagingdata " + data);
+      }
+
+      fetchUptimeStats("staging", 7)
+        .then((data) => {
+          updateUpTimeStaging7Days(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeStaging7Days(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime7 = document.getElementById("StagingEnvUptime7");
+        uptime7.innerHTML = "7 Days : " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchUptimeStats("staging", 1)
+        .then((data) => {
+          updateUpTimeStaging1Day(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeStaging1Day(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime1 = document.getElementById("StagingEnvUptime1");
+        uptime1.innerHTML = "24hrs: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      fetchUptimeStats("staging", 30)
+        .then((data) => {
+          updateUpTimeStaging30Day(data);
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+
+      function updateUpTimeStaging30Day(data) {
+        let uptime = (data.Green / data.Total) * 100;
+        let uptime30 = document.getElementById("StagingEnvUptime30");
+        uptime30.innerHTML = "30 Days: " + uptime.toFixed(2) + " %";
+        console.log(data);
+      }
+
+      async function fetchDevStatus() {
+        try {
+          const response = await fetch("/results/dev");
+          // if (Statsresponse) {
+          //     hideSpinner('spinnerDistance');
+          // }
+          const data = await response.json();
+          console.log(data);
+          return data;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      fetchDevStatus()
+        .then((data) => {
+          const testnames = data.map(function (index) {
+            return index.key;
+          });
+
+          const testresults = data.map(function (index) {
+            return index.value;
+          });
+          const AvgResponseTime = data.map(function (index) {
+            return index.AvgResponseTime;
+          });
+
+          const dateTime = data.map(function (index) {
+            return index.DateTime;
+          });
+
+          let lmd = document.getElementById("devlmd");
+          lmd.innerHTML = "Last Updated : " + dateTime[0];
+          //  console.log(testnames);
+          //  console.log(testresults);
+          let env = "AvgResponseTime";
+          const size = AvgResponseTime.length;
+          const filledArray = Array(size).fill(1);
+
+          myChart.config.data.labels = testnames;
+          myChart.config.data.datasets[0].backgroundColor = testresults;
+          myChart.config.data.datasets[0].data = filledArray;
+          //  myChart.config.data.datasets[0].label = env;
+          myChart.config.data.datasets[0].borderWidth = 3;
+          myChart.update();
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+    </script>
+    <script>
+      async function fetchTestStatus() {
+        try {
+          const response = await fetch("/results/test");
+          // if (Statsresponse) {
+          //     hideSpinner('spinnerDistance');
+          // }
+          const data = await response.json();
+          console.log(data);
+          return data;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      fetchTestStatus()
+        .then((data) => {
+          const testnames = data.map(function (index) {
+            return index.key;
+          });
+
+          const testresults = data.map(function (index) {
+            return index.value;
+          });
+          const AvgResponseTime = data.map(function (index) {
+            return index.AvgResponseTime;
+          });
+
+          const dateTime = data.map(function (index) {
+            return index.DateTime;
+          });
+
+          let lmd = document.getElementById("testlmd");
+          lmd.innerHTML = "Last Updated : " + dateTime[0];
+
+          console.log(testnames);
+          console.log(testresults);
+          let env = "AvgResponseTime";
+          const size = AvgResponseTime.length;
+          const filledArray = Array(size).fill(1);
+
+          testChart.config.data.labels = testnames;
+          testChart.config.data.datasets[0].backgroundColor = testresults;
+          testChart.config.data.datasets[0].data = filledArray;
+          //  testChart.config.data.datasets[0].label = AvgResponseTime;
+          testChart.config.data.datasets[0].borderWidth = 3;
+          testChart.update();
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+    </script>
+    <script>
+      async function fetchStagingStatus() {
+        try {
+          const response = await fetch("/results/staging");
+          const data = await response.json();
+          console.log(data);
+          return data;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      fetchStagingStatus()
+        .then((data) => {
+          const testnames = data.map(function (index) {
+            return index.key;
+          });
+
+          const testresults = data.map(function (index) {
+            return index.value;
+          });
+          const AvgResponseTime = data.map(function (index) {
+            return index.AvgResponseTime;
+          });
+
+          const dateTime = data.map(function (index) {
+            return index.DateTime;
+          });
+
+          let lmd = document.getElementById("stagelmd");
+          lmd.innerHTML = "Last Updated : " + dateTime[0];
+
+          const size = AvgResponseTime.length;
+          const filledArray = Array(size).fill(1);
+          console.log(testnames);
+          console.log(testresults);
+          let env = "AvgResponseTime";
+          const MyResponseTimeArray = [...AvgResponseTime];
+
+          stagingChart.config.data.labels = testnames;
+          stagingChart.config.data.datasets[0].backgroundColor = testresults;
+          stagingChart.config.data.datasets[0].data = filledArray;
+          // stagingChart.config.data.datasets[0].label= MyResponseTimeArray;
+          stagingChart.config.data.datasets[0].borderWidth = 3;
+          stagingChart.update();
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
+    </script>
+
+    <script>
+      function refreshPage() {
+        location.reload();
+      }
+
+
+
+    </script>
+
+<script>
+        $(function() {
+  // Load the header HTML file
+  $("#header-container").load("/data/header");
+});
+</script>  
+  </head>
+
+  <body class="p-4">
+    <div id="header-container" ></div>
+    <center>
+      <div id="pageTitle">App Feature Health</div>
+    </center>
+
+    <center>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              Development
+            </div>
+            <div class="card-body">
+              <canvas id="myChart"></canvas>
+              <div id="devlmd" style="font-size: 0.75em">dateTime</div>
+              <!-- <div><a href="/runDev" > Manual Execution </a> </div>-->
+              <div id="devtable"></div>
+              <div class="parent" style="border: thin solid black">
+                <div class="child" ><b>Feature Uptime</b></div>
+                <div class="child" id="DevEnvUptime"></div>
+                <div class="child" id="DevEnvUptime30"></div>
+                <div class="child" id="DevEnvUptime7"></div>
+                <div class="child" id="DevEnvUptime1"></div>
+              </div>
+    
+              <div style="border: thin solid black">
+                <b>Performance Graphs</b> <br />
+                <a href="/dashboard/performance/dev/1"> 1 day </a>|
+                <a href="/dashboard/performance/dev/3"> 3 days </a>|
+                <a href="/dashboard/performance/dev/7"> 7 days </a>|
+                <a href="/dashboard/performance/dev/14"> 14 days </a>|
+                <a href="/dashboard/performance/dev/30"> 30 days </a>|
+                <a href="/dashboard/performance/dev/All"> All </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              Test
+            </div>
+            <div class="card-body">
+              <canvas id="testChart"></canvas>
+              <div id="testlmd" style="font-size: 0.75em">dateTime</div>
+          <!-- <div><a href="/runTest" > Manual Execution </a> </div>-->
+          <div id="devtable"></div>
+          <div class="parent" style="border: thin solid black">
+            <div class="child"><b>Feature Uptime</b></div>
+            <div class="child" id="TestEnvUptime"></div>
+            <div class="child" id="TestEnvUptime30"></div>
+            <div class="child" id="TestEnvUptime7"></div>
+            <div class="child" id="TestEnvUptime1"></div>
+          </div>
+          <div style="border: thin solid black">
+            <b>Performance Graphs</b> <br />
+            <a href="/dashboard/performance/test/1"> 1 day </a>|
+            <a href="/dashboard/performance/test/3"> 3 days </a>|
+            <a href="/dashboard/performance/test/7"> 7 days </a>|
+            <a href="/dashboard/performance/test/14"> 14 days </a>|
+            <a href="/dashboard/performance/test/30"> 30 days </a>|
+            <a href="/dashboard/performance/test/All"> All </a>
+          </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              Staging
+            </div>
+            <div class="card-body">
+              <canvas id="stagingChart"></canvas>
+              <div id="stagelmd" style="font-size: 0.75em"></div>
+              <!-- <a href="/runStaging" > Manual Execution </a> </div>-->
+              <div id="devtable"></div>
+              <div class="parent" style="border: thin solid black">
+                <div class="child"><b>Feature Uptime</b></div>
+                <div class="child" id="StagingEnvUptime"></div>
+                <div class="child" id="StagingEnvUptime30"></div>
+                <div class="child" id="StagingEnvUptime7"></div>
+                <div class="child" id="StagingEnvUptime1"></div>
+              </div>
+    
+              <div style="border: thin solid black">
+                <b>Performance Graphs</b> <br />
+                <a href="/dashboard/performance/staging/1"> 1 day </a>|
+                <a href="/dashboard/performance/staging/3"> 3 days </a>|
+                <a href="/dashboard/performance/staging/7"> 7 days </a>|
+                <a href="/dashboard/performance/staging/14"> 14 days </a>|
+                <a href="/dashboard/performance/staging/30"> 30 days </a>|
+                <a href="/dashboard/performance/staging/All"> All </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+  </body>
+<br>
+  <footer>
+    <center>
+      <button class="btn-sm btn-primary" onclick="refreshPage()">Refresh Page</button>
+      @Copyright
+      <a href="http://www.environmentstatus.com"> EnvironmentStatus.com</a>
+    </center>
+  </footer>
+</html>
+
+<script>
+  let ctx = document.getElementById("myChart");
+  Chart.register(ChartDataLabels);
+  Chart.defaults.set("plugins.datalabels", {
+    color: "black",
+  });
+
+  let myChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "",
+          data: [],
+          backgroundColor: ["black", "black", "black", "black", "black"],
+          borderColor: [],
+          borderWidth: 3,
+        },
+      ],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {},
+      plugins: {
+        datalabels: {
+          formatter: (value, context) => {
+            console.log(
+              "context" + context.chart.data.labels[context.dataIndex]
+            );
+            console.log(context);
+            return context.chart.data.labels[context.dataIndex];
+          },
+        },
+      },
+    },
+  });
+</script>
+
+<script>
+  let ctxtest = document.getElementById("testChart");
+  Chart.register(ChartDataLabels);
+  let testChart = new Chart(ctxtest, {
+    type: "doughnut",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "",
+          data: [],
+          backgroundColor: ["black", "black", "black", "black", "black"],
+          borderColor: [],
+          borderWidth: 3,
+        },
+      ],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {},
+      plugins: {
+        datalabels: {
+          formatter: (value, context) => {
+            console.log(
+              "context  " + context.chart.data.labels[context.dataIndex]
+            );
+            console.log(context);
+            return context.chart.data.labels[context.dataIndex];
+          },
+          tooltips: {
+            enabled: false,
+          },
+        },
+      },
+    },
+  });
+</script>
+
+<script>
+  let ctxstaging = document.getElementById("stagingChart");
+  Chart.register(ChartDataLabels);
+  let stagingChart = new Chart(ctxstaging, {
+    type: "doughnut",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "",
+          datalabels: {
+            labels: {
+            },
+          },
+          data: [],
+          backgroundColor: ["black", "black", "black", "black", "black"],
+          borderColor: [],
+          borderWidth: 3,
+        },
+      ],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {},
+      plugins: {
+        datalabels: {
+          formatter: (value, context) => {
+            console.log(
+              "context" + context.chart.data.labels[context.dataIndex]
+            );
+            console.log(context);
+            return context.chart.data.labels[context.dataIndex];
+          },
+        },
+      },
+    },
+  });
+</script>

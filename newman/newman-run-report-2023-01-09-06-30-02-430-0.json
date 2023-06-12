@@ -1,0 +1,4286 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "38708a59-0ce7-405c-a6be-7e901a2d05af",
+      "exporter_id": "7161529"
+    },
+    "item": [
+      {
+        "id": "d1521911-effd-4a4e-b15b-c2fe3b51b31b",
+        "name": "IR-LTC-USD",
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "LTC"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [
+          {
+            "_": {
+              "postman_previewlanguage": "json"
+            },
+            "id": "f96b0423-9985-4bbf-8212-e81066150e57",
+            "name": "IR-LTC-USD",
+            "originalRequest": {
+              "url": {
+                "protocol": "https",
+                "path": [
+                  "Public",
+                  "GetMarketSummary"
+                ],
+                "host": [
+                  "api",
+                  "independentreserve",
+                  "com"
+                ],
+                "query": [
+                  {
+                    "key": "primaryCurrencyCode",
+                    "value": "LTC"
+                  },
+                  {
+                    "key": "secondaryCurrencyCode",
+                    "value": "usd"
+                  }
+                ],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "status": "OK",
+            "code": 200,
+            "header": [
+              {
+                "key": "Cache-Control",
+                "value": "private"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Date",
+                "value": "Fri, 05 Apr 2019 22:55:08 GMT"
+              },
+              {
+                "key": "Strict-Transport-Security",
+                "value": "max-age=31536000"
+              },
+              {
+                "key": "Content-Length",
+                "value": "327"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              }
+            ],
+            "body": "{\n    \"DayHighestPrice\": 88.69,\n    \"DayLowestPrice\": 84.39,\n    \"DayAvgPrice\": 86.54,\n    \"DayVolumeXbt\": 606.22908988,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 88.96,\n    \"CurrentHighestBidPrice\": 86.91,\n    \"LastPrice\": 86.38,\n    \"PrimaryCurrencyCode\": \"Ltc\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:09.1888089Z\"\n}",
+            "cookie": []
+          }
+        ],
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "ec885dc2-5260-41f9-afde-5b4bd5480735",
+              "type": "text/javascript",
+              "exec": [
+                "pm.variables.get(\"primaryCurrencyCode\");"
+              ],
+              "_lastExecutionId": "5b402ce0-c297-4f93-83a4-1e4007024a7f"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "id": "41f30ec3-c585-4854-b5fa-739b5ca20a20",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"Status code is 200\", function() {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test(\"Body has DayHighestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayLowestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayAvgPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbt\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                "});",
+                "pm.test(\"Body has LastPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                "});",
+                "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                "});",
+                "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                "});",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ],
+              "_lastExecutionId": "00270eaa-a9e3-4fd3-bee0-f71edb306e0c"
+            }
+          }
+        ]
+      },
+      {
+        "id": "af9d547a-74f8-4558-81a9-e1f26116c654",
+        "name": "IR-BCH-USD",
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "BCH"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [
+          {
+            "_": {
+              "postman_previewlanguage": "json"
+            },
+            "id": "3aed74bc-de0f-4190-9f08-359f4b96a8c0",
+            "name": "IR-BCH-USD",
+            "originalRequest": {
+              "url": {
+                "protocol": "https",
+                "path": [
+                  "Public",
+                  "GetMarketSummary"
+                ],
+                "host": [
+                  "api",
+                  "independentreserve",
+                  "com"
+                ],
+                "query": [
+                  {
+                    "key": "primaryCurrencyCode",
+                    "value": "bch"
+                  },
+                  {
+                    "key": "secondaryCurrencyCode",
+                    "value": "usd"
+                  }
+                ],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "status": "OK",
+            "code": 200,
+            "header": [
+              {
+                "key": "Cache-Control",
+                "value": "private"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Date",
+                "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+              },
+              {
+                "key": "Strict-Transport-Security",
+                "value": "max-age=31536000"
+              },
+              {
+                "key": "Content-Length",
+                "value": "333"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              }
+            ],
+            "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+            "cookie": []
+          }
+        ],
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "7799df0d-40a0-4b8d-ab3e-644d4e31b486",
+              "type": "text/javascript",
+              "exec": [
+                "pm.variables.get(\"primaryCurrencyCode\");"
+              ],
+              "_lastExecutionId": "957de45e-21f3-4abe-a821-af5eb1f043a8"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "id": "4e828121-9565-4f9b-acff-2d1367af69b2",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"Status code is 200\", function() {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test(\"Body has DayHighestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayLowestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayAvgPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbt\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                "});",
+                "pm.test(\"Body has LastPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                "});",
+                "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                "});",
+                "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                "});",
+                "",
+                "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                "});",
+                "",
+                ""
+              ],
+              "_lastExecutionId": "28efe838-bd8b-4ddc-85ab-3ef29fc290e9"
+            }
+          }
+        ]
+      },
+      {
+        "id": "76a6250a-820e-4b2d-8bd1-c13289e274d1",
+        "name": "IR-BTC-USD",
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "BTC"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [
+          {
+            "_": {
+              "postman_previewlanguage": "json"
+            },
+            "id": "e34df814-03fa-4b65-adc7-2cadb493dab3",
+            "name": "IR-BCH-USD",
+            "originalRequest": {
+              "url": {
+                "protocol": "https",
+                "path": [
+                  "Public",
+                  "GetMarketSummary"
+                ],
+                "host": [
+                  "api",
+                  "independentreserve",
+                  "com"
+                ],
+                "query": [
+                  {
+                    "key": "primaryCurrencyCode",
+                    "value": "bch"
+                  },
+                  {
+                    "key": "secondaryCurrencyCode",
+                    "value": "usd"
+                  }
+                ],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "status": "OK",
+            "code": 200,
+            "header": [
+              {
+                "key": "Cache-Control",
+                "value": "private"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Date",
+                "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+              },
+              {
+                "key": "Strict-Transport-Security",
+                "value": "max-age=31536000"
+              },
+              {
+                "key": "Content-Length",
+                "value": "333"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              }
+            ],
+            "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+            "cookie": []
+          }
+        ],
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "9b298458-04c2-43ea-b181-e60687e0637a",
+              "type": "text/javascript",
+              "exec": [
+                "pm.variables.get(\"primaryCurrencyCode\");"
+              ],
+              "_lastExecutionId": "9096a7bb-aa70-4fb0-8dcb-fefa0eac84a5"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "id": "34d8059c-20d5-44e1-9f61-f4ad98ce67a7",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"Status code is 200\", function() {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test(\"Body has DayHighestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayLowestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayAvgPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbt\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                "});",
+                "pm.test(\"Body has LastPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                "});",
+                "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                "});",
+                "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                "});",
+                "",
+                "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                "});",
+                "",
+                ""
+              ],
+              "_lastExecutionId": "4a57c388-c73f-489f-9c77-405f287c750d"
+            }
+          }
+        ]
+      },
+      {
+        "id": "204601a0-1410-457b-abb5-ef867b6bec38",
+        "name": "IR-SOL-USD",
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "SOL"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [
+          {
+            "_": {
+              "postman_previewlanguage": "json"
+            },
+            "id": "f8fb6204-95cb-46aa-a084-f9c71a89dbd0",
+            "name": "IR-BCH-USD",
+            "originalRequest": {
+              "url": {
+                "protocol": "https",
+                "path": [
+                  "Public",
+                  "GetMarketSummary"
+                ],
+                "host": [
+                  "api",
+                  "independentreserve",
+                  "com"
+                ],
+                "query": [
+                  {
+                    "key": "primaryCurrencyCode",
+                    "value": "bch"
+                  },
+                  {
+                    "key": "secondaryCurrencyCode",
+                    "value": "usd"
+                  }
+                ],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "status": "OK",
+            "code": 200,
+            "header": [
+              {
+                "key": "Cache-Control",
+                "value": "private"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Date",
+                "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+              },
+              {
+                "key": "Strict-Transport-Security",
+                "value": "max-age=31536000"
+              },
+              {
+                "key": "Content-Length",
+                "value": "333"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              }
+            ],
+            "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+            "cookie": []
+          }
+        ],
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "84c11f06-e5eb-44a9-8eac-1b7cae946dcb",
+              "type": "text/javascript",
+              "exec": [
+                "pm.variables.get(\"primaryCurrencyCode\");"
+              ],
+              "_lastExecutionId": "c8da6976-b302-4eea-b192-b29fd1ec92de"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "id": "5f38c3bf-fb54-4bc5-b5f1-6bbc9dab92b4",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"Status code is 200\", function() {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test(\"Body has DayHighestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayLowestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayAvgPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbt\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                "});",
+                "pm.test(\"Body has LastPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                "});",
+                "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                "});",
+                "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                "});",
+                "",
+                "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                "});",
+                "",
+                ""
+              ],
+              "_lastExecutionId": "91bd2b1e-fd2e-47b5-9d83-15b5f538df4a"
+            }
+          }
+        ]
+      },
+      {
+        "id": "e4ea62c2-e5c5-4512-ad67-a9122a9d2ead",
+        "name": "IR-ADA-USD Copy",
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "ADA"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [
+          {
+            "_": {
+              "postman_previewlanguage": "json"
+            },
+            "id": "116b1f87-1c99-49b0-ba30-d6fb6617a489",
+            "name": "IR-BCH-USD",
+            "originalRequest": {
+              "url": {
+                "protocol": "https",
+                "path": [
+                  "Public",
+                  "GetMarketSummary"
+                ],
+                "host": [
+                  "api",
+                  "independentreserve",
+                  "com"
+                ],
+                "query": [
+                  {
+                    "key": "primaryCurrencyCode",
+                    "value": "bch"
+                  },
+                  {
+                    "key": "secondaryCurrencyCode",
+                    "value": "usd"
+                  }
+                ],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "status": "OK",
+            "code": 200,
+            "header": [
+              {
+                "key": "Cache-Control",
+                "value": "private"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Date",
+                "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+              },
+              {
+                "key": "Strict-Transport-Security",
+                "value": "max-age=31536000"
+              },
+              {
+                "key": "Content-Length",
+                "value": "333"
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive"
+              }
+            ],
+            "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+            "cookie": []
+          }
+        ],
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "0caee753-8cd6-411b-bec7-1d31055adc6b",
+              "type": "text/javascript",
+              "exec": [
+                "pm.variables.get(\"primaryCurrencyCode\");"
+              ],
+              "_lastExecutionId": "8015cb12-5e75-4893-8948-e2c1c3df1345"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "id": "b6af033b-580e-4058-9701-e13b606f41eb",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test(\"Status code is 200\", function() {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test(\"Body has DayHighestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayLowestPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayAvgPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbt\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                "});",
+                "",
+                "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                "});",
+                "",
+                "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                "});",
+                "pm.test(\"Body has LastPrice\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                "});",
+                "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                "});",
+                "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                "});",
+                "",
+                "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                "});",
+                "",
+                ""
+              ],
+              "_lastExecutionId": "d4deca46-2137-4f88-8047-3ecd756e7bc1"
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [],
+    "info": {
+      "_postman_id": "38708a59-0ce7-405c-a6be-7e901a2d05af",
+      "name": "IR copy",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_at": "2022-05-07T09:46:15.581Z",
+      "postman_exported_using": "Postman/9.18.1-220502-0900"
+    },
+    "id": "1a44d3b0-7c57-4015-93b2-e6da6f73c155",
+    "name": "dev",
+    "values": [
+      {
+        "type": "any",
+        "value": "dev",
+        "key": "environment"
+      }
+    ]
+  },
+  "globals": {
+    "id": "0898e17f-60e1-487b-9488-bf73f9203fc4",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 59,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 180.6,
+      "responseMin": 62,
+      "responseMax": 443,
+      "responseSd": 154.2291801184199,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1673245800283,
+      "completed": 1673245802423
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 5,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "0461fee3-926b-40d1-b34a-c19d991f41fe",
+          "httpRequestId": "361cc9bb-af2b-4ae8-af0b-0cd7d801a536"
+        },
+        "item": {
+          "id": "d1521911-effd-4a4e-b15b-c2fe3b51b31b",
+          "name": "IR-LTC-USD",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "Public",
+                "GetMarketSummary"
+              ],
+              "host": [
+                "api",
+                "independentreserve",
+                "com"
+              ],
+              "query": [
+                {
+                  "key": "primaryCurrencyCode",
+                  "value": "LTC"
+                },
+                {
+                  "key": "secondaryCurrencyCode",
+                  "value": "usd"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [
+            {
+              "_": {
+                "postman_previewlanguage": "json"
+              },
+              "id": "f96b0423-9985-4bbf-8212-e81066150e57",
+              "name": "IR-LTC-USD",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    "Public",
+                    "GetMarketSummary"
+                  ],
+                  "host": [
+                    "api",
+                    "independentreserve",
+                    "com"
+                  ],
+                  "query": [
+                    {
+                      "key": "primaryCurrencyCode",
+                      "value": "LTC"
+                    },
+                    {
+                      "key": "secondaryCurrencyCode",
+                      "value": "usd"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Cache-Control",
+                  "value": "private"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 05 Apr 2019 22:55:08 GMT"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "327"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "body": "{\n    \"DayHighestPrice\": 88.69,\n    \"DayLowestPrice\": 84.39,\n    \"DayAvgPrice\": 86.54,\n    \"DayVolumeXbt\": 606.22908988,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 88.96,\n    \"CurrentHighestBidPrice\": 86.91,\n    \"LastPrice\": 86.38,\n    \"PrimaryCurrencyCode\": \"Ltc\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:09.1888089Z\"\n}",
+              "cookie": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "ec885dc2-5260-41f9-afde-5b4bd5480735",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.get(\"primaryCurrencyCode\");"
+                ],
+                "_lastExecutionId": "5b402ce0-c297-4f93-83a4-1e4007024a7f"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "41f30ec3-c585-4854-b5fa-739b5ca20a20",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayHighestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayLowestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayAvgPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbt\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                  "});",
+                  "pm.test(\"Body has LastPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                  "});",
+                  "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                  "});",
+                  "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                  "});",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                "_lastExecutionId": "00270eaa-a9e3-4fd3-bee0-f71edb306e0c"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "LTC"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.29.0",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "9e1369b8-6190-49c1-a062-4e0da5382f6e",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.independentreserve.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "7aef92be-84a6-4972-8dfa-747653e4097f",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Jan 2023 06:30:01 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "334"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "private"
+            },
+            {
+              "key": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept-Encoding"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              68,
+              97,
+              121,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              56,
+              50,
+              46,
+              53,
+              53,
+              44,
+              34,
+              68,
+              97,
+              121,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              55,
+              53,
+              46,
+              52,
+              57,
+              44,
+              34,
+              68,
+              97,
+              121,
+              65,
+              118,
+              103,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              55,
+              57,
+              46,
+              48,
+              50,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              34,
+              58,
+              49,
+              56,
+              49,
+              46,
+              53,
+              52,
+              54,
+              49,
+              50,
+              51,
+              54,
+              53,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              73,
+              110,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              34,
+              58,
+              48,
+              46,
+              48,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              79,
+              102,
+              102,
+              101,
+              114,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              56,
+              51,
+              46,
+              49,
+              50,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              66,
+              105,
+              100,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              56,
+              49,
+              46,
+              56,
+              55,
+              44,
+              34,
+              76,
+              97,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              56,
+              49,
+              46,
+              57,
+              53,
+              44,
+              34,
+              80,
+              114,
+              105,
+              109,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              76,
+              116,
+              99,
+              34,
+              44,
+              34,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              100,
+              34,
+              44,
+              34,
+              67,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              84,
+              105,
+              109,
+              101,
+              115,
+              116,
+              97,
+              109,
+              112,
+              85,
+              116,
+              99,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              51,
+              45,
+              48,
+              49,
+              45,
+              48,
+              57,
+              84,
+              48,
+              54,
+              58,
+              51,
+              48,
+              58,
+              48,
+              49,
+              46,
+              56,
+              49,
+              50,
+              51,
+              55,
+              57,
+              55,
+              90,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 443,
+          "responseSize": 327
+        },
+        "id": "d1521911-effd-4a4e-b15b-c2fe3b51b31b",
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayHighestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayLowestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayAvgPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbt",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbtInSecondaryCurrrency",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentLowestOfferPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentHighestBidPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has LastPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has PrimaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has SecondaryCurrencyCode",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "bc0dbf86-55f8-4692-b167-7511a3c4c309",
+          "length": 5,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "bcce10da-de3f-4d63-8dd6-fff4ab2445b1"
+        },
+        "item": {
+          "id": "af9d547a-74f8-4558-81a9-e1f26116c654",
+          "name": "IR-BCH-USD",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "Public",
+                "",
+                "GetMarketSummary"
+              ],
+              "host": [
+                "api",
+                "independentreserve",
+                "com"
+              ],
+              "query": [
+                {
+                  "key": "primaryCurrencyCode",
+                  "value": "BCH"
+                },
+                {
+                  "key": "secondaryCurrencyCode",
+                  "value": "usd"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [
+            {
+              "_": {
+                "postman_previewlanguage": "json"
+              },
+              "id": "3aed74bc-de0f-4190-9f08-359f4b96a8c0",
+              "name": "IR-BCH-USD",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    "Public",
+                    "GetMarketSummary"
+                  ],
+                  "host": [
+                    "api",
+                    "independentreserve",
+                    "com"
+                  ],
+                  "query": [
+                    {
+                      "key": "primaryCurrencyCode",
+                      "value": "bch"
+                    },
+                    {
+                      "key": "secondaryCurrencyCode",
+                      "value": "usd"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Cache-Control",
+                  "value": "private"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "333"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+              "cookie": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "7799df0d-40a0-4b8d-ab3e-644d4e31b486",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.get(\"primaryCurrencyCode\");"
+                ],
+                "_lastExecutionId": "957de45e-21f3-4abe-a821-af5eb1f043a8"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "4e828121-9565-4f9b-acff-2d1367af69b2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayHighestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayLowestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayAvgPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbt\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                  "});",
+                  "pm.test(\"Body has LastPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                  "});",
+                  "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                  "});",
+                  "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                  "});",
+                  "",
+                  ""
+                ],
+                "_lastExecutionId": "28efe838-bd8b-4ddc-85ab-3ef29fc290e9"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "BCH"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.29.0",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b5aff482-99b5-4b46-8119-d7b6b2d852ba",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.independentreserve.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "b876ea4c-1e6f-46bc-a2d6-5b6e26b20b54",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Jan 2023 06:30:01 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "325"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "private"
+            },
+            {
+              "key": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept-Encoding"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              68,
+              97,
+              121,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              48,
+              53,
+              46,
+              55,
+              54,
+              44,
+              34,
+              68,
+              97,
+              121,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              48,
+              50,
+              46,
+              53,
+              50,
+              44,
+              34,
+              68,
+              97,
+              121,
+              65,
+              118,
+              103,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              48,
+              52,
+              46,
+              49,
+              52,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              34,
+              58,
+              48,
+              46,
+              57,
+              53,
+              48,
+              53,
+              55,
+              57,
+              55,
+              54,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              73,
+              110,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              34,
+              58,
+              48,
+              46,
+              48,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              79,
+              102,
+              102,
+              101,
+              114,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              48,
+              54,
+              46,
+              54,
+              49,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              66,
+              105,
+              100,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              48,
+              53,
+              46,
+              49,
+              55,
+              44,
+              34,
+              76,
+              97,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              48,
+              53,
+              46,
+              55,
+              54,
+              44,
+              34,
+              80,
+              114,
+              105,
+              109,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              66,
+              99,
+              104,
+              34,
+              44,
+              34,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              100,
+              34,
+              44,
+              34,
+              67,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              84,
+              105,
+              109,
+              101,
+              115,
+              116,
+              97,
+              109,
+              112,
+              85,
+              116,
+              99,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              51,
+              45,
+              48,
+              49,
+              45,
+              48,
+              57,
+              84,
+              48,
+              54,
+              58,
+              51,
+              48,
+              58,
+              48,
+              49,
+              46,
+              57,
+              50,
+              49,
+              55,
+              52,
+              56,
+              90,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 63,
+          "responseSize": 330
+        },
+        "id": "af9d547a-74f8-4558-81a9-e1f26116c654",
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayHighestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayLowestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayAvgPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbt",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbtInSecondaryCurrrency",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentLowestOfferPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentHighestBidPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has LastPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has PrimaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has SecondaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CreatedTimestampUtc",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "78d67c60-b694-4522-aac1-f869674b6e72",
+          "length": 5,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "8a352700-c9a9-4889-ad7a-7efd4ce1b5e6"
+        },
+        "item": {
+          "id": "76a6250a-820e-4b2d-8bd1-c13289e274d1",
+          "name": "IR-BTC-USD",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "Public",
+                "",
+                "GetMarketSummary"
+              ],
+              "host": [
+                "api",
+                "independentreserve",
+                "com"
+              ],
+              "query": [
+                {
+                  "key": "primaryCurrencyCode",
+                  "value": "BTC"
+                },
+                {
+                  "key": "secondaryCurrencyCode",
+                  "value": "usd"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [
+            {
+              "_": {
+                "postman_previewlanguage": "json"
+              },
+              "id": "e34df814-03fa-4b65-adc7-2cadb493dab3",
+              "name": "IR-BCH-USD",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    "Public",
+                    "GetMarketSummary"
+                  ],
+                  "host": [
+                    "api",
+                    "independentreserve",
+                    "com"
+                  ],
+                  "query": [
+                    {
+                      "key": "primaryCurrencyCode",
+                      "value": "bch"
+                    },
+                    {
+                      "key": "secondaryCurrencyCode",
+                      "value": "usd"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Cache-Control",
+                  "value": "private"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "333"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+              "cookie": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "9b298458-04c2-43ea-b181-e60687e0637a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.get(\"primaryCurrencyCode\");"
+                ],
+                "_lastExecutionId": "9096a7bb-aa70-4fb0-8dcb-fefa0eac84a5"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "34d8059c-20d5-44e1-9f61-f4ad98ce67a7",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayHighestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayLowestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayAvgPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbt\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                  "});",
+                  "pm.test(\"Body has LastPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                  "});",
+                  "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                  "});",
+                  "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                  "});",
+                  "",
+                  ""
+                ],
+                "_lastExecutionId": "4a57c388-c73f-489f-9c77-405f287c750d"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "BTC"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.29.0",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "371e073f-af8e-4e5a-9a70-6fbb76f0a2da",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.independentreserve.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "203efb67-da2e-43e2-b19d-e7d77a58da13",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Jan 2023 06:30:02 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "347"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "private"
+            },
+            {
+              "key": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept-Encoding"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              68,
+              97,
+              121,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              55,
+              50,
+              54,
+              55,
+              46,
+              48,
+              50,
+              44,
+              34,
+              68,
+              97,
+              121,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              54,
+              57,
+              52,
+              53,
+              46,
+              54,
+              54,
+              44,
+              34,
+              68,
+              97,
+              121,
+              65,
+              118,
+              103,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              55,
+              49,
+              48,
+              54,
+              46,
+              51,
+              52,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              34,
+              58,
+              52,
+              56,
+              46,
+              48,
+              48,
+              54,
+              55,
+              56,
+              54,
+              53,
+              55,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              73,
+              110,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              34,
+              58,
+              49,
+              46,
+              48,
+              50,
+              49,
+              57,
+              53,
+              55,
+              50,
+              51,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              79,
+              102,
+              102,
+              101,
+              114,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              55,
+              50,
+              55,
+              48,
+              46,
+              48,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              66,
+              105,
+              100,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              55,
+              49,
+              48,
+              53,
+              46,
+              48,
+              44,
+              34,
+              76,
+              97,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              55,
+              49,
+              57,
+              51,
+              46,
+              50,
+              44,
+              34,
+              80,
+              114,
+              105,
+              109,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              88,
+              98,
+              116,
+              34,
+              44,
+              34,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              100,
+              34,
+              44,
+              34,
+              67,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              84,
+              105,
+              109,
+              101,
+              115,
+              116,
+              97,
+              109,
+              112,
+              85,
+              116,
+              99,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              51,
+              45,
+              48,
+              49,
+              45,
+              48,
+              57,
+              84,
+              48,
+              54,
+              58,
+              51,
+              48,
+              58,
+              48,
+              50,
+              46,
+              48,
+              49,
+              53,
+              52,
+              55,
+              50,
+              90,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 62,
+          "responseSize": 347
+        },
+        "id": "76a6250a-820e-4b2d-8bd1-c13289e274d1",
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayHighestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayLowestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayAvgPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbt",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbtInSecondaryCurrrency",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentLowestOfferPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentHighestBidPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has LastPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has PrimaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has SecondaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CreatedTimestampUtc",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "298765ff-a593-4c84-aac3-558ee65b3064",
+          "length": 5,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "e64f6c9e-55af-46ea-9bd3-3ee38de89b5b"
+        },
+        "item": {
+          "id": "204601a0-1410-457b-abb5-ef867b6bec38",
+          "name": "IR-SOL-USD",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "Public",
+                "",
+                "GetMarketSummary"
+              ],
+              "host": [
+                "api",
+                "independentreserve",
+                "com"
+              ],
+              "query": [
+                {
+                  "key": "primaryCurrencyCode",
+                  "value": "SOL"
+                },
+                {
+                  "key": "secondaryCurrencyCode",
+                  "value": "usd"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [
+            {
+              "_": {
+                "postman_previewlanguage": "json"
+              },
+              "id": "f8fb6204-95cb-46aa-a084-f9c71a89dbd0",
+              "name": "IR-BCH-USD",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    "Public",
+                    "GetMarketSummary"
+                  ],
+                  "host": [
+                    "api",
+                    "independentreserve",
+                    "com"
+                  ],
+                  "query": [
+                    {
+                      "key": "primaryCurrencyCode",
+                      "value": "bch"
+                    },
+                    {
+                      "key": "secondaryCurrencyCode",
+                      "value": "usd"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Cache-Control",
+                  "value": "private"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "333"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+              "cookie": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "84c11f06-e5eb-44a9-8eac-1b7cae946dcb",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.get(\"primaryCurrencyCode\");"
+                ],
+                "_lastExecutionId": "c8da6976-b302-4eea-b192-b29fd1ec92de"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "5f38c3bf-fb54-4bc5-b5f1-6bbc9dab92b4",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayHighestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayLowestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayAvgPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbt\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                  "});",
+                  "pm.test(\"Body has LastPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                  "});",
+                  "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                  "});",
+                  "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                  "});",
+                  "",
+                  ""
+                ],
+                "_lastExecutionId": "91bd2b1e-fd2e-47b5-9d83-15b5f538df4a"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "SOL"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.29.0",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "fcb4f208-b7b4-428f-8046-63d53f390c03",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.independentreserve.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "b939e092-eb68-4f9c-b757-1e0e812bbd09",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Jan 2023 06:30:02 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "337"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "private"
+            },
+            {
+              "key": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept-Encoding"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              68,
+              97,
+              121,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              54,
+              46,
+              53,
+              51,
+              50,
+              57,
+              44,
+              34,
+              68,
+              97,
+              121,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              50,
+              46,
+              51,
+              56,
+              51,
+              55,
+              44,
+              34,
+              68,
+              97,
+              121,
+              65,
+              118,
+              103,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              52,
+              46,
+              52,
+              53,
+              56,
+              51,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              34,
+              58,
+              49,
+              48,
+              48,
+              52,
+              46,
+              51,
+              55,
+              55,
+              49,
+              57,
+              48,
+              48,
+              48,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              73,
+              110,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              34,
+              58,
+              48,
+              46,
+              48,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              79,
+              102,
+              102,
+              101,
+              114,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              54,
+              46,
+              54,
+              49,
+              54,
+              52,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              66,
+              105,
+              100,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              50,
+              46,
+              52,
+              53,
+              48,
+              49,
+              44,
+              34,
+              76,
+              97,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              49,
+              54,
+              46,
+              53,
+              51,
+              50,
+              57,
+              44,
+              34,
+              80,
+              114,
+              105,
+              109,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              83,
+              111,
+              108,
+              34,
+              44,
+              34,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              100,
+              34,
+              44,
+              34,
+              67,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              84,
+              105,
+              109,
+              101,
+              115,
+              116,
+              97,
+              109,
+              112,
+              85,
+              116,
+              99,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              51,
+              45,
+              48,
+              49,
+              45,
+              48,
+              57,
+              84,
+              48,
+              54,
+              58,
+              51,
+              48,
+              58,
+              48,
+              50,
+              46,
+              49,
+              50,
+              52,
+              56,
+              53,
+              50,
+              49,
+              90,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 63,
+          "responseSize": 340
+        },
+        "id": "204601a0-1410-457b-abb5-ef867b6bec38",
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayHighestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayLowestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayAvgPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbt",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbtInSecondaryCurrrency",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentLowestOfferPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentHighestBidPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has LastPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has PrimaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has SecondaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CreatedTimestampUtc",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "ddbce135-d08b-45fa-9e35-f68865c2546e",
+          "length": 5,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "4a21ea51-5bb9-450a-bc5d-bfb2a09dd7bb"
+        },
+        "item": {
+          "id": "e4ea62c2-e5c5-4512-ad67-a9122a9d2ead",
+          "name": "IR-ADA-USD Copy",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "Public",
+                "",
+                "GetMarketSummary"
+              ],
+              "host": [
+                "api",
+                "independentreserve",
+                "com"
+              ],
+              "query": [
+                {
+                  "key": "primaryCurrencyCode",
+                  "value": "ADA"
+                },
+                {
+                  "key": "secondaryCurrencyCode",
+                  "value": "usd"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [
+            {
+              "_": {
+                "postman_previewlanguage": "json"
+              },
+              "id": "116b1f87-1c99-49b0-ba30-d6fb6617a489",
+              "name": "IR-BCH-USD",
+              "originalRequest": {
+                "url": {
+                  "protocol": "https",
+                  "path": [
+                    "Public",
+                    "GetMarketSummary"
+                  ],
+                  "host": [
+                    "api",
+                    "independentreserve",
+                    "com"
+                  ],
+                  "query": [
+                    {
+                      "key": "primaryCurrencyCode",
+                      "value": "bch"
+                    },
+                    {
+                      "key": "secondaryCurrencyCode",
+                      "value": "usd"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Cache-Control",
+                  "value": "private"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 05 Apr 2019 22:55:26 GMT"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "333"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "body": "{\n    \"DayHighestPrice\": 313.25,\n    \"DayLowestPrice\": 283.07,\n    \"DayAvgPrice\": 298.16,\n    \"DayVolumeXbt\": 123.51802858,\n    \"DayVolumeXbtInSecondaryCurrrency\": 0,\n    \"CurrentLowestOfferPrice\": 304.17,\n    \"CurrentHighestBidPrice\": 288.58,\n    \"LastPrice\": 293.15,\n    \"PrimaryCurrencyCode\": \"Bch\",\n    \"SecondaryCurrencyCode\": \"Usd\",\n    \"CreatedTimestampUtc\": \"2019-04-05T22:55:26.9728486Z\"\n}",
+              "cookie": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "0caee753-8cd6-411b-bec7-1d31055adc6b",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.get(\"primaryCurrencyCode\");"
+                ],
+                "_lastExecutionId": "8015cb12-5e75-4893-8948-e2c1c3df1345"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "b6af033b-580e-4058-9701-e13b606f41eb",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayHighestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayHighestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayLowestPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayLowestPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayAvgPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayAvgPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbt\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbt\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has DayVolumeXbtInSecondaryCurrrency\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"DayVolumeXbtInSecondaryCurrrency\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentLowestOfferPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentLowestOfferPrice\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CurrentHighestBidPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CurrentHighestBidPrice\");",
+                  "});",
+                  "pm.test(\"Body has LastPrice\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"LastPrice\");",
+                  "});",
+                  "pm.test(\"Body has PrimaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"PrimaryCurrencyCode\");",
+                  "});",
+                  "pm.test(\"Body has SecondaryCurrencyCode\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"SecondaryCurrencyCode\");",
+                  "});",
+                  "",
+                  "pm.test(\"Body has CreatedTimestampUtc\", function() {",
+                  "    pm.expect(pm.response.text()).to.include(\"CreatedTimestampUtc\");",
+                  "});",
+                  "",
+                  ""
+                ],
+                "_lastExecutionId": "d4deca46-2137-4f88-8047-3ecd756e7bc1"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "Public",
+              "",
+              "GetMarketSummary"
+            ],
+            "host": [
+              "api",
+              "independentreserve",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "primaryCurrencyCode",
+                "value": "ADA"
+              },
+              {
+                "key": "secondaryCurrencyCode",
+                "value": "usd"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.29.0",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "3b24d54a-6c76-4e40-a615-3245e328f305",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.independentreserve.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "da5c8d87-0e93-441e-b8b3-356f8c5806e7",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Jan 2023 06:30:02 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "338"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "private"
+            },
+            {
+              "key": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept-Encoding"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              68,
+              97,
+              121,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              48,
+              46,
+              51,
+              52,
+              53,
+              49,
+              52,
+              44,
+              34,
+              68,
+              97,
+              121,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              48,
+              46,
+              50,
+              55,
+              55,
+              49,
+              52,
+              44,
+              34,
+              68,
+              97,
+              121,
+              65,
+              118,
+              103,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              48,
+              46,
+              51,
+              49,
+              49,
+              49,
+              52,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              34,
+              58,
+              49,
+              48,
+              51,
+              54,
+              56,
+              55,
+              46,
+              49,
+              55,
+              56,
+              57,
+              48,
+              48,
+              48,
+              48,
+              44,
+              34,
+              68,
+              97,
+              121,
+              86,
+              111,
+              108,
+              117,
+              109,
+              101,
+              88,
+              98,
+              116,
+              73,
+              110,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              34,
+              58,
+              50,
+              46,
+              50,
+              49,
+              55,
+              54,
+              49,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              76,
+              111,
+              119,
+              101,
+              115,
+              116,
+              79,
+              102,
+              102,
+              101,
+              114,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              48,
+              46,
+              51,
+              50,
+              57,
+              57,
+              55,
+              44,
+              34,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              116,
+              72,
+              105,
+              103,
+              104,
+              101,
+              115,
+              116,
+              66,
+              105,
+              100,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              48,
+              46,
+              51,
+              50,
+              52,
+              55,
+              51,
+              44,
+              34,
+              76,
+              97,
+              115,
+              116,
+              80,
+              114,
+              105,
+              99,
+              101,
+              34,
+              58,
+              48,
+              46,
+              51,
+              51,
+              49,
+              49,
+              54,
+              44,
+              34,
+              80,
+              114,
+              105,
+              109,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              65,
+              100,
+              97,
+              34,
+              44,
+              34,
+              83,
+              101,
+              99,
+              111,
+              110,
+              100,
+              97,
+              114,
+              121,
+              67,
+              117,
+              114,
+              114,
+              101,
+              110,
+              99,
+              121,
+              67,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              100,
+              34,
+              44,
+              34,
+              67,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              84,
+              105,
+              109,
+              101,
+              115,
+              116,
+              97,
+              109,
+              112,
+              85,
+              116,
+              99,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              51,
+              45,
+              48,
+              49,
+              45,
+              48,
+              57,
+              84,
+              48,
+              54,
+              58,
+              51,
+              48,
+              58,
+              48,
+              50,
+              46,
+              52,
+              50,
+              49,
+              55,
+              53,
+              49,
+              49,
+              90,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 272,
+          "responseSize": 346
+        },
+        "id": "e4ea62c2-e5c5-4512-ad67-a9122a9d2ead",
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayHighestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayLowestPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayAvgPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbt",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has DayVolumeXbtInSecondaryCurrrency",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentLowestOfferPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CurrentHighestBidPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has LastPrice",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has PrimaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has SecondaryCurrencyCode",
+            "skipped": false
+          },
+          {
+            "assertion": "Body has CreatedTimestampUtc",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 1681
+    },
+    "failures": [],
+    "error": null
+  }
+}

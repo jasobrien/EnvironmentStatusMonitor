@@ -1,0 +1,61 @@
+{
+	"name": "Collections",
+	"Active": "1",
+	"ENV": [
+		{
+			"Active": "1",
+			"Name": "Dev",
+			"tests": [
+				{
+					"script_name": "{Collection Name from Collections folder }.json",
+					"environment_name": "{Environment Name from Environments folder }.json",
+					"datafile": "{data Name from data folder }.json",
+					"Active": "1"
+				},
+				{
+					"script_name": "{Collection Name from Collections folder }.json",
+					"environment_name": "{Environment Name from Environments folder }.json",
+					"datafile": "{Environment Name from data folder }.json",
+					"Active": "1"
+				}
+			]
+		},
+        {
+			"Active": "1",
+			"Name": "Test",
+			"tests": [
+				{
+					"script_name": "{Collection Name from Collections folder }.json",
+					"environment_name": "{Environment Name from Environments folder }.json",
+					"datafile": "{data Name from data folder }.json",
+					"Active": "1"
+				},
+				{
+					"script_name": "{Collection Name from Collections folder }.json",
+					"environment_name": "{Environment Name from Environments folder }.json",
+					"datafile": "{data Name from data folder }.json",
+					"Active": "1"
+				}
+			]
+		},
+        {
+			"Active": "1",
+			"Name": "Staging",
+			"tests": [
+				{
+					"script_name": "{Collection Name from Collections folder }.json",
+					"environment_name": "{Environment Name from Environments folder }.json",
+					"datafile": "{data Name from data folder }.json",
+					"Active": "1"
+				},
+				{
+					"script_name": "{Collection Name from Collections folder }.json",
+					"environment_name": "{Environment Name from Environments folder }.json",
+					"datafile": "{data Name from data folder }.json",
+					"Active": "1"
+				}
+			]
+		}
+
+	]
+}
