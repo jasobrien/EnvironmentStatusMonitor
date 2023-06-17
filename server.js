@@ -34,8 +34,8 @@ server.use(session({
   saveUninitialized: true
 }));
 fn.logOutput("Info", "Server Running");
-
 let config = cf.config;
+const ExtendedLog= config.ExtendedLog;
 const Env1Name = config.ENV1;
 const Env2Name = config.ENV2;
 const Env3Name = config.ENV3;
@@ -336,9 +336,9 @@ server.get ('/runStaging', async function (req,res){
 //Cron and run tests  0 */15 * * * *
 //everyMinute , every10Minutes , every15Minutes, 
 // change frequency of executions
-let job1 = new CronJob( every10Minutes,function startjob1() { runTests(0, "devresults"); },null,true, "Australia/Sydney"); //end job
-let job2 = new CronJob( every10Minutes,function startjob1() { runTests(1, "testresults"); },null,true, "Australia/Sydney"); //end job
-let job3 = new CronJob( every10Minutes,function startjob1() { runTests(2, "stagingresults"); },null,true, "Australia/Sydney"); //end job
+let job1 = new CronJob( everyMinute,function startjob1() { runTests(0, "devresults"); },null,true, "Australia/Sydney"); //end job
+let job2 = new CronJob( everyMinute,function startjob1() { runTests(1, "testresults"); },null,true, "Australia/Sydney"); //end job
+let job3 = new CronJob( everyMinute,function startjob1() { runTests(2, "stagingresults"); },null,true, "Australia/Sydney"); //end job
 
 function runTests(region, filename) {
   return new Promise((resolve, reject) => {
@@ -413,7 +413,6 @@ function runMyTest(collection,environmentfile, environmentName, datafile, filena
       throw err;
     }
     res.run.executions.forEach((exec) => {
-    
       fn.logOutput("Info","API Request call:", exec.item.name);
       // console.log('Response:', JSON.parse(exec.response.stream));
     });
@@ -422,10 +421,6 @@ function runMyTest(collection,environmentfile, environmentName, datafile, filena
     let myCollectionString = collection.split("/");
     fn.logOutput("Info","mystring is:" + myCollectionString);
     let myKey = myCollectionString[2].split(".");
-
-    // let myEnvString = environmentfile.split("/") ;
-    // console.log("mystring is:" + myEnvString);
-    // let myEnv = myEnvString[2].split(".");
     let failedTestCount = res.run.stats.assertions.failed;
     let totalTestCount = res.run.stats.assertions.total;
     let FailRate = fn.calculatePercentage(
@@ -462,8 +457,13 @@ function runMyTest(collection,environmentfile, environmentName, datafile, filena
     fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", "hist_" + filename);
     fn.logOutput("Info",FailRate + " % failed");
     fn.logOutput("Info","RAG Status " + status);
-
     let record = JSON.stringify(statusString);
+
+    if (ExtendedLog){
+      fn.writeToCurrentLog(JSON.stringify(res.run) + "\n", '_ExtendedLog_' +filename);
+    }
+
+    
   });
 } // end runMyTest
 

@@ -7,7 +7,7 @@ exports.config = {
     Env2Name: "Test",
     Env3Name: "Staging",
   },
-  log :0,
+  ExtendedLog :false,
   session: false,
   user: "admin",
   password: "password",
