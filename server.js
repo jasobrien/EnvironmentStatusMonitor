@@ -336,9 +336,9 @@ server.get ('/runStaging', async function (req,res){
 //Cron and run tests  0 */15 * * * *
 //everyMinute , every10Minutes , every15Minutes, 
 // change frequency of executions
-let job1 = new CronJob( everyMinute,function startjob1() { runTests(0, "devresults"); },null,true, "Australia/Sydney"); //end job
-let job2 = new CronJob( everyMinute,function startjob1() { runTests(1, "testresults"); },null,true, "Australia/Sydney"); //end job
-let job3 = new CronJob( everyMinute,function startjob1() { runTests(2, "stagingresults"); },null,true, "Australia/Sydney"); //end job
+let job1 = new CronJob( every10Minutes,function startjob1() { runTests(0, "devresults"); },null,true, "Australia/Sydney"); //end job
+let job2 = new CronJob( every10Minutes,function startjob1() { runTests(1, "testresults"); },null,true, "Australia/Sydney"); //end job
+let job3 = new CronJob( every10Minutes,function startjob1() { runTests(2, "stagingresults"); },null,true, "Australia/Sydney"); //end job
 
 function runTests(region, filename) {
   return new Promise((resolve, reject) => {
