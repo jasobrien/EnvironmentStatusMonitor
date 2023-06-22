@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #chart-wrapper {
+          display: inline-block;
+          position: relative;
+          width: 30%;
+        }
+  
+        /* #chart-container{
+            display: inline-block;
+            position: relative;
+            width: 70%;
+          } */
+  
+        .chart-container {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-gap: 10px;
+          width: 33%;
+        }
+  
+        .relative {
+          position: relative;
+        }
+  
+        .absolute-center {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+  
+        .text-center {
+          text-align: center;
+        }
+  
+        p {
+          font-size: 1.5rem;
+        }
+  
+        body {
+          background-color: lightblue;
+        }
+        canvas {
+          display: block;
+          height: 100px;
+          width: 100px;
+        }
+        .custom-card-text {
+              font-size: 14px;
+          }
+
+          .btn-spaced {
+  margin-right: 10px; /* Adjust the value as per your desired spacing */
+  margin-top: 10px ;
+}
+  
+      </style>
+
+    <title>File Upload</title>
+    <!-- Add Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(function() {
+      // Load the header HTML file
+      $("#header-container").load("/data/header");
+      });
+      </script>
+
+</head>
+<body>
+    <div id="header-container"></div>
+
+
+<div class="container mt-5">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#collections">Add Collections files</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#environments">Add Environments files</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#data">Add Data files</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tests">Add Test config / runner files</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-2">
+        <div class="tab-pane active" id="collections">
+            <p>Upload Collection Files</p>
+            <div class="container">
+                <h1 class="text-center mt-5"></h1>
+                <form action="/upload/collections" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" class="form-control" name="files" multiple accept=".json">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="tab-pane" id="environments">
+            <p>Upload Environment Files</p>
+            <div class="container">
+                <h1 class="text-center mt-5"></h1>
+                <form action="/upload/environments" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" class="form-control" name="files" multiple accept=".json">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="tab-pane" id="data">
+            <p>Upload Data Files</p>
+            <div class="container">
+                <h1 class="text-center mt-5"></h1>
+                <form action="/upload/data" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" class="form-control" name="files" multiple accept=".json">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="tab-pane" id="tests">
+            <p>Upload Test configuration File (please name collections.json)</p>
+            <div class="container">
+                <h1 class="text-center mt-5"></h1>
+                <form action="/upload/tests" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" class="form-control" name="files" multiple accept=".json">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

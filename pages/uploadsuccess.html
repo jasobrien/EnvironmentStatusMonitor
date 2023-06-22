@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+      // Load the header HTML file
+      $("#header-container").load("/data/header");
+      });
+      </script>
+    
+</head>
+<body>
+    <div id="header-container"></div>
+<center>
+    <h4> File(s) were uploaded successfully.</h4>
+    </center>
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success</title>
+    <!-- Add Bootstrap CSS for some basic styling -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="alert alert-primary" role="alert">
+        You will be redirected in <span id="counter">2</span> seconds...
+    </div>
+</div>
+
+<script>
+    var counterElement = document.getElementById('counter');
+    var counter = 2;
+    var intervalId = setInterval(function() {
+        counter--;
+        counterElement.innerText = counter;
+
+        if(counter === 0) {
+            clearInterval(intervalId);
+            // Redirect after countdown reaches 0
+            window.location.href = '/upload';
+        }
+    }, 1000);
+</script>
+
+</body>
+</html>

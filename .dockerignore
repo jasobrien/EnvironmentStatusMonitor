@@ -1,0 +1,17 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore npm debug logs
+npm-debug.log*
+
+# Ignore development-specific files
+Dockerfile
+.git
+.gitignore
+
+# Ignore other build artifacts or temporary files
+build/
+dist/
+*.log
+*.pid
+*.lock

@@ -7,6 +7,7 @@ const newman = require("newman");
 const CronJob = require("cron").CronJob;
 const express = require("express"); // lightweight web server
 const session = require("express-session");
+const multer = require("multer");
 let bodyParser = require("body-parser");
 const fs = require("fs");
 let path = require("path"); // used for path
@@ -80,6 +81,128 @@ server.use("/readyToDeploy", deployRoute);
 // server.get("/", function (req, res) {
 //   res.redirect("/dashboard");
 // });
+
+const Collection_storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './collections')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+
+const environments_storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './environments')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+
+const data_storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './datafiles')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+
+const tests_storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './featuretests')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+
+const uploadcollection = multer({ storage: Collection_storage,fileFilter: function (req, file, callback) {
+  if (path.extname(file.originalname) !== '.json') {
+    return callback(new Error('Only json files are allowed'));
+  }
+  callback(null, true);
+} });
+const uploadenvironments = multer({ storage: environments_storage,fileFilter: function (req, file, callback) {
+  if (path.extname(file.originalname) !== '.json') {
+    return callback(new Error('Only json files are allowed'));
+  }
+  callback(null, true);
+}  });
+
+const uploaddata = multer({ storage: data_storage,fileFilter: function (req, file, callback) {
+  if (path.extname(file.originalname) !== '.json' ) {
+    return callback(new Error('Only json files are allowed'));
+  }
+  callback(null, true);
+}  });
+
+const uploadtests = multer({ storage: tests_storage,fileFilter: function (req, file, callback) {
+  if (path.extname(file.originalname) !== '.json' ) {
+    return callback(new Error('Only json files are allowed'));
+  }
+  callback(null, true);
+}  });
+
+server.post('/upload/collections', uploadcollection.array('files'), (req, res) => {
+  try {
+    // Handle the files here...
+    // If everything is OK, send back a success message
+    res.redirect('/uploadsuccess');
+} catch (error) {
+    // If an error occurred, send back an error message
+    console.error('Error:', error);
+    res.json({ error: 'An error occurred while uploading the files.' });
+}
+
+  
+});
+
+server.post('/upload/environments', uploadenvironments.array('files'), (req, res) => {
+  try {
+    // Handle the files here...
+    // If everything is OK, send back a success message
+    res.redirect('/uploadsuccess');
+} catch (error) {
+    // If an error occurred, send back an error message
+    console.error('Error:', error);
+    res.json({ error: 'An error occurred while uploading the files.' });
+}
+});
+
+server.post('/upload/data', uploaddata.array('files'), (req, res) => {
+  try {
+    // Handle the files here...
+    // If everything is OK, send back a success message
+    res.redirect('/uploadsuccess');
+} catch (error) {
+    // If an error occurred, send back an error message
+    console.error('Error:', error);
+    res.json({ error: 'An error occurred while uploading the files.' });
+}
+
+});
+
+server.post('/upload/tests', uploadtests.array('files'), (req, res) => {
+  try {
+    // Handle the files here...
+    // If everything is OK, send back a success message
+    res.redirect('/uploadsuccess');
+} catch (error) {
+    // If an error occurred, send back an error message
+    console.error('Error:', error);
+    res.json({ error: 'An error occurred while uploading the files.' });
+}
+});
+
+server.get('/upload',(req, res) => {
+    res.sendFile(__dirname + '/pages/upload.html');
+});
+
+server.get('/uploadsuccess',(req, res) => {
+  res.sendFile(__dirname + '/pages/uploadsuccess.html');
+});
 
 server.get("/config", function (req, res) {
   res.send(config.web);
