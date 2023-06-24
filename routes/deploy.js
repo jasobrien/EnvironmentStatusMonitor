@@ -10,7 +10,7 @@ router.get("/:ResultsEnv/:key", function (req, res) {
   //TODO - catch if it doesnt exist
   let ResultsEnv = req.params.ResultsEnv;
   let myKey = req.params.key;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   let filename = fn.getResultFileName(ResultsEnv);
   let results = fn.createJsonArrayFromFile(filename);
   let data_filter = results.filter((element) => element.key == myKey);
@@ -22,7 +22,7 @@ router.get("/:ResultsEnv/:key", function (req, res) {
 router.get("/:ResultsEnv", function (req, res) {
   //returns the latest results json to the user
   let ResultsEnv = req.params.ResultsEnv;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   let filename = fn.getResultFileName(ResultsEnv);
   let results = fn.createJsonArrayFromFile(filename);
   res.send(results);

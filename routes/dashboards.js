@@ -9,23 +9,23 @@ const SESSION_ON = config.session;
 
 
 router.get("/", function (req, res) {
-  if(SESSION_ON){
-    if(req.session.loggedin || !SESSION_ON){
+  if (SESSION_ON) {
+    if (req.session.loggedin || !SESSION_ON) {
       res.sendFile(myPath + "/pages/dashboard.html");
-      }else{
-        res.redirect('/');
-       // res.send("User not logged in");
-      }
-  }else{
+    } else {
+      res.redirect('/');
+      // res.send("User not logged in");
+    }
+  } else {
     res.sendFile(myPath + "/pages/dashboard.html");
   }
- 
+
 });
 
 router.get("/performance/:env/", function (req, res) {
-    if(req.session.loggedin || !SESSION_ON){
-  res.sendFile(myPath + "/pages/performance.html");
-  }else{
+  if (req.session.loggedin || !SESSION_ON) {
+    res.sendFile(myPath + "/pages/performance.html");
+  } else {
     res.redirect('/');
     //res.send("User not logged in");
   }
@@ -34,9 +34,9 @@ router.get("/performance/:env/", function (req, res) {
 
 router.get("/performance/:env/:days", function (req, res) {
 
-    if(req.session.loggedin || !SESSION_ON){
-  res.sendFile(myPath + "/pages/performance.html");
-  }else{
+  if (req.session.loggedin || !SESSION_ON) {
+    res.sendFile(myPath + "/pages/performance.html");
+  } else {
     res.redirect('/');
     //res.send("User not logged in");
   }

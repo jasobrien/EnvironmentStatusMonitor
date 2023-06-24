@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Collection Suite Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
-            integrity="sha384-N+5bpyvQlOrCK9BzJk8+wwm1fY03n5m5w5MN5ql/Chj+SN/7zS9SxRn7CYuN+lAe" crossorigin="anonymous">
-        </script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <!-- Custom JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-N+5bpyvQlOrCK9BzJk8+wwm1fY03n5m5w5MN5ql/Chj+SN/7zS9SxRn7CYuN+lAe" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-<script>
-    $(function() {
-// Load the header HTML file
-$("#header-container").load("/data/header");
-});
-</script>
+    <script>
+        $(function () {
+            // Load the header HTML file
+            $("#header-container").load("/data/header");
+        });
+    </script>
 </head>
+
 <body class="p-4">
     <div id="header-container"></div>
 
@@ -39,35 +41,36 @@ $("#header-container").load("/data/header");
 
     <script>
         // Get the JSON data from the file and display it in the text box
-fetch('/data/editfile')
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('json-data').value = JSON.stringify(data, null, 2);
-    })
-    .catch(error => console.error(error));
+        fetch('/data/editfile')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('json-data').value = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error(error));
 
-// Save the updated JSON data to the file when the save button is clicked
-document.getElementById('save-button').addEventListener('click', () => {
-    const jsonData = document.getElementById('json-data').value;
-   // const updatedData = JSON.parse(jsonData);
-    //const updatedJsonString = JSON.stringify(jsonData, null, 2);
+        // Save the updated JSON data to the file when the save button is clicked
+        document.getElementById('save-button').addEventListener('click', () => {
+            const jsonData = document.getElementById('json-data').value;
+            // const updatedData = JSON.parse(jsonData);
+            //const updatedJsonString = JSON.stringify(jsonData, null, 2);
 
-    fetch('/data/editfile', {
-        method: 'PUT',
-        headers: {
-    'Content-Type': 'application/json'
-  },
-        body: jsonData
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        alert('Data saved successfully!');
-    })
-    .catch(error => alert('An error has occurred and the data could not be saved.  Check Json format.'));
-});
-
+            fetch('/data/editfile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: jsonData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    alert('Data saved successfully!');
+                })
+                .catch(error => alert(
+                    'An error has occurred and the data could not be saved.  Check Json format.'));
+        });
     </script>
 </body>
+
 </html>

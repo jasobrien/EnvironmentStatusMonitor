@@ -3,23 +3,15 @@ let cf = require("./config/config");
 const dashboardRoute = require("./routes/dashboards");
 const dataRoute = require("./routes/data");
 const deployRoute = require("./routes/deploy");
+const uploadRoute = require("./routes/upload");
 const newman = require("newman");
 const CronJob = require("cron").CronJob;
 const express = require("express"); // lightweight web server
 const session = require("express-session");
-const multer = require("multer");
 let bodyParser = require("body-parser");
 const fs = require("fs");
 let path = require("path"); // used for path
 const server = express().use(bodyParser.json());
-// server.use(
-//   bodyParser.urlencoded({
-//     extended: true,
-//     limit: '10mb', 
-//   }),
-//   bodyParser.json({ limit: '10mb' })
-// );
-
 server.use(bodyParser.urlencoded({
   extended: true,
   limit: '10mb'
@@ -34,9 +26,10 @@ server.use(session({
   resave: true,
   saveUninitialized: true
 }));
+
 fn.logOutput("Info", "Server Running");
 let config = cf.config;
-const ExtendedLog= config.ExtendedLog;
+const ExtendedLog = config.ExtendedLog;
 const Env1Name = config.ENV1;
 const Env2Name = config.ENV2;
 const Env3Name = config.ENV3;
@@ -62,7 +55,7 @@ const PostmanEnvFolder = config.PostmanEnvFolder; //'./environments/';
 const PostmanDataFolder = config.PostmanDataFolder; //'./datafiles/';
 
 // in beta
-const SESSION_ON = config.session;  
+const SESSION_ON = config.session;
 const user = config.user;
 const password = config.password;
 
@@ -72,161 +65,41 @@ const sevenDaysAgoTimestamp = now.getTime() - 3 * 24 * 60 * 60 * 1000;
 
 // Express Middleware for serving static files
 server.use(express.static(path.join(__dirname, "public")));
-server.use(express.text({ limit: '10mb' }));
+server.use(express.text({
+  limit: '10mb'
+}));
 
 // Express routes
 server.use("/dashboard", dashboardRoute);
 server.use("/data", dataRoute);
 server.use("/readyToDeploy", deployRoute);
-// server.get("/", function (req, res) {
-//   res.redirect("/dashboard");
-// });
-
-const Collection_storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './collections')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-
-const environments_storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './environments')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-
-const data_storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './datafiles')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-
-const tests_storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './featuretests')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-
-const uploadcollection = multer({ storage: Collection_storage,fileFilter: function (req, file, callback) {
-  if (path.extname(file.originalname) !== '.json') {
-    return callback(new Error('Only json files are allowed'));
-  }
-  callback(null, true);
-} });
-const uploadenvironments = multer({ storage: environments_storage,fileFilter: function (req, file, callback) {
-  if (path.extname(file.originalname) !== '.json') {
-    return callback(new Error('Only json files are allowed'));
-  }
-  callback(null, true);
-}  });
-
-const uploaddata = multer({ storage: data_storage,fileFilter: function (req, file, callback) {
-  if (path.extname(file.originalname) !== '.json' ) {
-    return callback(new Error('Only json files are allowed'));
-  }
-  callback(null, true);
-}  });
-
-const uploadtests = multer({ storage: tests_storage,fileFilter: function (req, file, callback) {
-  if (path.extname(file.originalname) !== '.json' ) {
-    return callback(new Error('Only json files are allowed'));
-  }
-  callback(null, true);
-}  });
-
-server.post('/upload/collections', uploadcollection.array('files'), (req, res) => {
-  try {
-    // Handle the files here...
-    // If everything is OK, send back a success message
-    res.redirect('/uploadsuccess');
-} catch (error) {
-    // If an error occurred, send back an error message
-    console.error('Error:', error);
-    res.json({ error: 'An error occurred while uploading the files.' });
-}
-
-  
-});
-
-server.post('/upload/environments', uploadenvironments.array('files'), (req, res) => {
-  try {
-    // Handle the files here...
-    // If everything is OK, send back a success message
-    res.redirect('/uploadsuccess');
-} catch (error) {
-    // If an error occurred, send back an error message
-    console.error('Error:', error);
-    res.json({ error: 'An error occurred while uploading the files.' });
-}
-});
-
-server.post('/upload/data', uploaddata.array('files'), (req, res) => {
-  try {
-    // Handle the files here...
-    // If everything is OK, send back a success message
-    res.redirect('/uploadsuccess');
-} catch (error) {
-    // If an error occurred, send back an error message
-    console.error('Error:', error);
-    res.json({ error: 'An error occurred while uploading the files.' });
-}
-
-});
-
-server.post('/upload/tests', uploadtests.array('files'), (req, res) => {
-  try {
-    // Handle the files here...
-    // If everything is OK, send back a success message
-    res.redirect('/uploadsuccess');
-} catch (error) {
-    // If an error occurred, send back an error message
-    console.error('Error:', error);
-    res.json({ error: 'An error occurred while uploading the files.' });
-}
-});
-
-server.get('/upload',(req, res) => {
-    res.sendFile(__dirname + '/pages/upload.html');
-});
-
-server.get('/uploadsuccess',(req, res) => {
-  res.sendFile(__dirname + '/pages/uploadsuccess.html');
-});
-
+server.use("/upload", uploadRoute);
 server.get("/config", function (req, res) {
   res.send(config.web);
 });
 
 
-server.get('/',(req, res) => {
-  if (SESSION_ON){
+server.get('/', (req, res) => {
+  if (SESSION_ON) {
     res.sendFile(__dirname + '/pages/login.html');
-  }else{
+  } else {
     res.redirect('/dashboard');
   }
 });
 
-server.get("/username", (req,res)=>{
-  if(req.session.loggedin){
-    res.send (req.session.username);
-  }else{
-    res.send ("Not logged in");
+server.get("/username", (req, res) => {
+  if (req.session.loggedin) {
+    res.send(req.session.username);
+  } else {
+    res.send("Not logged in");
   }
 });
 
 server.post('/login', (req, res) => {
-  const { username, password } = req.body;
+  const {
+    username,
+    password
+  } = req.body;
   if (username === user && password === password) {
     req.session.loggedin = true;
     req.session.username = username;
@@ -244,7 +117,7 @@ server.get('/logout', (req, res) => {
 server.get("/histresults/:ResultsEnv/:key", function (req, res) {
   let ResultsEnv = req.params.ResultsEnv;
   let myKey = req.params.key;
- fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getHistFileName(ResultsEnv);
   let results = fn.createJsonArrayFromFile(filename);
   let data_filter = results.filter((element) => element.key == myKey);
@@ -256,7 +129,7 @@ server.get("/histresultsdays/:ResultsEnv/:key/:days", function (req, res) {
   let ResultsEnv = req.params.ResultsEnv;
   let numDays = req.params.days;
   let myKey = req.params.key;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getHistFileName(ResultsEnv);
   let results = fn.createJsonArrayFromFile(filename);
   let data_filter = results.filter((element) => element.key == myKey);
@@ -278,8 +151,8 @@ server.get("/histresults/:ResultsEnv/:key/:days", function (req, res) {
   let ResultsEnv = req.params.ResultsEnv;
   let myKey = req.params.key;
   let numDays = req.params.days;
-  
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getHistFileName(ResultsEnv);
   let results = fn.createJsonArrayFromFile(filename);
   let data_filter = results.filter((element) => element.key == myKey);
@@ -301,7 +174,7 @@ function parseIso8601Datetime(isoString) {
 server.get("/histresultskeys/:ResultsEnv", function (req, res) {
   // gives a list of all keys(collection names) that are in result history log
   let ResultsEnv = req.params.ResultsEnv;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getHistFileName(ResultsEnv);
   let results = fn.createJsonArrayFromFile(filename);
   const transactions = results.map((trans) => trans.key);
@@ -313,7 +186,7 @@ server.get("/histresultskeys/:ResultsEnv", function (req, res) {
 server.get("/results/:ResultsEnv/", function (req, res) {
   //returns the latest results json
   let ResultsEnv = req.params.ResultsEnv;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getResultFileName(ResultsEnv);
   let results = fn.createJsonArrayFromFile(filename);
   res.send(results);
@@ -325,7 +198,7 @@ server.get("/getStats/:ResultsEnv/:key", function (req, res) {
   let ResultsEnv = req.params.ResultsEnv;
   let myKey = req.params.key;
   let error = 0;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getHistFileName(ResultsEnv);
 
   if (error == 0) {
@@ -361,7 +234,7 @@ server.get("/getStats/:ResultsEnv/:key", function (req, res) {
 server.get("/getSummaryStats/:ResultsEnv", function (req, res) {
   let ResultsEnv = req.params.ResultsEnv;
   let error = 0;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getHistFileName(ResultsEnv);
   if (error == 0) {
     let results = fn.createJsonArrayFromFile(filename);
@@ -395,7 +268,7 @@ server.get("/getSummaryStats/:ResultsEnv/:days", function (req, res) {
   let ResultsEnv = req.params.ResultsEnv;
   let numDays = req.params.days;
   let error = 0;
-  fn.logOutput("Info","Environment Passed was : " + ResultsEnv);
+  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
   const filename = fn.getHistFileName(ResultsEnv);
 
   if (error == 0) {
@@ -437,21 +310,21 @@ server.get("/getSummaryStats/:ResultsEnv/:days", function (req, res) {
 });
 
 
-server.get ('/runDev', async function (req,res){
+server.get('/runDev', async function (req, res) {
   const result = await runTests(0, "devresults");
-  fn.logOutput("Info","Result : " + result);
+  fn.logOutput("Info", "Result : " + result);
   res.redirect("/");
 });
 
-server.get ('/runTest',async function (req,res){
+server.get('/runTest', async function (req, res) {
   const result = await runTests(0, "testresults");
-  fn.logOutput("Info","Result : " + result);
+  fn.logOutput("Info", "Result : " + result);
   res.redirect("/");
 });
 
-server.get ('/runStaging', async function (req,res){
+server.get('/runStaging', async function (req, res) {
   const result = await runTests(0, "stagingresults");
-  fn.logOutput("Info","Result : " + result);
+  fn.logOutput("Info", "Result : " + result);
   res.redirect("/");
 });
 
@@ -459,56 +332,62 @@ server.get ('/runStaging', async function (req,res){
 //Cron and run tests  0 */15 * * * *
 //everyMinute , every10Minutes , every15Minutes, 
 // change frequency of executions
-let job1 = new CronJob( every10Minutes,function startjob1() { runTests(0, "devresults"); },null,true, "Australia/Sydney"); //end job
-let job2 = new CronJob( every10Minutes,function startjob1() { runTests(1, "testresults"); },null,true, "Australia/Sydney"); //end job
-let job3 = new CronJob( every10Minutes,function startjob1() { runTests(2, "stagingresults"); },null,true, "Australia/Sydney"); //end job
+let job1 = new CronJob(every10Minutes, function startjob1() {
+  runTests(0, "devresults");
+}, null, true, "Australia/Sydney"); //end job
+let job2 = new CronJob(every10Minutes, function startjob1() {
+  runTests(1, "testresults");
+}, null, true, "Australia/Sydney"); //end job
+let job3 = new CronJob(every10Minutes, function startjob1() {
+  runTests(2, "stagingresults");
+}, null, true, "Australia/Sydney"); //end job
 
 function runTests(region, filename) {
   return new Promise((resolve, reject) => {
-  // Cron jobs runs the schuedules using this function
-  let testdata = fs.readFileSync("./featuretests/collections.json");
-  let schedule = JSON.parse(testdata);
-   let totalTestsArray = Object.keys(schedule.ENV[region].tests);
-   let tests = schedule.ENV[region].tests;
-  // fn.logOutput("objects", totalTests1.keys());
-  ///TODO get an object that filters out test collections that are not meant to be run
-  // filter is working but need to focus more on this in next version to make it work.
-  let totalTests = Object.keys(schedule.ENV[region].tests).length;
-  let filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
-  let filteredTestCount = Object.keys(tests).filter(key => tests[key].Active == 1).length;
-  fn.logOutput("Total number of test objects", totalTests);
-  fn.logOutput("Total number of filtered test objects", filteredTests.length);
+    // Cron jobs runs the schuedules using this function
+    let testdata = fs.readFileSync("./featuretests/collections.json");
+    let schedule = JSON.parse(testdata);
+    let totalTestsArray = Object.keys(schedule.ENV[region].tests);
+    let tests = schedule.ENV[region].tests;
+    // fn.logOutput("objects", totalTests1.keys());
+    ///TODO get an object that filters out test collections that are not meant to be run
+    // filter is working but need to focus more on this in next version to make it work.
+    let totalTests = Object.keys(schedule.ENV[region].tests).length;
+    let filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
+    let filteredTestCount = Object.keys(tests).filter(key => tests[key].Active == 1).length;
+    fn.logOutput("Total number of test objects", totalTests);
+    fn.logOutput("Total number of filtered test objects", filteredTests.length);
 
-  for (var i = 0; i < totalTests; i++) {
-    //   for (var i = 0; i < filteredTests; i++) {
-    // let collection = PostmanCollectionFolder + totalTests[i].script_name ;
-    // let env = totalTests[i].environment_name;
-    let envfile;
-    let datafile;
-    let collection =
-      PostmanCollectionFolder + schedule.ENV[region].tests[i].script_name;
-    if (schedule.ENV[region].tests[i].environment_name != "") {
-      envfile =
-        PostmanEnvFolder + schedule.ENV[region].tests[i].environment_name;
-    } else {
-      envfile = "";
+    for (var i = 0; i < totalTests; i++) {
+      //   for (var i = 0; i < filteredTests; i++) {
+      // let collection = PostmanCollectionFolder + totalTests[i].script_name ;
+      // let env = totalTests[i].environment_name;
+      let envfile;
+      let datafile;
+      let collection =
+        PostmanCollectionFolder + schedule.ENV[region].tests[i].script_name;
+      if (schedule.ENV[region].tests[i].environment_name != "") {
+        envfile =
+          PostmanEnvFolder + schedule.ENV[region].tests[i].environment_name;
+      } else {
+        envfile = "";
+      }
+      if (schedule.ENV[region].tests[i].datafile != "") {
+        datafile = PostmanDataFolder + schedule.ENV[region].tests[i].datafile;
+      } else {
+        datafile = "";
+      }
+      runMyTest(collection, envfile, schedule.ENV[region], datafile, filename);
+      const log = fn.myDateTime() + "," + schedule.ENV[region].tests[i].script_name + "," + schedule.ENV[region].tests[i].environment_name;
+      fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
+      fn.logOutput("Info", "Log : " + log);
+
     }
-    if (schedule.ENV[region].tests[i].datafile != "") {
-      datafile = PostmanDataFolder + schedule.ENV[region].tests[i].datafile;
-    } else {
-      datafile = "";
-    }
-    runMyTest(collection, envfile, schedule.ENV[region], datafile, filename);
-    const log = fn.myDateTime() +","+ schedule.ENV[region].tests[i].script_name +","+  schedule.ENV[region].tests[i].environment_name ;
-    fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
-    fn.logOutput("Info","Log : " + log);
- 
-  }
-  resolve("Tests completed successfully.");
-});
+    resolve("Tests completed successfully.");
+  });
 }
 
-function runMyTest(collection,environmentfile, environmentName, datafile, filename) {
+function runMyTest(collection, environmentfile, environmentName, datafile, filename) {
   // Clear the current log to write new results.
 
   fn.clearCurrentLog(filename);
@@ -531,18 +410,18 @@ function runMyTest(collection,environmentfile, environmentName, datafile, filena
   newman.run(options, function (err, res) {
     if (err) {
       //write to error log.
-     
-      fn.logOutput("Info","An errof has occurred " + err);
+
+      fn.logOutput("Info", "An errof has occurred " + err);
       throw err;
     }
     res.run.executions.forEach((exec) => {
-      fn.logOutput("Info","API Request call:", exec.item.name);
+      fn.logOutput("Info", "API Request call:", exec.item.name);
       // console.log('Response:', JSON.parse(exec.response.stream));
     });
     // create fail rates
     // parse collection variable to make a nice Key for chart
     let myCollectionString = collection.split("/");
-    fn.logOutput("Info","mystring is:" + myCollectionString);
+    fn.logOutput("Info", "mystring is:" + myCollectionString);
     let myKey = myCollectionString[2].split(".");
     let failedTestCount = res.run.stats.assertions.failed;
     let totalTestCount = res.run.stats.assertions.total;
@@ -575,22 +454,23 @@ function runMyTest(collection,environmentfile, environmentName, datafile, filena
     };
     //add the result to the JSON array.
     fn.CreateJsonObjectForResults(testResult);
-    fn.logOutput("Info","Filename is " + filename);
+    fn.logOutput("Info", "Filename is " + filename);
     fn.writeToCurrentLog(JSON.stringify(testResult) + "\n", filename);
     fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", "hist_" + filename);
-    fn.logOutput("Info",FailRate + " % failed");
-    fn.logOutput("Info","RAG Status " + status);
+    fn.logOutput("Info", FailRate + " % failed");
+    fn.logOutput("Info", "RAG Status " + status);
     let record = JSON.stringify(statusString);
 
-    if (ExtendedLog){
-      fn.writeToCurrentLog(JSON.stringify(res.run) + "\n", '_ExtendedLog_' +filename);
+    if (ExtendedLog) {
+      fn.writeToCurrentLog(JSON.stringify(res.run) + "\n", '_ExtendedLog_' + filename);
     }
 
-    
+
   });
 } // end runMyTest
 
 const port = process.env.PORT || 8080;
+
 function keepAlive() {
   server.listen(port, () => {
     console.log("server is running and alive");

@@ -1,199 +1,202 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-      #chart-wrapper {
-        display: inline-block;
-        position: relative;
-        width: 30%;
-      }
 
-      /* #chart-container{
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    #chart-wrapper {
+      display: inline-block;
+      position: relative;
+      width: 30%;
+    }
+
+    /* #chart-container{
           display: inline-block;
           position: relative;
           width: 70%;
         } */
 
-      .chart-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 10px;
-        width: 33%;
-      }
+    .chart-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      width: 33%;
+    }
 
-      .relative {
-        position: relative;
-      }
+    .relative {
+      position: relative;
+    }
 
-      .absolute-center {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
+    .absolute-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 
-      .text-center {
-        text-align: center;
-      }
+    .text-center {
+      text-align: center;
+    }
 
-      p {
-        font-size: 1.5rem;
-      }
+    p {
+      font-size: 1.5rem;
+    }
 
-      body {
-        background-color: lightblue;
-      }
-      canvas {
-        display: block;
-        height: 100px;
-        width: 100px;
-      }
-      .custom-card-text {
-            font-size: 14px;
-        }
+    body {
+      background-color: lightblue;
+    }
 
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datasource@0.2.0/dist/chartjs-plugin-datasource.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
+    canvas {
+      display: block;
+      height: 100px;
+      width: 100px;
+    }
 
-<script>
-  $(function() {
-// Load the header HTML file
-$("#header-container").load("/data/header");
-});
-</script>
-  </head>
+    .custom-card-text {
+      font-size: 14px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datasource@0.2.0/dist/chartjs-plugin-datasource.min.js">
+  </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+  <script>
+    $(function () {
+      // Load the header HTML file
+      $("#header-container").load("/data/header");
+    });
+  </script>
+</head>
+
 <body class="p-4">
-    <div id="header-container"></div>
-    <center>
-        Feature Collection Performance
-    </center>
+  <div id="header-container"></div>
+  <center>
+    Feature Collection Performance
+  </center>
 
-    <div id="chart-container" class="row"></div>
+  <div id="chart-container" class="row"></div>
 
-    <script>
-        const path = window.location.pathname;
-        const currentPath = path.split("/");
-        const lastTwoParts = currentPath.slice(-2);
-        const [parameter1, parameter2] = lastTwoParts;
+  <script>
+    const path = window.location.pathname;
+    const currentPath = path.split("/");
+    const lastTwoParts = currentPath.slice(-2);
+    const [parameter1, parameter2] = lastTwoParts;
 
-        console.log(currentPath);
-        console.log(lastTwoParts);
+    console.log(currentPath);
+    console.log(lastTwoParts);
 
-        const [environmentName, days] = lastTwoParts;
-        URLKeys = "/histresultskeys/" + environmentName;
-        console.log("URLKeys are: " + URLKeys);
+    const [environmentName, days] = lastTwoParts;
+    URLKeys = "/histresultskeys/" + environmentName;
+    console.log("URLKeys are: " + URLKeys);
 
-        apiUrl = "/histresultsdays/" + environmentName + "/" + days;
-        console.log("apiUrl are: " + apiUrl);
+    apiUrl = "/histresultsdays/" + environmentName + "/" + days;
+    console.log("apiUrl are: " + apiUrl);
 
-        // Fetch data from API
-        async function fetchData() {
-            const response = await fetch("/histresultskeys/" + environmentName);
-            const jsonData = await response.json();
-            // return the array of transactions in file
-            return jsonData;
-        }
+    // Fetch data from API
+    async function fetchData() {
+      const response = await fetch("/histresultskeys/" + environmentName);
+      const jsonData = await response.json();
+      // return the array of transactions in file
+      return jsonData;
+    }
 
-        async function createCharts() {
-            const chartContainer = document.getElementById("chart-container");
+    async function createCharts() {
+      const chartContainer = document.getElementById("chart-container");
 
-            let transactions = await fetchData();
+      let transactions = await fetchData();
 
-            for (const value of transactions) {
-                const url =
-                    "/histresultsdays/" + environmentName + "/" + value + "/" + days;
-                const response = await fetch(url);
-                const mydata = await response.json();
-                console.log(`Response for ${value}: `, mydata);
-                // console.log(`AvgResponseTime: `, AvgResponseTime);
-                //Build charts for each array and add to page
+      for (const value of transactions) {
+        const url =
+          "/histresultsdays/" + environmentName + "/" + value + "/" + days;
+        const response = await fetch(url);
+        const mydata = await response.json();
+        console.log(`Response for ${value}: `, mydata);
+        // console.log(`AvgResponseTime: `, AvgResponseTime);
+        //Build charts for each array and add to page
 
-                const chartCard = document.createElement("div");
-                chartCard.classList.add("col-md-4");
+        const chartCard = document.createElement("div");
+        chartCard.classList.add("col-md-4");
 
-                const card = document.createElement("div");
-                card.classList.add("card");
+        const card = document.createElement("div");
+        card.classList.add("card");
 
-                const cardHeader = document.createElement("div");
-               
-                cardHeader.classList.add("card-header", "text-center");
-                cardHeader.innerHTML = value; // Use the value as the card header text
-                card.appendChild(cardHeader);
+        const cardHeader = document.createElement("div");
 
-                const cardBody = document.createElement("div");
-                cardBody.classList.add("card-body");
+        cardHeader.classList.add("card-header", "text-center");
+        cardHeader.innerHTML = value; // Use the value as the card header text
+        card.appendChild(cardHeader);
 
-                const canvas = document.createElement("canvas");
-                const chart = new Chart(canvas, {
-                    type: "line",
-                    data: {
-                        labels: mydata.map((d) => d.DateTime),
-                        datasets: [
-                            {
-                                label: Array.from(mydata)[0].key,
-                                data: mydata.map((d) => d.AvgResponseTime),
-                                fill: false,
-                                backgroundColor: "rgba(255, 99, 132, 0.2)",
-                                borderColor: "rgba(255, 99, 132, 1)",
-                                tension: 0.1,
-                            },
-                        ],
-                    },
-                    options: {
-                        scales: {
-                            x: {
-                                type: "time",
-                                distribution: "series",
-                                bounds: "data",
-                                time: {
-                                    parser: "YYYY-MM-DD HH:mm:ss",
-                                    displayFormats: {
-                                        millisecond: "MMM DD",
-                                        second: "MMM DD",
-                                        minute: "MMM DD",
-                                        hour: "MMM DD",
-                                        day: "MMM DD",
-                                        week: "MMM DD",
-                                        month: "MMM DD",
-                                        quarter: "MMM DD",
-                                        year: "MMM DD",
-                                    },
-                                },
-                            },
-                            y: {
-                                label: "Avg Response Time (ms)",
-                            },
-                        },
-                        plugins: {},
-                    },
-                });
+        const cardBody = document.createElement("div");
+        cardBody.classList.add("card-body");
 
-                cardBody.appendChild(canvas);
-                card.appendChild(cardBody);
-                chartCard.appendChild(card);
-                chartContainer.appendChild(chartCard);
-            }
-        }
+        const canvas = document.createElement("canvas");
+        const chart = new Chart(canvas, {
+          type: "line",
+          data: {
+            labels: mydata.map((d) => d.DateTime),
+            datasets: [{
+              label: Array.from(mydata)[0].key,
+              data: mydata.map((d) => d.AvgResponseTime),
+              fill: false,
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              tension: 0.1,
+            }, ],
+          },
+          options: {
+            scales: {
+              x: {
+                type: "time",
+                distribution: "series",
+                bounds: "data",
+                time: {
+                  parser: "YYYY-MM-DD HH:mm:ss",
+                  displayFormats: {
+                    millisecond: "MMM DD",
+                    second: "MMM DD",
+                    minute: "MMM DD",
+                    hour: "MMM DD",
+                    day: "MMM DD",
+                    week: "MMM DD",
+                    month: "MMM DD",
+                    quarter: "MMM DD",
+                    year: "MMM DD",
+                  },
+                },
+              },
+              y: {
+                label: "Avg Response Time (ms)",
+              },
+            },
+            plugins: {},
+          },
+        });
 
-        createCharts();
-    </script>
-<br>
-      <div class="card">
-          <div class="card-body">
-              <p class="card-text custom-card-text">All response times for failed tests are removed automatically. If
-                there are any performance spikes that distort graphs and can be explained,
-                they can be removed from the graphs by editing the associated results
-                history file and setting "IncludeInStats" key to 0 . A "RemoveComment" key
-                can be used to add the reason for the removal of the data.</p>
-              <ol>
-                
-              </ol>
-          </div>
-      </div>
+        cardBody.appendChild(canvas);
+        card.appendChild(cardBody);
+        chartCard.appendChild(card);
+        chartContainer.appendChild(chartCard);
+      }
+    }
+
+    createCharts();
+  </script>
+  <br>
+  <div class="card">
+    <div class="card-body">
+      <p class="card-text custom-card-text">All response times for failed tests are removed automatically. If
+        there are any performance spikes that distort graphs and can be explained,
+        they can be removed from the graphs by editing the associated results
+        history file and setting "IncludeInStats" key to 0 . A "RemoveComment" key
+        can be used to add the reason for the removal of the data.</p>
+      <ol>
+
+      </ol>
+    </div>
+  </div>
 
 </body>
+
 </html>

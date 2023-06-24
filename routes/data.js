@@ -29,8 +29,10 @@ router.get("/directory", (req, res) => {
   const directoryPath = myPath + "/collections"; // replace with your directory path
   fs.readdir(directoryPath, (err, files) => {
     if (err) {
-      fn.logOutput("Error",err);
-      return res.status(500).json({ error: "Failed to read directory" });
+      fn.logOutput("Error", err);
+      return res.status(500).json({
+        error: "Failed to read directory"
+      });
     }
     const fileDetails = files.map((fileName) => {
       const filePath = path.join(directoryPath, fileName);
@@ -72,7 +74,7 @@ router.get("/devresults", function (req, res) {
 
 router.get("/editfile/devresults", (req, res) => {
   let rawdata = fs.readFileSync("./results/hist_devresults.json");
- // let file = JSON.parse(rawdata);
+  // let file = JSON.parse(rawdata);
   res.send(rawdata);
 });
 
@@ -81,7 +83,7 @@ router.put("/editfile/devresults", (req, res) => {
   const data = req.body;
   // const contentString = JSON.stringify(data);
   //console.log('Data to be written to file', data);
-fs.writeFile('./results/hist_devresults.json', data, (err) => {
+  fs.writeFile('./results/hist_devresults.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
     res.send('Data written to file');
@@ -97,7 +99,7 @@ router.get("/testresults", function (req, res) {
 
 router.get("/editfile/testresults", (req, res) => {
   let rawdata = fs.readFileSync("./results/hist_testresults.json");
- // let file = JSON.parse(rawdata);
+  // let file = JSON.parse(rawdata);
   res.send(rawdata);
 });
 
@@ -106,7 +108,7 @@ router.put("/editfile/testresults", (req, res) => {
   const data = req.body;
   // const contentString = JSON.stringify(data);
   //console.log('Data to be written to file', data);
-fs.writeFile('./results/hist_testresults.json', data, (err) => {
+  fs.writeFile('./results/hist_testresults.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
     res.send('Data written to file');
@@ -122,7 +124,7 @@ router.get("/stagingresults", function (req, res) {
 
 router.get("/editfile/stagingresults", (req, res) => {
   let rawdata = fs.readFileSync("./results/hist_stagingresults.json");
- // let file = JSON.parse(rawdata);
+  // let file = JSON.parse(rawdata);
   res.send(rawdata);
 });
 
@@ -131,7 +133,7 @@ router.put("/editfile/stagingresults", (req, res) => {
   const data = req.body;
   // const contentString = JSON.stringify(data);
   //console.log('Data to be written to file', data);
-fs.writeFile('./results/hist_stagingresults.json', data, (err) => {
+  fs.writeFile('./results/hist_stagingresults.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
     res.send('Data written to file');

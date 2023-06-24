@@ -1,44 +1,46 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Schedule</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-<script>
-  $(function() {
-// Load the header HTML file
-$("#header-container").load("/data/header");
-});
-</script>
 
-  </head>
-  <body class="p-4">
-    <div id="header-container"></div>
-  
-    <div class="container mt-3">
-      <hr>
+<head>
+  <title>Schedule</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-      <!-- Use JavaScript to fetch the data from the API -->
-      <script>
-        fetch("/data/scheduledata")
-          .then(response => response.json())
-          .then(data => {
-            renderData(data);
-          })
-          .catch(error => console.error(error));
-        
-        // Function to render the data using Bootstrap
-        function renderData(data) {
-          // Create the HTML for the name and active status
-          const nameHtml = `
+  <script>
+    $(function () {
+      // Load the header HTML file
+      $("#header-container").load("/data/header");
+    });
+  </script>
+
+</head>
+
+<body class="p-4">
+  <div id="header-container"></div>
+
+  <div class="container mt-3">
+    <hr>
+
+    <!-- Use JavaScript to fetch the data from the API -->
+    <script>
+      fetch("/data/scheduledata")
+        .then(response => response.json())
+        .then(data => {
+          renderData(data);
+        })
+        .catch(error => console.error(error));
+
+      // Function to render the data using Bootstrap
+      function renderData(data) {
+        // Create the HTML for the name and active status
+        const nameHtml = `
             <h2>${data.name}</h2>
             <p>Active: ${data.Active}</p>
           `;
 
-          // Create the HTML for the environments and tests
-          const environmentsHtml = data.ENV.map(environment => {
-            const testsHtml = environment.tests.map(test => `
+        // Create the HTML for the environments and tests
+        const environmentsHtml = data.ENV.map(environment => {
+          const testsHtml = environment.tests.map(test => `
               <tr>
                 <td>${test.script_name}</td>
                 <td>${test.environment_name}</td>
@@ -46,7 +48,7 @@ $("#header-container").load("/data/header");
                 <td>${test.Active}</td>
               </tr>
             `).join("");
-            return `
+          return `
               <div class="card mb-3">
                 <div class="card-header">
                   ${environment.Name}
@@ -71,15 +73,16 @@ $("#header-container").load("/data/header");
                 </div>
               </div>
             `;
-          }).join("");
+        }).join("");
 
-          // Insert the HTML into the page
-          document.getElementById("data-container").innerHTML = nameHtml + environmentsHtml;
-        }
-      </script>
+        // Insert the HTML into the page
+        document.getElementById("data-container").innerHTML = nameHtml + environmentsHtml;
+      }
+    </script>
 
-      <!-- Placeholder for the data -->
-      <div id="data-container"></div>
-    </div>
-  </body>
+    <!-- Placeholder for the data -->
+    <div id="data-container"></div>
+  </div>
+</body>
+
 </html>
