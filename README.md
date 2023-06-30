@@ -3,8 +3,10 @@
 - Dashboard.html shows doughnut charts with each collection having a segments for 3 environment / regions / apps / features
 
 * Uptime for full history, last 30 days, 14 days, 7 days and 24hrs
-* performance.html displays time series graphs with response times for each collection. - excludes failures
-* schedule.html shows the your collections.json run file.
+* Performance page displays time series graphs with response times for each collection. - excludes failures
+* Main schedules from menu
+* Upload postman files from menu
+* Use Edit Files menu to edit the history files for the different environments to remove outliers that are distoring performance graphs. You can add a reason as well so others will know why the result should not be counted.
 
 # Setup Instructions
 
@@ -26,8 +28,6 @@ Sample tests are running that test different areas of the environmentstatus soft
    /readyToDeploy/{env}/{collection name}
 
 6. BETA - Enable a login page and very basic session mgmt by changing session to true in the config (Click Edit Schedule). Login using username : admin password : password or change in the config to other values.
-
-7. Use the Edit Files menu to edit the history files for the different environments to remove outliers that are distoring performance graphs. You can add a reason as well so others will now why the result should not be counted.
 
 # Install dependencies and Run
 
