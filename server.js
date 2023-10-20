@@ -13,29 +13,9 @@ let bodyParser = require("body-parser");
 const fs = require("fs");
 let path = require("path"); // used for path
 require('dotenv').config();
-//get .env variables
-const session_secret =process.env.SECRET;
-const token = process.env.INFLUXDB_TOKEN
-
-const server = express().use(bodyParser.json());
-server.use(bodyParser.urlencoded({
-  extended: true,
-  limit: '10mb'
-}));
-
-server.use(bodyParser.json({
-  limit: '10mb'
-}));
-
-server.use(session({
-  secret: session_secret, 
-  resave: true,
-  saveUninitialized: true
-}));
-
-fn.logOutput("Info", "Server Running");
 
 
+//setup config
 let config = cf.config;
 const ExtendedLog = config.ExtendedLog;
 const Env1Name = config.ENV1;
@@ -67,6 +47,37 @@ const influx_on= config.Influx;
 const SESSION_ON = config.session;
 const user = config.user;
 const password = config.password;
+
+
+//get .env variables if required
+if(SESSION_ON){
+  const session_secret =process.env.SECRET;
+  server.use(session({
+    secret: session_secret, 
+    resave: true,
+    saveUninitialized: true
+  }));
+}
+if(influx_on){
+  const token = process.env.INFLUXDB_TOKEN
+}
+
+const server = express().use(bodyParser.json());
+server.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '10mb'
+}));
+
+server.use(bodyParser.json({
+  limit: '10mb'
+}));
+
+
+
+fn.logOutput("Info", "Server Running");
+
+
+
 
 const now = new Date();
 // Calculate the timestamp of 7 days ago
@@ -350,13 +361,13 @@ server.get('/runStaging', async function (req, res) {
 //Cron and run tests  0 */15 * * * *
 //everyMinute , every10Minutes , every15Minutes, 
 // change frequency of executions
-let job1 = new CronJob(everyMinute, function startjob1() {
+let job1 = new CronJob(every10Minutes, function startjob1() {
   runTests(0, "devresults");
 }, null, true, "Australia/Sydney"); //end job
-let job2 = new CronJob(everyMinute, function startjob1() {
+let job2 = new CronJob(every10Minutes, function startjob1() {
   runTests(1, "testresults");
 }, null, true, "Australia/Sydney"); //end job
-let job3 = new CronJob(everyMinute, function startjob1() {
+let job3 = new CronJob(every10Minutes, function startjob1() {
   runTests(2, "stagingresults");
 }, null, true, "Australia/Sydney"); //end job
 
