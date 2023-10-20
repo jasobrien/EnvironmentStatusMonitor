@@ -27,7 +27,11 @@ Sample tests are running that test different areas of the environmentstatus soft
    /readyToDeploy/{env}
    /readyToDeploy/{env}/{collection name}
 
-6. BETA - Enable a login page and very basic session mgmt by changing session to true in the config (Click Edit Schedule). Login using username : admin password : password or change in the config to other values.
+6. BETA - Enable a login page and very basic session mgmt by changing session to true in the config (Click Edit Schedule). Login using username : admin password : password or change in the config to other values. Session password held in .env file. SECRET=''
+
+7. If you want to upload your data to influxDB, enable the influx flaf in config.json and add the API Key to .env file. INFLUXDB_TOKEN=''
+
+8.
 
 # Install dependencies and Run
 

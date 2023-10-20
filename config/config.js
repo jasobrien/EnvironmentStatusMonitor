@@ -7,6 +7,7 @@ exports.config = {
     Env2Name: "Test",
     Env3Name: "Staging",
   },
+  Influx: false,
   ExtendedLog :false,
   session: false,
   user: "admin",
@@ -14,6 +15,7 @@ exports.config = {
   ENV1: "dev",
   ENV2: "test",
   ENV3: "staging",
+  //dashboard colour % thresholds
   Green: 100,
   Amber: 90,
     //cron scheduler

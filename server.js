@@ -1,4 +1,5 @@
 let fn = require("./functions");
+let influx =require("./influx")
 let cf = require("./config/config");
 const dashboardRoute = require("./routes/dashboards");
 const dataRoute = require("./routes/data");
@@ -11,6 +12,11 @@ const session = require("express-session");
 let bodyParser = require("body-parser");
 const fs = require("fs");
 let path = require("path"); // used for path
+require('dotenv').config();
+//get .env variables
+const session_secret =process.env.SECRET;
+const token = process.env.INFLUXDB_TOKEN
+
 const server = express().use(bodyParser.json());
 server.use(bodyParser.urlencoded({
   extended: true,
@@ -22,12 +28,14 @@ server.use(bodyParser.json({
 }));
 
 server.use(session({
-  secret: 'VERY_LONG_PASSPHRASE_THAT_WILL_BE_IN_A_MORE_SECURE_PLACE_AND_YOU_SHOULD_CHANGE',
+  secret: session_secret, 
   resave: true,
   saveUninitialized: true
 }));
 
 fn.logOutput("Info", "Server Running");
+
+
 let config = cf.config;
 const ExtendedLog = config.ExtendedLog;
 const Env1Name = config.ENV1;
@@ -55,6 +63,7 @@ const PostmanEnvFolder = config.PostmanEnvFolder; //'./environments/';
 const PostmanDataFolder = config.PostmanDataFolder; //'./datafiles/';
 
 // in beta
+const influx_on= config.Influx;
 const SESSION_ON = config.session;
 const user = config.user;
 const password = config.password;
@@ -77,6 +86,7 @@ server.use("/upload", uploadRoute);
 server.get("/config", function (req, res) {
   res.send(config.web);
 });
+
 
 
 server.get('/', (req, res) => {
@@ -106,6 +116,14 @@ server.post('/login', (req, res) => {
     res.redirect('/dashboard');
   } else {
     res.send('Invalid username or password');
+  }
+});
+
+server.get('/check-login', (req, res) => {
+  if (req.session.loggedin) {
+      res.json({ loggedin: true });
+  } else {
+      res.json({ loggedin: false });
   }
 });
 
@@ -332,13 +350,13 @@ server.get('/runStaging', async function (req, res) {
 //Cron and run tests  0 */15 * * * *
 //everyMinute , every10Minutes , every15Minutes, 
 // change frequency of executions
-let job1 = new CronJob(every10Minutes, function startjob1() {
+let job1 = new CronJob(everyMinute, function startjob1() {
   runTests(0, "devresults");
 }, null, true, "Australia/Sydney"); //end job
-let job2 = new CronJob(every10Minutes, function startjob1() {
+let job2 = new CronJob(everyMinute, function startjob1() {
   runTests(1, "testresults");
 }, null, true, "Australia/Sydney"); //end job
-let job3 = new CronJob(every10Minutes, function startjob1() {
+let job3 = new CronJob(everyMinute, function startjob1() {
   runTests(2, "stagingresults");
 }, null, true, "Australia/Sydney"); //end job
 
@@ -452,9 +470,12 @@ function runMyTest(collection, environmentfile, environmentName, datafile, filen
       IncludeInStats: IncludeInStats,
       RemoveComment: RemoveComment,
     };
+
+    
     //add the result to the JSON array.
     fn.CreateJsonObjectForResults(testResult);
     fn.logOutput("Info", "Filename is " + filename);
+    if (influx_on == true ? influx.write(testResult,token): "Influx not in use");
     fn.writeToCurrentLog(JSON.stringify(testResult) + "\n", filename);
     fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", "hist_" + filename);
     fn.logOutput("Info", FailRate + " % failed");
@@ -468,6 +489,7 @@ function runMyTest(collection, environmentfile, environmentName, datafile, filen
 
   });
 } // end runMyTest
+
 
 const port = process.env.PORT || 8080;
 

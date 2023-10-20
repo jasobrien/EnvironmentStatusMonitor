@@ -3,60 +3,11 @@
 <meta http-equiv="refresh" content="60" />
 
 <head>
-
-
-
-  <style>
-    #chart-wrapper {
-      display: inline-block;
-      position: relative;
-      width: 30%;
-    }
-
-    .relative {
-      position: relative;
-    }
-
-    .absolute-center {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    p {
-      font-size: 1.5rem;
-    }
-
-    body {
-      background-color: lightblue;
-    }
-
-    .parent {
-      display: flex;
-      flex-direction: row;
-      /* This is the default value, so you could omit this line */
-      justify-content: center;
-    }
-
-    .child {
-      width: 75px;
-      height: 50px;
-
-      border: 1px solid black;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js">
-  </script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel2@2.1.1/dist/chartjs-plugin-doughnutlabel.min.js">
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel2@2.1.1/dist/chartjs-plugin-doughnutlabel.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script>
@@ -88,6 +39,19 @@
         console.log(err);
       });
 
+
+      function updateUpTimeStats(data,ElementID,Duration) {
+      let uptime = (data.Green / data.Total) * 100;
+      let element = document.getElementById(ElementID);
+      if(!isNaN(uptime)) {
+        element.innerHTML = Duration+ " Days: " + uptime.toFixed(2) + " %";
+        }else{
+        element.innerHTML = "N/A";
+      }
+      console.log(data);
+    }
+
+
     async function fetchUptimeStats(environment, days) {
       try {
         const response = await fetch(
@@ -103,48 +67,28 @@
 
     fetchUptimeStats("dev", 7)
       .then((data) => {
-        updateUpTimeDev7Days(data);
+        updateUpTimeStats(data,"DevEnvUptime7","7");
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeDev7Days(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime7 = document.getElementById("DevEnvUptime7");
-      uptime7.innerHTML = "7 Days: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     fetchUptimeStats("dev", 1)
       .then((data) => {
-        updateUpTimeDev1Day(data);
+        updateUpTimeStats(data,"DevEnvUptime1","1");
+       // updateUpTimeDev1Day(data);
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeDev1Day(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime1 = document.getElementById("DevEnvUptime1");
-      uptime1.innerHTML = "24hrs: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     fetchUptimeStats("dev", 30)
       .then((data) => {
-        updateUpTimeDev30Day(data);
+        updateUpTimeStats(data,"DevEnvUptime30","30");
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeDev30Day(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime30 = document.getElementById("DevEnvUptime30");
-      uptime30.innerHTML = "30 Days: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     async function fetchStats(environment) {
       try {
@@ -159,145 +103,81 @@
 
     fetchStats("dev")
       .then((data) => {
-        updateUpTimeDev(data);
+        updateUpTimeStats(data,"DevEnvUptime","All");
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeDev(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let badges = document.getElementById("DevEnvUptime");
-      badges.innerHTML = "Total : " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     fetchStats("test")
       .then((data) => {
-        updateUpTimeTest(data);
+        updateUpTimeStats(data,"TestEnvUptime","All");
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeTest(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let badges = document.getElementById("TestEnvUptime");
-      badges.innerHTML = "Total : " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     fetchUptimeStats("test", 7)
       .then((data) => {
-        updateUpTimeTest7Days(data);
+        updateUpTimeStats(data,"TestEnvUptime7","7");
       })
       .catch(function (err) {
         console.log(err);
       });
 
-    function updateUpTimeTest7Days(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime7 = document.getElementById("TestEnvUptime7");
-      uptime7.innerHTML = "7 Days: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
+      fetchUptimeStats("test", 30)
+      .then((data) => {
+        updateUpTimeStats(data,"TestEnvUptime30","30");
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
 
     fetchUptimeStats("test", 1)
       .then((data) => {
-        updateUpTimeTest1Day(data);
+        updateUpTimeStats(data,"TestEnvUptime1","1");
       })
       .catch(function (err) {
         console.log(err);
       });
 
-    function updateUpTimeTest1Day(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime1 = document.getElementById("TestEnvUptime1");
-      uptime1.innerHTML = "24hrs: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
-
-    fetchUptimeStats("test", 30)
-      .then((data) => {
-        updateUpTimeTest30Day(data);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-
-    function updateUpTimeTest30Day(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime30 = document.getElementById("TestEnvUptime30");
-      uptime30.innerHTML = "30 Days: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     fetchStats("staging")
       .then((data) => {
-        updateUpTimeStaging(data);
+        updateUpTimeStats(data,"StagingEnvUptime","All");
       })
       .catch(function (err) {
         console.log(err);
       });
 
-    function updateUpTimeStaging(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let badges = document.getElementById("StagingEnvUptime");
-      badges.innerHTML = "Total : " + uptime.toFixed(2) + " %";
-      console.log("Stagingdata " + data);
-    }
 
     fetchUptimeStats("staging", 7)
       .then((data) => {
-        updateUpTimeStaging7Days(data);
+        updateUpTimeStats(data,"StagingEnvUptime7","7");
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeStaging7Days(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime7 = document.getElementById("StagingEnvUptime7");
-      uptime7.innerHTML = "7 Days : " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     fetchUptimeStats("staging", 1)
       .then((data) => {
-        updateUpTimeStaging1Day(data);
+        updateUpTimeStats(data,"StagingEnvUptime1","1");
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeStaging1Day(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime1 = document.getElementById("StagingEnvUptime1");
-      uptime1.innerHTML = "24hrs: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     fetchUptimeStats("staging", 30)
       .then((data) => {
-        updateUpTimeStaging30Day(data);
+        updateUpTimeStats(data,"StagingEnvUptime30","30");
       })
       .catch(function (err) {
         console.log(err);
       });
-
-    function updateUpTimeStaging30Day(data) {
-      let uptime = (data.Green / data.Total) * 100;
-      let uptime30 = document.getElementById("StagingEnvUptime30");
-      uptime30.innerHTML = "30 Days: " + uptime.toFixed(2) + " %";
-      console.log(data);
-    }
 
     async function fetchDevStatus() {
       try {
         const response = await fetch("/results/dev");
-        // if (Statsresponse) {
-        //     hideSpinner('spinnerDistance');
-        // }
         const data = await response.json();
         console.log(data);
         return data;
@@ -346,9 +226,6 @@
     async function fetchTestStatus() {
       try {
         const response = await fetch("/results/test");
-        // if (Statsresponse) {
-        //     hideSpinner('spinnerDistance');
-        // }
         const data = await response.json();
         console.log(data);
         return data;
