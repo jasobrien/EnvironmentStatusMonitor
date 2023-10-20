@@ -31,7 +31,10 @@ Sample tests are running that test different areas of the environmentstatus soft
 
 7. If you want to upload your data to influxDB, enable the influx flaf in config.json and add the API Key to .env file. INFLUXDB_TOKEN=''
 
-8.
+8. Node environment variables. Create a file .env file with following parameters
+   PORT=
+   SECRET=
+   INFLUXDB_TOKEN=
 
 # Install dependencies and Run
 
