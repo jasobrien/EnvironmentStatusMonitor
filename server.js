@@ -48,6 +48,21 @@ const SESSION_ON = config.session;
 const user = config.user;
 const password = config.password;
 
+const server = express().use(bodyParser.json());
+server.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '10mb'
+}));
+
+server.use(bodyParser.json({
+  limit: '10mb'
+}));
+
+// Express Middleware for serving static files
+server.use(express.static(path.join(__dirname, "public")));
+server.use(express.text({
+  limit: '10mb'
+}));
 
 //get .env variables if required
 if(SESSION_ON){
@@ -62,32 +77,13 @@ if(influx_on){
   const token = process.env.INFLUXDB_TOKEN
 }
 
-const server = express().use(bodyParser.json());
-server.use(bodyParser.urlencoded({
-  extended: true,
-  limit: '10mb'
-}));
-
-server.use(bodyParser.json({
-  limit: '10mb'
-}));
-
-
-
 fn.logOutput("Info", "Server Running");
-
-
-
 
 const now = new Date();
 // Calculate the timestamp of 7 days ago
 const sevenDaysAgoTimestamp = now.getTime() - 3 * 24 * 60 * 60 * 1000;
 
-// Express Middleware for serving static files
-server.use(express.static(path.join(__dirname, "public")));
-server.use(express.text({
-  limit: '10mb'
-}));
+
 
 // Express routes
 server.use("/dashboard", dashboardRoute);
@@ -131,11 +127,17 @@ server.post('/login', (req, res) => {
 });
 
 server.get('/check-login', (req, res) => {
-  if (req.session.loggedin) {
-      res.json({ loggedin: true });
-  } else {
+  if(SESSION_ON){
+    if (!req.session.loggedin) {
       res.json({ loggedin: false });
+  } else {
+      res.json({ loggedin: true });
   }
+
+  }else{
+    res.json({ loggedin: false });
+  }
+
 });
 
 server.get('/logout', (req, res) => {

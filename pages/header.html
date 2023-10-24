@@ -6,53 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
+    
     <title>Environment Status</title>
-    <script>
-    async function fetchConfig() {
-      try {
-        const response = await fetch("/config");
-        const data = await response.json();
-        console.log(data);
-        return data;
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    const loggedIn = await fetch('/check-login')
-    .then(response => response.json())
-    .then(data => {
-        if (data.loggedIn) {
-            console.log("User is logged in");
-        } else {
-            console.log("User is not logged in");
-        }
-    })
-    .catch(error => console.error('Error:', error));
-
-    function setCredentials(data) {
-      if(!data.session){
-        document.getElementById('login').hidden = true;
-      }else{
-        document.getElementById('login').hidden = false;
-      }
-
-      if 
-       // let login = document.getElementById("pageTitle");
-       // login.
-      //  login.innerHTML = titlecontent;
-      
-    }
-
-    // check if session is enabled and enable login /logout menu
-    fetchConfig()
-      .then((data) => {
-        setCredentials(data);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-    </script>
 </head>
 
 <body>
@@ -97,18 +52,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="http://www.environmentstatus.com/support">Support</a>
                     </li>
-                    <!-- <li class="nav-item hidden">
-                        <a id="login" class="nav-link" href="/login">Login</a>
-                    </li> -->
-                    <!-- <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="#">Contact</a>
-                    </li> -->
+                    </li>
+                    <li class="nav-item">
+                        <a id="login" class="nav-link" href="/logout">Logout</a>
+                    </li> 
+
                 </ul>
             </div>
         </div>
     </nav>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/header.js"></script>
 </body>
 
 </html>
