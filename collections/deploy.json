@@ -61,7 +61,9 @@
 					"raw": "https://environmentstatusmonitor.onrender.com/readyToDeploy/{{env}}/{{trans_name}}",
 					"protocol": "http",
 					"host": [
-						"https://environmentstatusmonitor.onrender.com/"
+						"environmentstatusmonitor",
+						"onrender",
+						"com"
 					],
 					"port": "8080",
 					"path": [

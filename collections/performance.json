@@ -28,7 +28,9 @@
 					"raw": "https://environmentstatusmonitor.onrender.com/dashboard/performance/{{env}}/All",
 					"protocol": "http",
 					"host": [
-						"https://environmentstatusmonitor.onrender.com/"
+						"environmentstatusmonitor",
+						"onrender",
+						"com"
 					],
 					"port": "8080",
 					"path": [
@@ -63,7 +65,9 @@
 					"raw": "https://environmentstatusmonitor.onrender.com/dashboard/performance/{{env}}/30",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"environmentstatusmonitor",
+						"onrender",
+						"com"
 					],
 					"port": "8080",
 					"path": [
