@@ -6,6 +6,7 @@ exports.config = {
     Env1Name: "Dev",
     Env2Name: "Test",
     Env3Name: "Staging",
+    email: "EnvironmentStatusmMnitor@gmail.com"
   },
   Influx: false,
   ExtendedLog :false,
