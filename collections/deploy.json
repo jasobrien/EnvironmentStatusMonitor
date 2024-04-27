@@ -30,7 +30,6 @@
 					"host": [
 						"https://environmentstatusmonitor.onrender.com/"
 					],
-					"port": "8080",
 					"path": [
 						"readyToDeploy",
 						"{{env}}"
@@ -65,7 +64,6 @@
 						"onrender",
 						"com"
 					],
-					"port": "8080",
 					"path": [
 						"readyToDeploy",
 						"{{env}}",

@@ -69,7 +69,6 @@
 						"onrender",
 						"com"
 					],
-					"port": "8080",
 					"path": [
 						"dashboard",
 						"performance",
