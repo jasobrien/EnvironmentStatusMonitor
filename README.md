@@ -12,10 +12,11 @@
 
 Sample tests are running that test different areas of the environmentstatus software. You can delete these and add your own.
 
-1. Add your postman files
-   Add postman collections into collections folder
-   Add Environment files into environment folder
-   Add data files into datafiles folder
+1.  Add your postman files
+
+- Add postman collections into collections folder
+- Add Environment files into environment folder
+- Add data files into datafiles folder
 
 2. Click "Edit Schedule" in menu bar to have add your postman collection file names, environment file names and data file names. This is the file that will control what is executed. There are 3 environment areas - Dev, Test & Staging.
 
@@ -24,14 +25,16 @@ Sample tests are running that test different areas of the environmentstatus soft
 4. Collections run every 10 minutes by default - change in server.js line 281-283. Use Cron timing or variables from config.
 
 5. Use Ready to deploy API to query for each env and env and feature if you want to check environment availability before deployment. You will get the latest results that you can then use to make deployment decisions.
-   /readyToDeploy/{env}
-   /readyToDeploy/{env}/{collection name}
+
+   - /readyToDeploy/{env}
+   - /readyToDeploy/{env}/{collection name}
 
 6. BETA - Enable a login page and very basic session mgmt by changing session to true in the config (Click Edit Schedule). Login using username : admin password : password or change in the config to other values. Session password held in .env file. SECRET=''
 
 7. If you want to upload your data to influxDB, enable the influx flaf in config.json and add the API Key to .env file. INFLUXDB_TOKEN=''
 
 8. Node environment variables. Create a file .env file with following parameters
+   '''
    PORT=
    SECRET=
    INFLUXDB_TOKEN=
