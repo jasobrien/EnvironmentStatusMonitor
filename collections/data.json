@@ -25,10 +25,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/data/directory",
+					"raw": "https://environmentstatusmonitor.onrender.com/data/directory",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"https://environmentstatusmonitor.onrender.com/"
 					],
 					"port": "8080",
 					"path": [
@@ -58,10 +58,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/data/schedule",
+					"raw": "https://environmentstatusmonitor.onrender.com/data/schedule",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"https://environmentstatusmonitor.onrender.com/"
 					],
 					"port": "8080",
 					"path": [

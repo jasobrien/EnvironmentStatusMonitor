@@ -25,10 +25,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/dashboard",
+					"raw": "https://environmentstatusmonitor.onrender.com/dashboard",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"https://environmentstatusmonitor.onrender.com/"
 					],
 					"port": "8080",
 					"path": [

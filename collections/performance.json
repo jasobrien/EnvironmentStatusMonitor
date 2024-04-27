@@ -25,10 +25,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/dashboard/performance/{{env}}/All",
+					"raw": "https://environmentstatusmonitor.onrender.com/dashboard/performance/{{env}}/All",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"https://environmentstatusmonitor.onrender.com/"
 					],
 					"port": "8080",
 					"path": [
@@ -60,7 +60,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/dashboard/performance/{{env}}/30",
+					"raw": "https://environmentstatusmonitor.onrender.com/dashboard/performance/{{env}}/30",
 					"protocol": "http",
 					"host": [
 						"localhost"

@@ -25,10 +25,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/readyToDeploy/{{env}}",
+					"raw": "https://environmentstatusmonitor.onrender.com/readyToDeploy/{{env}}",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"https://environmentstatusmonitor.onrender.com/"
 					],
 					"port": "8080",
 					"path": [
@@ -58,10 +58,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/readyToDeploy/{{env}}/{{trans_name}}",
+					"raw": "https://environmentstatusmonitor.onrender.com/readyToDeploy/{{env}}/{{trans_name}}",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"https://environmentstatusmonitor.onrender.com/"
 					],
 					"port": "8080",
 					"path": [
