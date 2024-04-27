@@ -1,47 +1,54 @@
-# Monitor your feature or application uptime across your envionments using your postman collections.
+**EnvironmentStatus: Monitor Application Uptime and Performance with Postman Collections**
 
-- Dashboard.html shows doughnut charts with each collection having a segments for 3 environment / regions / apps / features
+**Overview:**
 
-* Uptime for full history, last 30 days, 14 days, 7 days and 24hrs
-* Performance page displays time series graphs with response times for each collection. - excludes failures
-* Main schedules from menu
-* Upload postman files from menu
-* Use Edit Files menu to edit the history files for the different environments to remove outliers that are distoring performance graphs. You can add a reason as well so others will know why the result should not be counted.
+* Gain insights into your application/feature uptime across multiple environments with customizable dashboards.
+* Track historical uptime trends and recent performance metrics (last 30 days, 14 days, 7 days, 24 hrs).
+* Analyse response time graphs for each collection, with the option to exclude outliers.
 
-# Setup Instructions
+**Key Features:**
 
-Sample tests are running that test different areas of the environmentstatus software. You can delete these and add your own.
+* **Uptime Dashboard (Dashboard.html):** Visualize uptime with doughnut charts, with each collection having segments for different environments/regions/apps/features.
+* **Performance Dashboard:** View time-series graphs of response times, excluding failures.
+* **Flexible Scheduling:** Adjust test execution frequency.
+* **Postman :**  Reuse existing Postman collections, environments, and data files.
+* **Outlier Management:** Edit history files to refine performance graphs and add comments for transparency.
+* **Deployment Readiness API:** Query uptime status before deployment using `/readyToDeploy/{env}` and `/readyToDeploy/{env}/{collection name}` endpoints.
+* **Optional Authentication:** Enable basic login and session management for added security.
+* **InfluxDB Integration:** Optionally send data to InfluxDB for extended analysis.
 
-1.  Add your postman files
+**Setup Instructions:**
 
-- Add postman collections into collections folder
-- Add Environment files into environment folder
-- Add data files into datafiles folder
+1. **Add Postman Files:**
+   * Place collections into the `collections` folder.
+   * Place environments into the `environment` folder.
+   * Place data files into the `datafiles` folder.
 
-2. Click "Edit Schedule" in menu bar to have add your postman collection file names, environment file names and data file names. This is the file that will control what is executed. There are 3 environment areas - Dev, Test & Staging.
+2. **Edit Schedule (`Edit Schedule` menu):**
+   * Specify Postman collection, environment, and data file names for each environment (Dev, Test, Staging).
 
-3. Delete all the files in the results folder as they will be regenerated on first run.
+3. **Clear Results:** Delete files within the `results` folder (regenerated on the first run).
 
-4. Collections run every 10 minutes by default - change in server.js line 281-283. Use Cron timing or variables from config.
+4. **Customize Run Frequency (server.js):** Modify lines 281-283 (default: every 10 minutes, Cron syntax supported).
 
-5. Use Ready to deploy API to query for each env and env and feature if you want to check environment availability before deployment. You will get the latest results that you can then use to make deployment decisions.
+5. **(Optional) InfluxDB Setup:**
+   * Enable the `influx` flag in `config.json`.
+   * Add your API key to the `.env` file.
 
-   - /readyToDeploy/{env}
-   - /readyToDeploy/{env}/{collection name}
+**Getting Started:**
 
-6. BETA - Enable a login page and very basic session mgmt by changing session to true in the config (Click Edit Schedule). Login using username : admin password : password or change in the config to other values. Session password held in .env file. SECRET=''
+1. **Prerequisites:** Node.js 
+2. **Install Dependencies:** `npm install`
+3. **Run:** `node index.js`
 
-7. If you want to upload your data to influxDB, enable the influx flaf in config.json and add the API Key to .env file. INFLUXDB_TOKEN=''
+**Environment Variables (.env file):**
 
-8. Node environment variables. Create a file .env file with following parameters
-   '''
-   PORT=
-   SECRET=
-   INFLUXDB_TOKEN=
+* `PORT= <Your desired port>`
+* `SECRET= <Session management secret>`
+* `INFLUXDB_TOKEN= <InfluxDB API Token>`
 
-# Install dependencies and Run
+**Additional Notes:**
 
-ensure you have NodeJS installed
+* Sample tests are provided; replace them with your own.
+* Consider adding screenshots or a demo GIF.
 
-- npm install
-- node index.js
