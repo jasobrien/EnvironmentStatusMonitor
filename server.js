@@ -37,6 +37,7 @@ const every15Minutes = config.Every15;
 const every5Minutes = config.Every5;
 const every30Minutes = config.Every30;
 const everyhour = config.Every60;
+const every6hours=config.every6hours;
 const resultsFolder = config.ResultsFolder; //'./results/';
 const PostmanCollectionFolder = config.PostmanCollectionFolder; //'./collections/';
 const PostmanEnvFolder = config.PostmanEnvFolder; //'./environments/';
@@ -361,15 +362,15 @@ server.get('/runStaging', async function (req, res) {
 
 
 //Cron and run tests  0 */15 * * * *
-//everyMinute , every10Minutes , every15Minutes, 
+//everyMinute , every10Minutes , every15Minutes, every6hours
 // change frequency of executions
-let job1 = new CronJob(every10Minutes, function startjob1() {
+let job1 = new CronJob(every6hours, function startjob1() {
   runTests(0, "devresults");
 }, null, true, "Australia/Sydney"); //end job
-let job2 = new CronJob(every10Minutes, function startjob1() {
+let job2 = new CronJob(every6hours, function startjob1() {
   runTests(1, "testresults");
 }, null, true, "Australia/Sydney"); //end job
-let job3 = new CronJob(every10Minutes, function startjob1() {
+let job3 = new CronJob(every6hours, function startjob1() {
   runTests(2, "stagingresults");
 }, null, true, "Australia/Sydney"); //end job
 
