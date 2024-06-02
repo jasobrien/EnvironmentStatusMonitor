@@ -27,6 +27,8 @@ exports.config = {
   everyMinute: "0 */1 * * * *",
   every10Minutes: "0 */10 * * * *",
   everyhour: "0 * * * *",
+  every6hours: "0 */6 * * *",
+  every12hours: "0 */12 * * *",
   Customtime1: "",
   Customtime2: "",
   Customtime3: "",
