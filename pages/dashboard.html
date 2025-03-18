@@ -1,8 +1,7 @@
 <html>
-
-<meta http-equiv="refresh" content="60" />
-
 <head>
+  <meta http-equiv="refresh" content="60" />
+  <title>Feature Status Monitor Dashboard</title>
   <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,18 +14,18 @@
         // Load the header HTML file
         $("#header-container").load("/data/header");
     });
-</script>
 
+    function refreshPage() {
+        location.reload();
+    }
+  </script>
 </head>
-
 <body class="p-4">
   <div id="header-container"></div>
   <center>
     <div id="pageTitle">App Feature Health</div>
   </center>
-
   <center>
-
     <div class="row">
       <div class="col-md-4">
         <div class="card">
@@ -45,7 +44,6 @@
               <div class="child" id="DevEnvUptime7"></div>
               <div class="child" id="DevEnvUptime1"></div>
             </div>
-
             <div style="border: thin solid black">
               <b>Performance Graphs</b> <br />
               <a href="/dashboard/performance/dev/1"> 1 day </a>|
@@ -58,7 +56,6 @@
           </div>
         </div>
       </div>
-
       <div class="col-md-4">
         <div class="card">
           <div class="card-header">
@@ -68,7 +65,7 @@
             <canvas id="testChart"></canvas>
             <div id="testlmd" style="font-size: 0.75em">dateTime</div>
             <!-- <div><a href="/runTest" > Manual Execution </a> </div>-->
-            <div id="devtable"></div>
+            <div id="testtable"></div>
             <div class="parent" style="border: thin solid black">
               <div class="child"><b>Feature Uptime</b></div>
               <div class="child" id="TestEnvUptime"></div>
@@ -88,7 +85,6 @@
           </div>
         </div>
       </div>
-
       <div class="col-md-4">
         <div class="card">
           <div class="card-header">
@@ -96,9 +92,9 @@
           </div>
           <div class="card-body">
             <canvas id="stagingChart"></canvas>
-            <div id="stagelmd" style="font-size: 0.75em"></div>
-            <!-- <a href="/runStaging" > Manual Execution </a> </div>-->
-            <div id="devtable"></div>
+            <div id="stagelmd" style="font-size: 0.75em">dateTime</div>
+            <!-- <a href="/runStaging" > Manual Execution </a>-->
+            <div id="stagingtable"></div>
             <div class="parent" style="border: thin solid black">
               <div class="child"><b>Feature Uptime</b></div>
               <div class="child" id="StagingEnvUptime"></div>
@@ -106,7 +102,6 @@
               <div class="child" id="StagingEnvUptime7"></div>
               <div class="child" id="StagingEnvUptime1"></div>
             </div>
-
             <div style="border: thin solid black">
               <b>Performance Graphs</b> <br />
               <a href="/dashboard/performance/staging/1"> 1 day </a>|
@@ -119,10 +114,9 @@
           </div>
         </div>
       </div>
-
     </div>
-
     <script src="/js/dashboard.js"></script>
+  </center>
 </body>
 <br>
 <footer>
@@ -130,9 +124,7 @@
     <button class="btn-sm btn-primary" onclick="refreshPage()">Refresh Page</button>
     @Copyright
     <a href="http://www.environmentstatus.com"> EnvironmentStatus.com</a>
-
     | Email : EnvironmentStatusMonitor@gmail.com
   </center>
 </footer>
-
 </html>

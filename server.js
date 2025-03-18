@@ -1,515 +1,307 @@
-let fn = require("./functions");
-let influx =require("./influx")
-let cf = require("./config/config");
+const fn = require("./functions");
+const influx = require("./influx");
+const cf = require("./config/config");
 const dashboardRoute = require("./routes/dashboards");
 const dataRoute = require("./routes/data");
 const deployRoute = require("./routes/deploy");
 const uploadRoute = require("./routes/upload");
 const newman = require("newman");
 const CronJob = require("cron").CronJob;
-const express = require("express"); // lightweight web server
+const express = require("express");
 const session = require("express-session");
-let bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const fs = require("fs");
-let path = require("path"); // used for path
+const path = require("path");
 require('dotenv').config();
 
-
-//setup config
-let config = cf.config;
-const ExtendedLog = config.ExtendedLog;
-const Env1Name = config.ENV1;
-const Env2Name = config.ENV2;
-const Env3Name = config.ENV3;
-const Env1NameResultFileName = Env1Name + config.ResultFileSuffix;
-const Env2NameResultFileName = Env2Name + config.ResultFileSuffix;
-const Env3NameResultFileName = Env3Name + config.ResultFileSuffix;
-const Env1NameResultHistFileName =
-  config.HistoryFilePrefix + Env1Name + config.ResultFileSuffix;
-const Env2NameResultHistFileName =
-  config.HistoryFilePrefix + Env2Name + config.ResultFileSuffix;
-const Env3NameResultHistFileName =
-  config.HistoryFilePrefix + Env3Name + config.ResultFileSuffix;
-
-const everyMinute = config.everyMinute;
-const every10Minutes = config.every10Minutes;
-const every15Minutes = config.Every15;
-const every5Minutes = config.Every5;
-const every30Minutes = config.Every30;
-const everyhour = config.Every60;
-const every6hours=config.every6hours;
-const resultsFolder = config.ResultsFolder; //'./results/';
-const PostmanCollectionFolder = config.PostmanCollectionFolder; //'./collections/';
-const PostmanEnvFolder = config.PostmanEnvFolder; //'./environments/';
-const PostmanDataFolder = config.PostmanDataFolder; //'./datafiles/';
-
-// in beta
-const influx_on= config.Influx;
-const SESSION_ON = config.session;
-const user = config.user;
-const password = config.password;
+// Setup config
+const config = cf.config;
+const { ExtendedLog, ENV1, ENV2, ENV3, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password } = config;
+const Env1NameResultFileName = `${ENV1}${ResultFileSuffix}`;
+const Env2NameResultFileName = `${ENV2}${ResultFileSuffix}`;
+const Env3NameResultFileName = `${ENV3}${ResultFileSuffix}`;
+const Env1NameResultHistFileName = `${HistoryFilePrefix}${ENV1}${ResultFileSuffix}`;
+const Env2NameResultHistFileName = `${HistoryFilePrefix}${ENV2}${ResultFileSuffix}`;
+const Env3NameResultHistFileName = `${HistoryFilePrefix}${ENV3}${ResultFileSuffix}`;
 
 const server = express().use(bodyParser.json());
-server.use(bodyParser.urlencoded({
-  extended: true,
-  limit: '10mb'
-}));
-
-server.use(bodyParser.json({
-  limit: '10mb'
-}));
-
-// Express Middleware for serving static files
+server.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+server.use(bodyParser.json({ limit: '10mb' }));
 server.use(express.static(path.join(__dirname, "public")));
-server.use(express.text({
-  limit: '10mb'
-}));
+server.use(express.text({ limit: '10mb' }));
 
-//get .env variables if required
-if(SESSION_ON){
-  const session_secret =process.env.SECRET;
-  server.use(session({
-    secret: session_secret, 
-    resave: true,
-    saveUninitialized: true
-  }));
+if (SESSION_ON) {
+    const session_secret = process.env.SECRET;
+    server.use(session({
+        secret: session_secret,
+        resave: true,
+        saveUninitialized: true
+    }));
 }
-if(influx_on){
-  const token = process.env.INFLUXDB_TOKEN
+
+if (Influx) {
+    const token = process.env.INFLUXDB_TOKEN;
 }
 
 fn.logOutput("Info", "Server Running");
 
 const now = new Date();
-// Calculate the timestamp of 7 days ago
-const sevenDaysAgoTimestamp = now.getTime() - 3 * 24 * 60 * 60 * 1000;
-
-
+const sevenDaysAgoTimestamp = now.getTime() - 7 * 24 * 60 * 60 * 1000;
 
 // Express routes
 server.use("/dashboard", dashboardRoute);
 server.use("/data", dataRoute);
 server.use("/readyToDeploy", deployRoute);
 server.use("/upload", uploadRoute);
-server.get("/config", function (req, res) {
-  res.send(config.web);
-});
-
-
+server.get("/config", (req, res) => res.send(config.web));
 
 server.get('/', (req, res) => {
-  if (SESSION_ON) {
-    res.sendFile(__dirname + '/pages/login.html');
-  } else {
-    res.redirect('/dashboard');
-  }
+    if (SESSION_ON) {
+        res.sendFile(path.join(__dirname, 'pages', 'login.html'));
+    } else {
+        res.redirect('/dashboard');
+    }
 });
 
 server.get("/username", (req, res) => {
-  if (req.session.loggedin) {
-    res.send(req.session.username);
-  } else {
-    res.send("Not logged in");
-  }
+    if (req.session.loggedin) {
+        res.send(req.session.username);
+    } else {
+        res.send("Not logged in");
+    }
 });
 
 server.post('/login', (req, res) => {
-  const {
-    username,
-    password
-  } = req.body;
-  if (username === user && password === password) {
-    req.session.loggedin = true;
-    req.session.username = username;
-    res.redirect('/dashboard');
-  } else {
-    res.send('Invalid username or password');
-  }
+    const { username, password } = req.body;
+    if (username === user && password === password) {
+        req.session.loggedin = true;
+        req.session.username = username;
+        res.redirect('/dashboard');
+    } else {
+        res.send('Invalid username or password');
+    }
 });
 
 server.get('/check-login', (req, res) => {
-  if(SESSION_ON){
-    if (!req.session.loggedin) {
-      res.json({ loggedin: false });
-  } else {
-      res.json({ loggedin: true });
-  }
-
-  }else{
-    res.json({ loggedin: false });
-  }
-
+    if (SESSION_ON) {
+        res.json({ loggedin: req.session.loggedin || false });
+    } else {
+        res.json({ loggedin: false });
+    }
 });
 
 server.get('/logout', (req, res) => {
-  req.session.destroy();
-  res.redirect('/');
+    req.session.destroy();
+    res.redirect('/');
 });
 
-server.get("/histresults/:ResultsEnv/:key", function (req, res) {
-  let ResultsEnv = req.params.ResultsEnv;
-  let myKey = req.params.key;
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getHistFileName(ResultsEnv);
-  let results = fn.createJsonArrayFromFile(filename);
-  let data_filter = results.filter((element) => element.key == myKey);
-  data_filter = data_filter.filter((element) => element.IncludeInStats == 1);
-  res.send(data_filter);
+server.get("/histresults/:ResultsEnv/:key", (req, res) => {
+    const { ResultsEnv, key: myKey } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const data_filter = results.filter(element => element.key == myKey && element.IncludeInStats == 1);
+    res.send(data_filter);
 });
 
-server.get("/histresultsdays/:ResultsEnv/:key/:days", function (req, res) {
-  let ResultsEnv = req.params.ResultsEnv;
-  let numDays = req.params.days;
-  let myKey = req.params.key;
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getHistFileName(ResultsEnv);
-  let results = fn.createJsonArrayFromFile(filename);
-  let data_filter = results.filter((element) => element.key == myKey);
-  data_filter = data_filter.filter((element) => element.IncludeInStats == 1);
-  const now = new Date();
-  // Calculate the timestamp of 7 days ago
-  if (numDays === "All") {
-    numDays = 1000;
-  }
-  const DaysAgoTimestamp = now.getTime() - numDays * 24 * 60 * 60 * 1000;
-  const graphHistory = data_filter.filter((record) => {
-    const timestamp = parseIso8601Datetime(record.DateTime).getTime();
-    return timestamp >= DaysAgoTimestamp;
-  });
-  res.send(graphHistory);
+server.get("/histresultsdays/:ResultsEnv/:key/:days", (req, res) => {
+    const { ResultsEnv, key: myKey, days: numDays } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const data_filter = results.filter(element => element.key == myKey && element.IncludeInStats == 1);
+    const now = new Date();
+    const DaysAgoTimestamp = now.getTime() - (numDays === "All" ? 1000 : numDays) * 24 * 60 * 60 * 1000;
+    const graphHistory = data_filter.filter(record => parseIso8601Datetime(record.DateTime).getTime() >= DaysAgoTimestamp);
+    res.send(graphHistory);
 });
 
-server.get("/histresults/:ResultsEnv/:key/:days", function (req, res) {
-  let ResultsEnv = req.params.ResultsEnv;
-  let myKey = req.params.key;
-  let numDays = req.params.days;
-
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getHistFileName(ResultsEnv);
-  let results = fn.createJsonArrayFromFile(filename);
-  let data_filter = results.filter((element) => element.key == myKey);
-  data_filter = data_filter.filter((element) => element.IncludeInStats == 1);
-  const now = new Date();
-  // Calculate the timestamp of 7 days ago
-  const DaysAgoTimestamp = now.getTime() - numDays * 24 * 60 * 60 * 1000;
-  const graphHistory = data_filter.filter((record) => {
-    const timestamp = parseIso8601Datetime(record.DateTime).getTime();
-    return timestamp >= DaysAgoTimestamp;
-  });
-  res.send(graphHistory);
+server.get("/histresults/:ResultsEnv/:key/:days", (req, res) => {
+    const { ResultsEnv, key: myKey, days: numDays } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const data_filter = results.filter(element => element.key == myKey && element.IncludeInStats == 1);
+    const now = new Date();
+    const DaysAgoTimestamp = now.getTime() - numDays * 24 * 60 * 60 * 1000;
+    const graphHistory = data_filter.filter(record => parseIso8601Datetime(record.DateTime).getTime() >= DaysAgoTimestamp);
+    res.send(graphHistory);
 });
 
 function parseIso8601Datetime(isoString) {
-  return new Date(isoString);
+    return new Date(isoString);
 }
 
-server.get("/histresultskeys/:ResultsEnv", function (req, res) {
-  // gives a list of all keys(collection names) that are in result history log
-  let ResultsEnv = req.params.ResultsEnv;
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getHistFileName(ResultsEnv);
-  let results = fn.createJsonArrayFromFile(filename);
-  const transactions = results.map((trans) => trans.key);
-  const distinctTrans = Array.from(new Set(transactions));
-  res.send(distinctTrans);
+server.get("/histresultskeys/:ResultsEnv", (req, res) => {
+    const { ResultsEnv } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const distinctTrans = Array.from(new Set(results.map(trans => trans.key)));
+    res.send(distinctTrans);
 });
 
-/// Main Dashboard calls
-server.get("/results/:ResultsEnv/", function (req, res) {
-  //returns the latest results json
-  let ResultsEnv = req.params.ResultsEnv;
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getResultFileName(ResultsEnv);
-  let results = fn.createJsonArrayFromFile(filename);
-  res.send(results);
-});
-
-server.get("/getStats/:ResultsEnv/:key", function (req, res) {
-  //returns the stats for a key from history results
-  // not finished
-  let ResultsEnv = req.params.ResultsEnv;
-  let myKey = req.params.key;
-  let error = 0;
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getHistFileName(ResultsEnv);
-
-  if (error == 0) {
-    // 29/3   refactor / check this to how file can be validated
-    let results = fn.createJsonArrayFromFile(filename);
-    let data = results.filter((element) => element.key == myKey);
-    const green = data.reduce((accumulator, data) => {
-      if (data.value === "Green") {
-        accumulator++;
-      }
-      return accumulator;
-    }, 0);
-    const amber = data.reduce((accumulator, data) => {
-      if (data.value === "Amber") {
-        accumulator++;
-      }
-      return accumulator;
-    }, 0);
-
-    results = {
-      Feature: myKey,
-      Green: green,
-      Amber: amber,
-      Red: data.length - green - amber,
-      Total: data.length,
-    };
+server.get("/results/:ResultsEnv/", (req, res) => {
+    const { ResultsEnv } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getResultFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
     res.send(results);
-  } else {
-    res.send("Environment does not exist");
-  }
 });
 
-server.get("/getSummaryStats/:ResultsEnv", function (req, res) {
-  let ResultsEnv = req.params.ResultsEnv;
-  let error = 0;
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getHistFileName(ResultsEnv);
-  if (error == 0) {
-    let results = fn.createJsonArrayFromFile(filename);
-    const green = results.reduce((accumulator, results) => {
-      if (results.value === "Green") {
-        accumulator++;
-      }
-      return accumulator;
-    }, 0);
-    const amber = results.reduce((accumulator, results) => {
-      if (results.value === "Amber") {
-        accumulator++;
-      }
-      return accumulator;
-    }, 0);
-
-    EnvStats = {
-      Environment: ResultsEnv,
-      Green: green,
-      Amber: amber,
-      Red: results.length - green - amber,
-      Total: results.length,
-    };
-    res.send(EnvStats);
-  } else {
-    res.send("Environment does not exist");
-  }
+server.get("/getStats/:ResultsEnv/:key", (req, res) => {
+    const { ResultsEnv, key: myKey } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const data = results.filter(element => element.key == myKey);
+    const green = data.reduce((acc, data) => data.value === "Green" ? acc + 1 : acc, 0);
+    const amber = data.reduce((acc, data) => data.value === "Amber" ? acc + 1 : acc, 0);
+    res.send({ Feature: myKey, Green: green, Amber: amber, Red: data.length - green - amber, Total: data.length });
 });
 
-server.get("/getSummaryStats/:ResultsEnv/:days", function (req, res) {
-  let ResultsEnv = req.params.ResultsEnv;
-  let numDays = req.params.days;
-  let error = 0;
-  fn.logOutput("Info", "Environment Passed was : " + ResultsEnv);
-  const filename = fn.getHistFileName(ResultsEnv);
+server.get("/getSummaryStats/:ResultsEnv", (req, res) => {
+    const { ResultsEnv } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const green = results.reduce((acc, results) => results.value === "Green" ? acc + 1 : acc, 0);
+    const amber = results.reduce((acc, results) => results.value === "Amber" ? acc + 1 : acc, 0);
+    res.send({ Environment: ResultsEnv, Green: green, Amber: amber, Red: results.length - green - amber, Total: results.length });
+});
 
-  if (error == 0) {
-    let results = fn.createJsonArrayFromFile(filename);
-
+server.get("/getSummaryStats/:ResultsEnv/:days", (req, res) => {
+    const { ResultsEnv, days: numDays } = req.params;
+    fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
     const now = new Date();
-    // Calculate the timestamp of a time in the past
     const DaysAgoTimestamp = now.getTime() - numDays * 24 * 60 * 60 * 1000;
-
-    const data = results.filter((record) => {
-      const timestamp = parseIso8601Datetime(record.DateTime).getTime();
-      return timestamp >= DaysAgoTimestamp;
-    });
-
-    const green = data.reduce((accumulator, data) => {
-      if (data.value === "Green") {
-        accumulator++;
-      }
-      return accumulator;
-    }, 0);
-    const amber = data.reduce((accumulator, data) => {
-      if (data.value === "Amber") {
-        accumulator++;
-      }
-      return accumulator;
-    }, 0);
-
-    EnvStats = {
-      Environment: ResultsEnv,
-      Green: green,
-      Amber: amber,
-      Red: data.length - green - amber,
-      Total: data.length,
-    };
-    res.send(EnvStats);
-  } else {
-    res.send("Environment does not exist");
-  }
+    const data = results.filter(record => parseIso8601Datetime(record.DateTime).getTime() >= DaysAgoTimestamp);
+    const green = data.reduce((acc, data) => data.value === "Green" ? acc + 1 : acc, 0);
+    const amber = data.reduce((acc, data) => data.value === "Amber" ? acc + 1 : acc, 0);
+    res.send({ Environment: ResultsEnv, Green: green, Amber: amber, Red: data.length - green - amber, Total: data.length });
 });
 
-
-server.get('/runDev', async function (req, res) {
-  const result = await runTests(0, "devresults");
-  fn.logOutput("Info", "Result : " + result);
-  res.redirect("/");
+server.get('/runDev', async (req, res) => {
+    try {
+        const result = await runTests(0, "devresults");
+        fn.logOutput("Info", `Result : ${result}`);
+        res.redirect("/");
+    } catch (error) {
+        fn.logOutput("Error", `Failed to run dev tests: ${error}`);
+        res.status(500).send("Failed to run dev tests");
+    }
 });
 
-server.get('/runTest', async function (req, res) {
-  const result = await runTests(0, "testresults");
-  fn.logOutput("Info", "Result : " + result);
-  res.redirect("/");
+server.get('/runTest', async (req, res) => {
+    try {
+        const result = await runTests(1, "testresults");
+        fn.logOutput("Info", `Result : ${result}`);
+        res.redirect("/");
+    } catch (error) {
+        fn.logOutput("Error", `Failed to run test tests: ${error}`);
+        res.status(500).send("Failed to run test tests");
+    }
 });
 
-server.get('/runStaging', async function (req, res) {
-  const result = await runTests(0, "stagingresults");
-  fn.logOutput("Info", "Result : " + result);
-  res.redirect("/");
+server.get('/runStaging', async (req, res) => {
+    try {
+        const result = await runTests(2, "stagingresults");
+        fn.logOutput("Info", `Result : ${result}`);
+        res.redirect("/");
+    } catch (error) {
+        fn.logOutput("Error", `Failed to run staging tests: ${error}`);
+        res.status(500).send("Failed to run staging tests");
+    }
 });
 
-
-//Cron and run tests  0 */15 * * * *
-//everyMinute , every10Minutes , every15Minutes, every6hours
-// change frequency of executions
-let job1 = new CronJob(every6hours, function startjob1() {
-  runTests(0, "devresults");
-}, null, true, "Australia/Sydney"); //end job
-let job2 = new CronJob(every6hours, function startjob1() {
-  runTests(1, "testresults");
-}, null, true, "Australia/Sydney"); //end job
-let job3 = new CronJob(every6hours, function startjob1() {
-  runTests(2, "stagingresults");
-}, null, true, "Australia/Sydney"); //end job
+// Cron jobs
+const job1 = new CronJob(everyMinute, () => runTests(0, "devresults"), null, true, "Australia/Sydney");
+const job2 = new CronJob(everyMinute, () => runTests(1, "testresults"), null, true, "Australia/Sydney");
+const job3 = new CronJob(everyMinute, () => runTests(2, "stagingresults"), null, true, "Australia/Sydney");
 
 function runTests(region, filename) {
-  return new Promise((resolve, reject) => {
-    // Cron jobs runs the schuedules using this function
-    let testdata = fs.readFileSync("./featuretests/collections.json");
-    let schedule = JSON.parse(testdata);
-    let totalTestsArray = Object.keys(schedule.ENV[region].tests);
-    let tests = schedule.ENV[region].tests;
-    // fn.logOutput("objects", totalTests1.keys());
-    ///TODO get an object that filters out test collections that are not meant to be run
-    // filter is working but need to focus more on this in next version to make it work.
-    let totalTests = Object.keys(schedule.ENV[region].tests).length;
-    let filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
-    let filteredTestCount = Object.keys(tests).filter(key => tests[key].Active == 1).length;
-    fn.logOutput("Total number of test objects", totalTests);
-    fn.logOutput("Total number of filtered test objects", filteredTests.length);
+    return new Promise((resolve, reject) => {
+        try {
+            const testdata = fs.readFileSync("./featuretests/collections.json");
+            const schedule = JSON.parse(testdata);
+            const totalTests = Object.keys(schedule.ENV[region].tests).length;
+            const tests = schedule.ENV[region].tests;
+            const filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
+            fn.logOutput("Total number of test objects", totalTests);
+            fn.logOutput("Total number of filtered test objects", filteredTests.length);
 
-    for (var i = 0; i < totalTests; i++) {
-      //   for (var i = 0; i < filteredTests; i++) {
-      // let collection = PostmanCollectionFolder + totalTests[i].script_name ;
-      // let env = totalTests[i].environment_name;
-      let envfile;
-      let datafile;
-      let collection =
-        PostmanCollectionFolder + schedule.ENV[region].tests[i].script_name;
-      if (schedule.ENV[region].tests[i].environment_name != "") {
-        envfile =
-          PostmanEnvFolder + schedule.ENV[region].tests[i].environment_name;
-      } else {
-        envfile = "";
-      }
-      if (schedule.ENV[region].tests[i].datafile != "") {
-        datafile = PostmanDataFolder + schedule.ENV[region].tests[i].datafile;
-      } else {
-        datafile = "";
-      }
-      runMyTest(collection, envfile, schedule.ENV[region], datafile, filename);
-      const log = fn.myDateTime() + "," + schedule.ENV[region].tests[i].script_name + "," + schedule.ENV[region].tests[i].environment_name;
-      fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
-      fn.logOutput("Info", "Log : " + log);
-
-    }
-    resolve("Tests completed successfully.");
-  });
+            for (let i = 0; i < totalTests; i++) {
+                const collection = `${PostmanCollectionFolder}${schedule.ENV[region].tests[i].script_name}`;
+                const envfile = schedule.ENV[region].tests[i].environment_name ? `${PostmanEnvFolder}${schedule.ENV[region].tests[i].environment_name}` : "";
+                const datafile = schedule.ENV[region].tests[i].datafile ? `${PostmanDataFolder}${schedule.ENV[region].tests[i].datafile}` : "";
+                runMyTest(collection, envfile, schedule.ENV[region], datafile, filename);
+                const log = `${fn.myDateTime()},${schedule.ENV[region].tests[i].script_name},${schedule.ENV[region].tests[i].environment_name}`;
+                fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
+                fn.logOutput("Info", `Log : ${log}`);
+            }
+            resolve("Tests completed successfully.");
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 function runMyTest(collection, environmentfile, environmentName, datafile, filename) {
-  // Clear the current log to write new results.
-
-  fn.clearCurrentLog(filename);
-  // Run the collections with Newman
-
-  const options = {
-    collection: collection, // Path to the Postman Collection JSON file
-    reporters: "cli", // Use the command-line reporter for generating the report
-  };
-  // Optional: set up the environment object if the environment file is provided
-  //const environmentFile = environment; // Path to the Postman Environment JSON file (optional)
-  if (environmentfile != "") {
-    options.environment = environmentfile;
-  }
-
-  if (datafile != "") {
-    options.iterationData = datafile;
-  }
-
-  newman.run(options, function (err, res) {
-    if (err) {
-      //write to error log.
-
-      fn.logOutput("Info", "An errof has occurred " + err);
-      throw err;
-    }
-    res.run.executions.forEach((exec) => {
-      fn.logOutput("Info", "API Request call:", exec.item.name);
-      // console.log('Response:', JSON.parse(exec.response.stream));
-    });
-    // create fail rates
-    // parse collection variable to make a nice Key for chart
-    let myCollectionString = collection.split("/");
-    fn.logOutput("Info", "mystring is:" + myCollectionString);
-    let myKey = myCollectionString[2].split(".");
-    let failedTestCount = res.run.stats.assertions.failed;
-    let totalTestCount = res.run.stats.assertions.total;
-    let FailRate = fn.calculatePercentage(
-      res.run.stats.assertions.failed,
-      res.run.stats.assertions.total
-    );
-    let status = fn.RAG(100 - FailRate);
-    let statusString = status;
-    let runTiming = res.run.timings.responseAverage;
-    let scriptName = res.run.executions[0].item.name;
-    let IncludeInStats = 1; // test results by default are included
-    let RemoveComment = ""; // test result comments by default are blank
-
-    if (statusString != "Green") {
-      IncludeInStats = 0;
-      RemoveComment = "Test failures have distorted timing.";
-    }
-
-    let testResult = {
-      DateTime: fn.myDateTime(),
-      Environment: environmentName.Name, //myEnv[0],//Environment Name comes from feature test file
-      key: myKey[0],
-      value: statusString,
-      TestCount: totalTestCount,
-      FailedTestCount: failedTestCount,
-      AvgResponseTime: runTiming,
-      IncludeInStats: IncludeInStats,
-      RemoveComment: RemoveComment,
+    fn.clearCurrentLog(filename);
+    const options = {
+        collection,
+        reporters: "cli",
+        environment: environmentfile || undefined,
+        iterationData: datafile || undefined
     };
 
-    
-    //add the result to the JSON array.
-    fn.CreateJsonObjectForResults(testResult);
-    fn.logOutput("Info", "Filename is " + filename);
-    if (influx_on == true ? influx.write(testResult,token): "Influx not in use");
-    fn.writeToCurrentLog(JSON.stringify(testResult) + "\n", filename);
-    fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", "hist_" + filename);
-    fn.logOutput("Info", FailRate + " % failed");
-    fn.logOutput("Info", "RAG Status " + status);
-    let record = JSON.stringify(statusString);
+    newman.run(options, (err, res) => {
+        if (err) {
+            fn.logOutput("Error", `An error has occurred: ${err}`);
+            throw err;
+        }
+        res.run.executions.forEach(exec => fn.logOutput("Info", `API Request call: ${exec.item.name}`));
+        const myCollectionString = collection.split("/");
+        const myKey = myCollectionString[2].split(".");
+        const failedTestCount = res.run.stats.assertions.failed;
+        const totalTestCount = res.run.stats.assertions.total;
+        const FailRate = fn.calculatePercentage(failedTestCount, totalTestCount);
+        const statusString = fn.RAG(100 - FailRate);
+        const runTiming = res.run.timings.responseAverage;
+        const IncludeInStats = statusString !== "Green" ? 0 : 1;
+        const RemoveComment = statusString !== "Green" ? "Test failures have distorted timing." : "";
 
-    if (ExtendedLog) {
-      fn.writeToCurrentLog(JSON.stringify(res.run) + "\n", '_ExtendedLog_' + filename);
-    }
+        const testResult = {
+            DateTime: fn.myDateTime(),
+            Environment: environmentName.Name,
+            key: myKey[0],
+            value: statusString,
+            TestCount: totalTestCount,
+            FailedTestCount: failedTestCount,
+            AvgResponseTime: runTiming,
+            IncludeInStats,
+            RemoveComment
+        };
 
-
-  });
-} // end runMyTest
-
+        fn.CreateJsonObjectForResults(testResult);
+        fn.logOutput("Info", `Filename is ${filename}`);
+        if (Influx) influx.write(testResult, token);
+        fn.writeToCurrentLog(JSON.stringify(testResult) + "\n", filename);
+        fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", `hist_${filename}`);
+        fn.logOutput("Info", `${FailRate} % failed`);
+        fn.logOutput("Info", `RAG Status ${statusString}`);
+        if (ExtendedLog) fn.writeToCurrentLog(JSON.stringify(res.run) + "\n", `_ExtendedLog_${filename}`);
+    });
+}
 
 const port = process.env.PORT || 8080;
 
 function keepAlive() {
-  server.listen(port, () => {
-    console.log("server is running and alive");
-  });
+    server.listen(port, () => {
+        console.log("server is running and alive");
+    });
 }
+
 module.exports = keepAlive;
