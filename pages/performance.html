@@ -30,36 +30,42 @@
     <div class="inner-div" >
       <center><b>Development Performance Graphs</b> </center> 
    
-      <a href="/dashboard/performance/dev/1"> 1 day </a>|
-      <a href="/dashboard/performance/dev/3"> 3 days </a>|
-      <a href="/dashboard/performance/dev/7"> 7 days </a>|
-      <a href="/dashboard/performance/dev/14"> 14 days </a>|
-      <a href="/dashboard/performance/dev/30"> 30 days </a>|
-      <a href="/dashboard/performance/dev/All"> All </a>
+      <a href="/dashboard/performance/dev/1" aria-label="1 day"> 1 day </a>|
+      <a href="/dashboard/performance/dev/3" aria-label="3 days"> 3 days </a>|
+      <a href="/dashboard/performance/dev/7" aria-label="7 days"> 7 days </a>|
+      <a href="/dashboard/performance/dev/14" aria-label="14 days"> 14 days </a>|
+      <a href="/dashboard/performance/dev/30" aria-label="30 days"> 30 days </a>|
+      <a href="/dashboard/performance/dev/All" aria-label="All days"> All </a>
     </div>
   
     <div class="inner-div" >
       <center> <b>Test Performance Graphs</b></center> 
-      <a href="/dashboard/performance/test/1"> 1 day </a>|
-      <a href="/dashboard/performance/test/3"> 3 days </a>|
-      <a href="/dashboard/performance/test/7"> 7 days </a>|
-      <a href="/dashboard/performance/test/14"> 14 days </a>|
-      <a href="/dashboard/performance/test/30"> 30 days </a>|
-      <a href="/dashboard/performance/test/All"> All </a>
+      <a href="/dashboard/performance/test/1" aria-label="1 day"> 1 day </a>|
+      <a href="/dashboard/performance/test/3" aria-label="3 days"> 3 days </a>|
+      <a href="/dashboard/performance/test/7" aria-label="7 days"> 7 days </a>|
+      <a href="/dashboard/performance/test/14" aria-label="14 days"> 14 days </a>|
+      <a href="/dashboard/performance/test/30" aria-label="30 days"> 30 days </a>|
+      <a href="/dashboard/performance/test/All" aria-label="All days"> All </a>
     </div>
    <div class="inner-div" >
       <center><b>Staging Performance Graphs</b> </center>
-      <a href="/dashboard/performance/staging/1"> 1 day </a>|
-      <a href="/dashboard/performance/staging/3"> 3 days </a>|
-      <a href="/dashboard/performance/staging/7"> 7 days </a>|
-      <a href="/dashboard/performance/staging/14"> 14 days </a>|
-      <a href="/dashboard/performance/staging/30"> 30 days </a>|
-      <a href="/dashboard/performance/staging/All"> All </a>
+      <a href="/dashboard/performance/staging/1" aria-label="1 day"> 1 day </a>|
+      <a href="/dashboard/performance/staging/3" aria-label="3 days"> 3 days </a>|
+      <a href="/dashboard/performance/staging/7" aria-label="7 days"> 7 days </a>|
+      <a href="/dashboard/performance/staging/14" aria-label="14 days"> 14 days </a>|
+      <a href="/dashboard/performance/staging/30" aria-label="30 days"> 30 days </a>|
+      <a href="/dashboard/performance/staging/All" aria-label="All days"> All </a>
     </div>
   </div>
 <br>
 
-  <div id="chart-container" class="row"></div>
+  <div id="chart-container" class="row">
+    <div id="loading-spinner" class="text-center w-100">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
   <br>
   <div class="card">
     <div class="card-body">
@@ -73,6 +79,12 @@
       </ol>
     </div>
   </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const spinner = document.getElementById("loading-spinner");
+      spinner.style.display = "none"; // Hide spinner once charts are loaded
+    });
+  </script>
   <script src="/js/performance.js"></script>
 </body>
 

@@ -16,21 +16,37 @@ console.log("apiUrl are: " + apiUrl);
 async function fetchData(url) {
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const jsonData = await response.json();
     return jsonData;
   } catch (err) {
     console.error("Failed to fetch data:", err);
+    return null;
   }
 }
 
 async function createCharts() {
   const chartContainer = document.getElementById("chart-container");
 
+  // Fetch transaction keys
   const transactions = await fetchData(URLKeys);
+  if (!transactions || transactions.length === 0) {
+    console.error("No transactions found or failed to fetch transaction keys.");
+    chartContainer.innerHTML = "<p>No data available to display charts.</p>";
+    return;
+  }
 
   for (const value of transactions) {
     const url = `/histresultsdays/${environmentName}/${value}/${days}`;
     const mydata = await fetchData(url);
+
+    if (!mydata || mydata.length === 0) {
+      console.warn(`No data found for transaction: ${value}`);
+      continue;
+    }
+
     console.log(`Response for ${value}: `, mydata);
 
     const chartCard = document.createElement("div");
@@ -56,8 +72,8 @@ async function createCharts() {
           label: mydata[0].key,
           data: mydata.map((d) => d.AvgResponseTime),
           fill: false,
-          backgroundColor: "rgba(255, 99, 132, 0.2)",
-          borderColor: "rgba(255, 99, 132, 1)",
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
           tension: 0.1,
         }],
       },
@@ -70,23 +86,23 @@ async function createCharts() {
             time: {
               parser: "YYYY-MM-DD HH:mm:ss",
               displayFormats: {
-                millisecond: "MMM DD",
-                second: "MMM DD",
-                minute: "MMM DD",
-                hour: "MMM DD",
                 day: "MMM DD",
-                week: "MMM DD",
-                month: "MMM DD",
-                quarter: "MMM DD",
-                year: "MMM DD",
               },
             },
           },
           y: {
-            label: "Avg Response Time (ms)",
+            title: {
+              display: true,
+              text: "Avg Response Time (ms)",
+            },
           },
         },
-        plugins: {},
+        plugins: {
+          legend: {
+            display: true,
+            position: "top",
+          },
+        },
       },
     });
 
@@ -97,4 +113,4 @@ async function createCharts() {
   }
 }
 
-createCharts();
+document.addEventListener("DOMContentLoaded", createCharts);
