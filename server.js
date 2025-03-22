@@ -300,8 +300,12 @@ const port = process.env.PORT || 8080;
 
 function keepAlive() {
     server.listen(port, () => {
-        console.log("server is running and alive");
+        console.log(`Server is running and listening on http://localhost:${port}`);
     });
+}
+
+if (require.main === module) {
+    keepAlive(); // Automatically start the server if this file is run directly
 }
 
 module.exports = keepAlive;
