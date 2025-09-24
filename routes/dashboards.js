@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-let path = require("path"); // used for path
+const path = require("path"); // used for path
 const myPath = path.join(__dirname, "..");
-let cf = require("../config/config.js");
+const cf = require("../config/config.js");
 
-let config = cf.config;
+const config = cf.config;
 const SESSION_ON = config.session;
 
 

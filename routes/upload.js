@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-let path = require("path"); // used for path
+const path = require("path"); // used for path
 const fs = require("fs");
-let fn = require("../functions");
-let cf = require("../config/config");
+const fn = require("../functions");
+const cf = require("../config/config");
 const multer = require("multer");
 const myPath = path.join(__dirname, "..");
 

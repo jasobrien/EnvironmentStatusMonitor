@@ -9,21 +9,21 @@ exports.config = {
     email: "EnvironmentStatusmMnitor@gmail.com"
   },
   Influx: false,
-  ExtendedLog :false,
+  ExtendedLog: false,
   session: false,
   user: "admin",
   password: "password",
   ENV1: "dev",
   ENV2: "test",
   ENV3: "staging",
-  //dashboard colour % thresholds
+  // Dashboard colour % thresholds
   Green: 100,
   Amber: 90,
-    //cron scheduler
-  Every5: "0 */5 * * * *'",
-  Every15: "'0 */15 * * * *'",
-  Every30: "'0 */30 * * * *'",
-  Every60: "'0 * * * *'",
+  // Cron scheduler
+  Every5: "0 */5 * * * *",
+  Every15: "0 */15 * * * *",
+  Every30: "0 */30 * * * *",
+  Every60: "0 * * * *",
   everyMinute: "0 */1 * * * *",
   every10Minutes: "0 */10 * * * *",
   everyhour: "0 * * * *",
@@ -33,13 +33,13 @@ exports.config = {
   Customtime2: "",
   Customtime3: "",
   CronLocation: "Australia/Sydney",
-  //Folders
+  // Folders
   ResultsFolder: "./results/",
   PostmanCollectionFolder: "./collections/",
   PostmanEnvFolder: "./environments/",
   PostmanDataFolder: "./datafiles/",
   resultsFolder: "./results/",
-  //Files
+  // Files
   HistoryFilePrefix: "hist_",
   ResultFileSuffix: "results"
 };

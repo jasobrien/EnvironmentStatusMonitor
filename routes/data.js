@@ -11,17 +11,15 @@ router.get("/schedule", function (req, res) {
 
 
 router.get("/scheduledata", function (req, res) {
-  //refactor to be active file
-  let rawdata = fs.readFileSync("./featuretests/collections.json");
-  let schedule = JSON.parse(rawdata);
+  // Refactor to be active file
+  const rawdata = fs.readFileSync("./featuretests/collections.json");
+  const schedule = JSON.parse(rawdata);
   res.send(JSON.stringify(schedule));
 });
 
 router.get("/header", function (req, res) {
-  //refactor to be active file
+  // Refactor to be active file
   res.sendFile(myPath + "/pages/header.html");
-  //let rawdata = fs.readFileSync("./pages/header.html");
-
 });
 
 
@@ -50,8 +48,8 @@ router.get("/edit", function (req, res) {
 });
 
 router.get("/editfile", (req, res) => {
-  let rawdata = fs.readFileSync("./featuretests/collections.json");
-  let schedule = JSON.parse(rawdata);
+  const rawdata = fs.readFileSync("./featuretests/collections.json");
+  const schedule = JSON.parse(rawdata);
   res.send(JSON.stringify(schedule));
 });
 
@@ -67,28 +65,23 @@ router.put("/editfile", (req, res) => {
 
 
 // Edit history files
-//dev
+// Dev
 router.get("/devresults", function (req, res) {
   res.sendFile(myPath + "/pages/devresults.html");
 });
 
 router.get("/editfile/devresults", (req, res) => {
-  let rawdata = fs.readFileSync("./results/hist_devresults.json");
-  // let file = JSON.parse(rawdata);
+  const rawdata = fs.readFileSync("./results/hist_devresults.json");
   res.send(rawdata);
 });
 
 router.put("/editfile/devresults", (req, res) => {
-  //const data = JSON.stringify(req.body);
   const data = req.body;
-  // const contentString = JSON.stringify(data);
-  //console.log('Data to be written to file', data);
   fs.writeFile('./results/hist_devresults.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
     res.send('Data written to file');
   });
-
 });
 
 // Test
@@ -98,22 +91,17 @@ router.get("/testresults", function (req, res) {
 });
 
 router.get("/editfile/testresults", (req, res) => {
-  let rawdata = fs.readFileSync("./results/hist_testresults.json");
-  // let file = JSON.parse(rawdata);
+  const rawdata = fs.readFileSync("./results/hist_testresults.json");
   res.send(rawdata);
 });
 
 router.put("/editfile/testresults", (req, res) => {
-  //const data = JSON.stringify(req.body);
   const data = req.body;
-  // const contentString = JSON.stringify(data);
-  //console.log('Data to be written to file', data);
   fs.writeFile('./results/hist_testresults.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
     res.send('Data written to file');
   });
-
 });
 
 // Staging
@@ -123,22 +111,17 @@ router.get("/stagingresults", function (req, res) {
 });
 
 router.get("/editfile/stagingresults", (req, res) => {
-  let rawdata = fs.readFileSync("./results/hist_stagingresults.json");
-  // let file = JSON.parse(rawdata);
+  const rawdata = fs.readFileSync("./results/hist_stagingresults.json");
   res.send(rawdata);
 });
 
 router.put("/editfile/stagingresults", (req, res) => {
-  //const data = JSON.stringify(req.body);
   const data = req.body;
-  // const contentString = JSON.stringify(data);
-  //console.log('Data to be written to file', data);
   fs.writeFile('./results/hist_stagingresults.json', data, (err) => {
     if (err) throw err;
     console.log('Data written to file');
     res.send('Data written to file');
   });
-
 });
 
 // router.get("/viewdata", function (req, res) {
