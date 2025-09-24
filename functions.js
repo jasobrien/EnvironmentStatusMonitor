@@ -15,7 +15,7 @@ exports.myDateTime = function () {
 };
 
 exports.logOutput = function (type, output) {
-  if (log == 1) {
+  if (log === 1) {
     console.log(`${type}: ${output}`);
   }
 };
