@@ -35,8 +35,8 @@ jobs:
         echo  $! > pid.txt
       # env:
       #   PORT: ${{ env.PORT }}
-    # - name: Run Playwright tests
-    #   run: npx playwright test --project="API Tests"
+    - name: Run Playwright tests
+      run: npx playwright test --project="API Tests"
     #   env:
     #     PORT: ${{ env.PORT }}
     - name: Stop server
