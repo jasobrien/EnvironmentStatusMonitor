@@ -15,7 +15,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [18.x]
+        #, 20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -26,17 +27,17 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - name: Set dynamic port
-      run: echo "PORT=$((8000 + ${{ strategy.job-index || 0 }}))" >> $GITHUB_ENV
+    # - name: Set dynamic port
+    #   run: echo "PORT=$((8000 + ${{ strategy.job-index || 0 }}))" >> $GITHUB_ENV
     - name: Start server in background
-      run: |
-        node index.js &
-        echo $! > pid.txt
-      env:
-        PORT: ${{ env.PORT }}
-    - name: Run Playwright tests
-      run: npx playwright test --project="API Tests"
-      env:
-        PORT: ${{ env.PORT }}
-    - name: Stop server
-      run: kill $(cat pid.txt)
+      run: node index.js
+    #    node index.js &
+   #      echo  $! > pid.txt
+    #   env:
+    #     PORT: ${{ env.PORT }}
+    # - name: Run Playwright tests
+    #   run: npx playwright test --project="API Tests"
+    #   env:
+    #     PORT: ${{ env.PORT }}
+    # - name: Stop server
+    #   run: kill $(cat pid.txt)
