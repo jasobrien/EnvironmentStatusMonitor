@@ -27,5 +27,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: node index.js
-    - run: npx playwright test --project="API Tests"
+    - name: Start server in background
+      run: |
+        node index.js &
+        echo $! > pid.txt
+    - name: Run Playwright tests
+      run: npx playwright test --project="API Tests"
+    - name: Stop server
+      run: |
+        kill $(cat pid.txt)
