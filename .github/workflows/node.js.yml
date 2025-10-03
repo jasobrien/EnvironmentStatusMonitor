@@ -29,10 +29,10 @@ jobs:
     - run: npm ci
     # - name: Set dynamic port
     #   run: echo "PORT=$((8000 + ${{ strategy.job-index || 0 }}))" >> $GITHUB_ENV
-    - name: Start server in background
-      run: |
-        node index.js &
-        echo  $! > pid.txt
+    # - name: Start server in background
+    #   run: |
+    #     node index.js &
+    #     echo  $! > pid.txt
       # env:
       #   PORT: ${{ env.PORT }}
     - name: Run Playwright tests
