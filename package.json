@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js", 
-    "test:ui": "playwright test --config=./test/ui/playwright.config.js", 
-    "test:api": "playwright test --config=./test/api/playwright.config.js"
+    "test:ui": "playwright test --config=playwright.config.js", 
+    "test:api": "playwright test --config=playwright.config.js"
   },
   "keywords": [],
   "author": "Jim O'Brien",
