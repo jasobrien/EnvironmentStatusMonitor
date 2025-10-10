@@ -50,10 +50,10 @@ async function createCharts() {
     console.log(`Response for ${value}: `, mydata);
 
     const chartCard = document.createElement("div");
-    chartCard.classList.add("col-md-4");
+    chartCard.classList.add("col-12", "col-md-6", "col-lg-4", "mb-4");
 
     const card = document.createElement("div");
-    card.classList.add("card");
+    card.classList.add("card", "h-100");
 
     const cardHeader = document.createElement("div");
     cardHeader.classList.add("card-header", "text-center");
@@ -64,6 +64,8 @@ async function createCharts() {
     cardBody.classList.add("card-body");
 
     const canvas = document.createElement("canvas");
+    canvas.setAttribute("role", "img");
+    canvas.setAttribute("aria-label", `Performance chart for ${value}`);
     const chart = new Chart(canvas, {
       type: "line",
       data: {
@@ -78,6 +80,9 @@ async function createCharts() {
         }],
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
         scales: {
           x: {
             type: "time",

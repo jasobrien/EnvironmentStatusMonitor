@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feature Collection Performance</title>
   <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -21,64 +23,75 @@
 
 <body class="p-4">
   <div id="header-container"></div>
-  <center>
-    <h2>Feature Collection Performance</h2>
-  </center>
+  <header class="text-center mb-4">
+    <h1>Feature Collection Performance</h1>
+  </header>
 
-  <div class="container">
+  <main class="container-fluid">
 
-    <div class="inner-div" >
-      <center><b>Development Performance Graphs</b> </center> 
-   
-      <a href="/dashboard/performance/dev/1" aria-label="1 day"> 1 day </a>|
-      <a href="/dashboard/performance/dev/3" aria-label="3 days"> 3 days </a>|
-      <a href="/dashboard/performance/dev/7" aria-label="7 days"> 7 days </a>|
-      <a href="/dashboard/performance/dev/14" aria-label="14 days"> 14 days </a>|
-      <a href="/dashboard/performance/dev/30" aria-label="30 days"> 30 days </a>|
-      <a href="/dashboard/performance/dev/All" aria-label="All days"> All </a>
-    </div>
+    <nav aria-label="Environment Performance Selection" class="mb-4">
+      <div class="row">
+        <div class="col-12 col-md-4 mb-3">
+          <h5 class="text-center font-weight-bold">Development Performance Graphs</h5>
+          <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
+            <a href="/dashboard/performance/dev/1" class="nav-link" aria-label="Development 1 day">1 day</a>
+            <a href="/dashboard/performance/dev/3" class="nav-link" aria-label="Development 3 days">3 days</a>
+            <a href="/dashboard/performance/dev/7" class="nav-link" aria-label="Development 7 days">7 days</a>
+            <a href="/dashboard/performance/dev/14" class="nav-link" aria-label="Development 14 days">14 days</a>
+            <a href="/dashboard/performance/dev/30" class="nav-link" aria-label="Development 30 days">30 days</a>
+            <a href="/dashboard/performance/dev/All" class="nav-link" aria-label="Development All days">All</a>
+          </div>
+        </div>
   
-    <div class="inner-div" >
-      <center> <b>Test Performance Graphs</b></center> 
-      <a href="/dashboard/performance/test/1" aria-label="1 day"> 1 day </a>|
-      <a href="/dashboard/performance/test/3" aria-label="3 days"> 3 days </a>|
-      <a href="/dashboard/performance/test/7" aria-label="7 days"> 7 days </a>|
-      <a href="/dashboard/performance/test/14" aria-label="14 days"> 14 days </a>|
-      <a href="/dashboard/performance/test/30" aria-label="30 days"> 30 days </a>|
-      <a href="/dashboard/performance/test/All" aria-label="All days"> All </a>
-    </div>
-   <div class="inner-div" >
-      <center><b>Staging Performance Graphs</b> </center>
-      <a href="/dashboard/performance/staging/1" aria-label="1 day"> 1 day </a>|
-      <a href="/dashboard/performance/staging/3" aria-label="3 days"> 3 days </a>|
-      <a href="/dashboard/performance/staging/7" aria-label="7 days"> 7 days </a>|
-      <a href="/dashboard/performance/staging/14" aria-label="14 days"> 14 days </a>|
-      <a href="/dashboard/performance/staging/30" aria-label="30 days"> 30 days </a>|
-      <a href="/dashboard/performance/staging/All" aria-label="All days"> All </a>
-    </div>
-  </div>
-<br>
+        <div class="col-12 col-md-4 mb-3">
+          <h5 class="text-center font-weight-bold">Test Performance Graphs</h5>
+          <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
+            <a href="/dashboard/performance/test/1" class="nav-link" aria-label="Test 1 day">1 day</a>
+            <a href="/dashboard/performance/test/3" class="nav-link" aria-label="Test 3 days">3 days</a>
+            <a href="/dashboard/performance/test/7" class="nav-link" aria-label="Test 7 days">7 days</a>
+            <a href="/dashboard/performance/test/14" class="nav-link" aria-label="Test 14 days">14 days</a>
+            <a href="/dashboard/performance/test/30" class="nav-link" aria-label="Test 30 days">30 days</a>
+            <a href="/dashboard/performance/test/All" class="nav-link" aria-label="Test All days">All</a>
+          </div>
+        </div>
 
-  <div id="chart-container" class="row">
-    <div id="loading-spinner" class="text-center w-100">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
+        <div class="col-12 col-md-4 mb-3">
+          <h5 class="text-center font-weight-bold">Staging Performance Graphs</h5>
+          <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
+            <a href="/dashboard/performance/staging/1" class="nav-link" aria-label="Staging 1 day">1 day</a>
+            <a href="/dashboard/performance/staging/3" class="nav-link" aria-label="Staging 3 days">3 days</a>
+            <a href="/dashboard/performance/staging/7" class="nav-link" aria-label="Staging 7 days">7 days</a>
+            <a href="/dashboard/performance/staging/14" class="nav-link" aria-label="Staging 14 days">14 days</a>
+            <a href="/dashboard/performance/staging/30" class="nav-link" aria-label="Staging 30 days">30 days</a>
+            <a href="/dashboard/performance/staging/All" class="nav-link" aria-label="Staging All days">All</a>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <br>
-  <div class="card">
-    <div class="card-body">
-      <p class="card-text custom-card-text">All response times for failed tests are removed automatically. If
-        there are any performance spikes that distort graphs and can be explained,
-        they can be removed from the graphs by editing the associated results
-        history file and setting "IncludeInStats" key to 0 . A "RemoveComment" key
-        can be used to add the reason for the removal of the data.</p>
-      <ol>
+    </nav>
 
-      </ol>
-    </div>
-  </div>
+    <section aria-label="Performance Charts" class="mb-4">
+      <div id="chart-container" class="row">
+        <div id="loading-spinner" class="text-center w-100">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Information" class="mb-4">
+      <div class="card">
+        <div class="card-body">
+          <p class="card-text custom-card-text">All response times for failed tests are removed automatically. If
+            there are any performance spikes that distort graphs and can be explained,
+            they can be removed from the graphs by editing the associated results
+            history file and setting "IncludeInStats" key to 0 . A "RemoveComment" key
+            can be used to add the reason for the removal of the data.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const spinner = document.getElementById("loading-spinner");
