@@ -10,8 +10,8 @@ async function fetchConfig() {
     }
   }
 
-  async function checkLoggedIn(){
-    try{
+  async function checkLoggedIn() {
+    try {
         const response = await fetch("/check-login");
         const data = await response.json(); 
         return(data);
@@ -20,11 +20,10 @@ async function fetchConfig() {
       }
   }
 
-
   function setCredentials(data) {
-    if(!data.session){
+    if (!data.session) {
       document.getElementById('login').hidden = true;
-    }else{
+    } else {
       document.getElementById('login').hidden = false;
     }
   }
@@ -42,16 +41,10 @@ async function fetchConfig() {
     .then(data => {
         if (data.loggedin) {
             console.log("User is logged in");
-            // document.addEventListener("DOMContentLoaded", function() {
-            // document.getElementById('login').hidden = false;
-            // });
             document.getElementById('login').hidden = false;
         } else {
             console.log("User is not logged in");
-            //console.log(data);
-            // document.addEventListener("DOMContentLoaded", function() {
-                document.getElementById('login').hidden = true;
-              //  });
+            document.getElementById('login').hidden = true;
         }
     })
     .catch(function (err) {
