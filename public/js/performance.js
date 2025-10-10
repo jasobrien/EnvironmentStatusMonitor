@@ -12,6 +12,46 @@ console.log("URLKeys are: " + URLKeys);
 const apiUrl = `/histresultsdays/${environmentName}/${days}`;
 console.log("apiUrl are: " + apiUrl);
 
+// Map environment codes to display names
+const environmentDisplayNames = {
+  'dev': 'Development',
+  'test': 'Test',
+  'staging': 'Staging'
+};
+
+// Update page to highlight current environment
+function updatePageForCurrentEnvironment() {
+  const displayName = environmentDisplayNames[environmentName] || environmentName;
+  
+  // Update the main heading to show current environment
+  const mainHeading = document.querySelector('header h1');
+  if (mainHeading) {
+    let timeDisplay = days === 'All' ? 'All Time' : `${days} day${days === '1' ? '' : 's'}`;
+    mainHeading.textContent = `${displayName} Performance - ${timeDisplay}`;
+  }
+  
+  // Highlight the active environment section
+  const allEnvContainers = document.querySelectorAll('.col-12.col-md-4.mb-3');
+  allEnvContainers.forEach((container, index) => {
+    const envMatch = ['dev', 'test', 'staging'][index];
+    if (envMatch === environmentName) {
+      container.style.backgroundColor = '#e7f3ff';
+      container.style.border = '2px solid #0066cc';
+      container.style.borderRadius = '8px';
+      container.style.padding = '15px';
+    }
+  });
+  
+  // Highlight the active day link for current environment
+  const currentEnvLinks = document.querySelectorAll(`a[href*="/dashboard/performance/${environmentName}/"]`);
+  currentEnvLinks.forEach(link => {
+    const linkDays = link.getAttribute('href').split('/').pop();
+    if (linkDays === days) {
+      link.classList.add('active');
+    }
+  });
+}
+
 // Fetch data from API
 async function fetchData(url) {
   try {
@@ -118,4 +158,7 @@ async function createCharts() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", createCharts);
+document.addEventListener("DOMContentLoaded", () => {
+  updatePageForCurrentEnvironment();
+  createCharts();
+});

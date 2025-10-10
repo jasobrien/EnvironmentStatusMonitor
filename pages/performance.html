@@ -29,45 +29,54 @@
 
   <main class="container-fluid">
 
-    <nav aria-label="Environment Performance Selection" class="mb-4">
-      <div class="row">
-        <div class="col-12 col-md-4 mb-3">
-          <h5 class="text-center font-weight-bold">Development Performance Graphs</h5>
-          <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
-            <a href="/dashboard/performance/dev/1" class="nav-link" aria-label="Development 1 day">1 day</a>
-            <a href="/dashboard/performance/dev/3" class="nav-link" aria-label="Development 3 days">3 days</a>
-            <a href="/dashboard/performance/dev/7" class="nav-link" aria-label="Development 7 days">7 days</a>
-            <a href="/dashboard/performance/dev/14" class="nav-link" aria-label="Development 14 days">14 days</a>
-            <a href="/dashboard/performance/dev/30" class="nav-link" aria-label="Development 30 days">30 days</a>
-            <a href="/dashboard/performance/dev/All" class="nav-link" aria-label="Development All days">All</a>
-          </div>
+    <div class="mb-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white text-center">
+          <h5 class="mb-0">Select Environment and Time Period</h5>
         </div>
-  
-        <div class="col-12 col-md-4 mb-3">
-          <h5 class="text-center font-weight-bold">Test Performance Graphs</h5>
-          <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
-            <a href="/dashboard/performance/test/1" class="nav-link" aria-label="Test 1 day">1 day</a>
-            <a href="/dashboard/performance/test/3" class="nav-link" aria-label="Test 3 days">3 days</a>
-            <a href="/dashboard/performance/test/7" class="nav-link" aria-label="Test 7 days">7 days</a>
-            <a href="/dashboard/performance/test/14" class="nav-link" aria-label="Test 14 days">14 days</a>
-            <a href="/dashboard/performance/test/30" class="nav-link" aria-label="Test 30 days">30 days</a>
-            <a href="/dashboard/performance/test/All" class="nav-link" aria-label="Test All days">All</a>
-          </div>
-        </div>
+        <div class="card-body">
+          <nav aria-label="Environment Performance Selection">
+            <div class="row">
+              <div class="col-12 col-md-4 mb-3">
+                <h5 class="text-center font-weight-bold">Development Performance Graphs</h5>
+                <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
+                  <a href="/dashboard/performance/dev/1" class="nav-link" aria-label="Development 1 day">1 day</a>
+                  <a href="/dashboard/performance/dev/3" class="nav-link" aria-label="Development 3 days">3 days</a>
+                  <a href="/dashboard/performance/dev/7" class="nav-link" aria-label="Development 7 days">7 days</a>
+                  <a href="/dashboard/performance/dev/14" class="nav-link" aria-label="Development 14 days">14 days</a>
+                  <a href="/dashboard/performance/dev/30" class="nav-link" aria-label="Development 30 days">30 days</a>
+                  <a href="/dashboard/performance/dev/All" class="nav-link" aria-label="Development All days">All</a>
+                </div>
+              </div>
+        
+              <div class="col-12 col-md-4 mb-3">
+                <h5 class="text-center font-weight-bold">Test Performance Graphs</h5>
+                <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
+                  <a href="/dashboard/performance/test/1" class="nav-link" aria-label="Test 1 day">1 day</a>
+                  <a href="/dashboard/performance/test/3" class="nav-link" aria-label="Test 3 days">3 days</a>
+                  <a href="/dashboard/performance/test/7" class="nav-link" aria-label="Test 7 days">7 days</a>
+                  <a href="/dashboard/performance/test/14" class="nav-link" aria-label="Test 14 days">14 days</a>
+                  <a href="/dashboard/performance/test/30" class="nav-link" aria-label="Test 30 days">30 days</a>
+                  <a href="/dashboard/performance/test/All" class="nav-link" aria-label="Test All days">All</a>
+                </div>
+              </div>
 
-        <div class="col-12 col-md-4 mb-3">
-          <h5 class="text-center font-weight-bold">Staging Performance Graphs</h5>
-          <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
-            <a href="/dashboard/performance/staging/1" class="nav-link" aria-label="Staging 1 day">1 day</a>
-            <a href="/dashboard/performance/staging/3" class="nav-link" aria-label="Staging 3 days">3 days</a>
-            <a href="/dashboard/performance/staging/7" class="nav-link" aria-label="Staging 7 days">7 days</a>
-            <a href="/dashboard/performance/staging/14" class="nav-link" aria-label="Staging 14 days">14 days</a>
-            <a href="/dashboard/performance/staging/30" class="nav-link" aria-label="Staging 30 days">30 days</a>
-            <a href="/dashboard/performance/staging/All" class="nav-link" aria-label="Staging All days">All</a>
-          </div>
+              <div class="col-12 col-md-4 mb-3">
+                <h5 class="text-center font-weight-bold">Staging Performance Graphs</h5>
+                <div class="nav nav-pills flex-column flex-sm-row justify-content-center">
+                  <a href="/dashboard/performance/staging/1" class="nav-link" aria-label="Staging 1 day">1 day</a>
+                  <a href="/dashboard/performance/staging/3" class="nav-link" aria-label="Staging 3 days">3 days</a>
+                  <a href="/dashboard/performance/staging/7" class="nav-link" aria-label="Staging 7 days">7 days</a>
+                  <a href="/dashboard/performance/staging/14" class="nav-link" aria-label="Staging 14 days">14 days</a>
+                  <a href="/dashboard/performance/staging/30" class="nav-link" aria-label="Staging 30 days">30 days</a>
+                  <a href="/dashboard/performance/staging/All" class="nav-link" aria-label="Staging All days">All</a>
+                </div>
+              </div>
+            </div>
+          </nav>
         </div>
       </div>
-    </nav>
+    </div>
 
     <section aria-label="Performance Charts" class="mb-4">
       <div id="chart-container" class="row">
