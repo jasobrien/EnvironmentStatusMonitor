@@ -66,9 +66,20 @@ Install Playwright and its dependencies:
 
 ```bash
 npm install -D @playwright/test wait-on
+npx playwright install chromium
 ```
 
-#### 2. Run All Tests
+#### 2. Setup Test Data
+
+Before running tests, you need to set up sample test data:
+
+```bash
+node test/setup-test-data.js
+```
+
+This creates sample result files that the tests expect to exist.
+
+#### 4. Run All Tests
 
 To run all tests (UI and API):
 
@@ -76,7 +87,7 @@ To run all tests (UI and API):
 npx playwright test
 ```
 
-#### 3. Run Only UI Tests
+#### 5. Run Only UI Tests
 
 To run only the UI tests:
 
@@ -84,7 +95,7 @@ To run only the UI tests:
 npx playwright test --project="UI Tests"
 ```
 
-#### 4. Run Only API Tests
+#### 6. Run Only API Tests
 
 To run only the API tests:
 
@@ -92,12 +103,18 @@ To run only the API tests:
 npx playwright test --project="API Tests"
 ```
 
-#### 5. Debugging Tests
+#### 7. Debugging Tests
 
 To run tests in headed mode for debugging:
 
 ```bash
 npx playwright test --headed
+```
+
+To view test reports:
+
+```bash
+npx playwright show-report
 ```
 
 ---
@@ -110,9 +127,25 @@ The Playwright tests use global setup and teardown scripts to start and stop the
 
 - **Global Setup**: Starts the server before running the tests.
   - File: `test/global-setup.js`
+  - Starts the Express server and waits for it to be ready
 - **Global Teardown**: Stops the server after the tests complete.
   - File: `test/global-teardown.js`
+  - Gracefully closes the server connection
+
+### Test Data Setup
+
+Tests require sample data files to run successfully. The `test/setup-test-data.js` script creates:
+- Sample result files for test, dev, and staging environments
+- Historical data files for time-series queries
+- Test data with various status values (Green, Amber, Red)
+
+This setup is automatically run in CI/CD but needs to be run manually for local testing.
 
 ### Playwright Configuration
 
-The Playwright configuration is defined in `playwright.config.js`. It includes separate projects for UI and API tests.
+The Playwright configuration is defined in `playwright.config.js`. It includes:
+- Separate projects for UI and API tests
+- 60-second timeout for tests (some tests trigger Postman collection runs)
+- Trace retention on failure for debugging
+- HTML report generation
+- Automatic retry on failure (1 retry)
