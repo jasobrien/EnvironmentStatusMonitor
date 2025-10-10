@@ -8,17 +8,18 @@
 </head>
 <body class="p-4">
     <div id="header-container"></div>
-    <div class="container-fluid">
+    <main class="container-fluid">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                 <h1 class="text-center mb-4">Feature Test Suite Editor</h1>
-                <textarea id="json-data" class="form-control" rows="100" style="font-size: 11px"></textarea>
+                <label for="json-data" class="sr-only">Feature test suite JSON editor</label>
+                <textarea id="json-data" class="form-control" rows="100" style="font-size: 11px" aria-label="JSON data editor for feature test suite"></textarea>
                 <div class="text-center mt-4">
                     <button id="save-button" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-N+5bpyvQlOrCK9BzJk8+wwm1fY03n5m5w5MN5ql/Chj+SN/7zS9SxRn7CYuN+lAe" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

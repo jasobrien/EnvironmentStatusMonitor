@@ -1,82 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Upload</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="p-4">
     <div id="header-container"></div>
-    <div class="container mt-5">
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#collections">Add Collections files</a>
+    <main class="container mt-5">
+        <h1 class="mb-4">Add Postman Files</h1>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" data-bs-toggle="tab" href="#collections" role="tab" aria-controls="collections" aria-selected="true">Add Collections files</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#environments">Add Environments files</a>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#environments" role="tab" aria-controls="environments" aria-selected="false">Add Environments files</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#data">Add Data files</a>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#data" role="tab" aria-controls="data" aria-selected="false">Add Data files</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#tests">Add Test config / runner files</a>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#tests" role="tab" aria-controls="tests" aria-selected="false">Add Test config / runner files</a>
             </li>
         </ul>
         <div class="tab-content mt-2">
-            <div class="tab-pane active" id="collections">
-                <p>Upload Collection Files</p>
-                <div class="container">
-                    <form action="/upload/collections" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" class="form-control" name="files" multiple accept=".json">
-                        </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="tab-pane active" id="collections" role="tabpanel" aria-labelledby="collections-tab">
+                <h2 class="h5">Upload Collection Files</h2>
+                <form action="/upload/collections" method="post" enctype="multipart/form-data" aria-label="Upload collection files form">
+                    <div class="form-group">
+                        <label for="collections-file" class="sr-only">Select collection files</label>
+                        <input type="file" class="form-control" id="collections-file" name="files" multiple accept=".json" aria-label="Select collection JSON files">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                    </div>
+                </form>
             </div>
-            <div class="tab-pane" id="environments">
-                <p>Upload Environment Files</p>
-                <div class="container">
-                    <form action="/upload/environments" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" class="form-control" name="files" multiple accept=".json">
-                        </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="tab-pane" id="environments" role="tabpanel" aria-labelledby="environments-tab">
+                <h2 class="h5">Upload Environment Files</h2>
+                <form action="/upload/environments" method="post" enctype="multipart/form-data" aria-label="Upload environment files form">
+                    <div class="form-group">
+                        <label for="environments-file" class="sr-only">Select environment files</label>
+                        <input type="file" class="form-control" id="environments-file" name="files" multiple accept=".json" aria-label="Select environment JSON files">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                    </div>
+                </form>
             </div>
-            <div class="tab-pane" id="data">
-                <p>Upload Data Files</p>
-                <div class="container">
-                    <form action="/upload/data" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" class="form-control" name="files" multiple accept=".json">
-                        </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="tab-pane" id="data" role="tabpanel" aria-labelledby="data-tab">
+                <h2 class="h5">Upload Data Files</h2>
+                <form action="/upload/data" method="post" enctype="multipart/form-data" aria-label="Upload data files form">
+                    <div class="form-group">
+                        <label for="data-file" class="sr-only">Select data files</label>
+                        <input type="file" class="form-control" id="data-file" name="files" multiple accept=".json" aria-label="Select data JSON files">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                    </div>
+                </form>
             </div>
-            <div class="tab-pane" id="tests">
-                <p>Upload Test configuration File (please name collections.json)</p>
-                <div class="container">
-                    <form action="/upload/tests" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" class="form-control" name="files" multiple accept=".json">
-                        </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="tab-pane" id="tests" role="tabpanel" aria-labelledby="tests-tab">
+                <h2 class="h5">Upload Test configuration File (please name collections.json)</h2>
+                <form action="/upload/tests" method="post" enctype="multipart/form-data" aria-label="Upload test configuration files form">
+                    <div class="form-group">
+                        <label for="tests-file" class="sr-only">Select test configuration files</label>
+                        <input type="file" class="form-control" id="tests-file" name="files" multiple accept=".json" aria-label="Select test configuration JSON files">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-spaced">Upload</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
+    </main>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.bundle.min.js"></script>
     <script>

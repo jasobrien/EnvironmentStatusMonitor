@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>File Upload</title>
-    <!-- Add Bootstrap CSS -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Success</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -12,33 +13,18 @@
             $("#header-container").load("/data/header");
         });
     </script>
-
 </head>
 
-<body>
+<body class="p-4">
     <div id="header-container"></div>
-    <center>
-        <h4> File(s) were uploaded successfully.</h4>
-    </center>
-</body>
-
-</html>
-
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Success</title>
-    <!-- Add Bootstrap CSS for some basic styling -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body>
-    <div class="container mt-5">
-        <div class="alert alert-primary" role="alert">
+    <main class="container mt-5">
+        <div class="text-center">
+            <h1 class="h4">File(s) were uploaded successfully.</h1>
+        </div>
+        <div class="alert alert-primary mt-3" role="alert">
             You will be redirected in <span id="counter">2</span> seconds...
         </div>
-    </div>
+    </main>
 
     <script>
         var counterElement = document.getElementById('counter');
@@ -54,7 +40,6 @@
             }
         }, 1000);
     </script>
-
 </body>
 
 </html>

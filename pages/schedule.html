@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Schedule</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
-<body>
+<body class="p-4">
   <div id="header-container"></div>
-  <div class="container-fluid">
+  <main class="container-fluid">
+    <h1 class="sr-only">Execution Schedule</h1>
     <hr>
-    <div id="data-container"></div>
-  </div>
+    <div id="data-container" role="region" aria-label="Schedule data"></div>
+  </main>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(function () {
@@ -41,25 +44,27 @@
         return `
           <div class="card mb-3">
             <div class="card-header">
-              ${environment.Name}
+              <h2 class="h5 mb-0 d-inline">${environment.Name}</h2>
               <span class="badge badge-${environment.Active === "1" ? "success" : "secondary"} float-right">
                 ${environment.Active === "1" ? "Active" : "Inactive"}
               </span>
             </div>
             <div class="card-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Script Name</th>
-                    <th>Environment Name</th>
-                    <th>Datafile</th>
-                    <th>Active</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${testsHtml}
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table class="table" role="table" aria-label="${environment.Name} tests">
+                  <thead>
+                    <tr>
+                      <th scope="col">Script Name</th>
+                      <th scope="col">Environment Name</th>
+                      <th scope="col">Datafile</th>
+                      <th scope="col">Active</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${testsHtml}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         `;
