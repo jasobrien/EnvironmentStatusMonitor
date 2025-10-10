@@ -16,7 +16,7 @@ require('dotenv').config();
 
 // Setup config
 const config = cf.config;
-const { ExtendedLog, ENV1, ENV2, ENV3, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password } = config;
+const { ExtendedLog, ENV1, ENV2, ENV3, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password, CronLocation, FeatureTestsFolder } = config;
 const Env1NameResultFileName = `${ENV1}${ResultFileSuffix}`;
 const Env2NameResultFileName = `${ENV2}${ResultFileSuffix}`;
 const Env3NameResultFileName = `${ENV3}${ResultFileSuffix}`;
@@ -217,14 +217,14 @@ server.get('/runStaging', async (req, res) => {
 });
 
 // Cron jobs
-const job1 = new CronJob(everyMinute, () => runTests(0, "devresults"), null, true, "Australia/Sydney");
-const job2 = new CronJob(everyMinute, () => runTests(1, "testresults"), null, true, "Australia/Sydney");
-const job3 = new CronJob(everyMinute, () => runTests(2, "stagingresults"), null, true, "Australia/Sydney");
+const job1 = new CronJob(everyMinute, () => runTests(0, "devresults"), null, true, CronLocation);
+const job2 = new CronJob(everyMinute, () => runTests(1, "testresults"), null, true, CronLocation);
+const job3 = new CronJob(everyMinute, () => runTests(2, "stagingresults"), null, true, CronLocation);
 
 function runTests(region, filename) {
     return new Promise((resolve, reject) => {
         try {
-            const testdata = fs.readFileSync("./featuretests/collections.json");
+            const testdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
             const schedule = JSON.parse(testdata);
             const totalTests = Object.keys(schedule.ENV[region].tests).length;
             const tests = schedule.ENV[region].tests;

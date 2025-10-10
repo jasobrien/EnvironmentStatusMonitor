@@ -2,7 +2,7 @@ const fs = require("fs");
 const cf = require("./config/config");
 
 const config = cf.config;
-const { ResultFileSuffix, ENV1, ENV2, ENV3, HistoryFilePrefix, ResultsFolder, log } = config;
+const { ResultFileSuffix, ENV1, ENV2, ENV3, HistoryFilePrefix, ResultsFolder, log, CronLocation, Green, Amber } = config;
 const Env1NameResultFileName = `${ENV1}${ResultFileSuffix}`;
 const Env2NameResultFileName = `${ENV2}${ResultFileSuffix}`;
 const Env3NameResultFileName = `${ENV3}${ResultFileSuffix}`;
@@ -11,7 +11,7 @@ const Env2NameResultHistFileName = `${HistoryFilePrefix}${ENV2}${ResultFileSuffi
 const Env3NameResultHistFileName = `${HistoryFilePrefix}${ENV3}${ResultFileSuffix}`;
 
 exports.myDateTime = function () {
-  return new Date().toLocaleString("en-US", { timeZone: "Australia/Sydney" });
+  return new Date().toLocaleString("en-US", { timeZone: CronLocation });
 };
 
 exports.logOutput = function (type, output) {
@@ -29,9 +29,9 @@ exports.calculatePercentage = function (partialValue, totalValue) {
 };
 
 exports.RAG = function (percentage) {
-  if (percentage === 100) return "Green";
-  if (percentage >= 90) return "Amber";
-  if (percentage < 90) return "Red";
+  if (percentage === Green) return "Green";
+  if (percentage >= Amber) return "Amber";
+  if (percentage < Amber) return "Red";
   return "Blue"; // Blue means something is wrong with the test
 };
 

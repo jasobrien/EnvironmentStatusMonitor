@@ -6,7 +6,7 @@ exports.config = {
     Env1Name: "Dev",
     Env2Name: "Test",
     Env3Name: "Staging",
-    email: "EnvironmentStatusmMnitor@gmail.com"
+    email: "EnvironmentStatusMonitor@gmail.com"
   },
   Influx: false,
   ExtendedLog: false,
@@ -38,7 +38,7 @@ exports.config = {
   PostmanCollectionFolder: "./collections/",
   PostmanEnvFolder: "./environments/",
   PostmanDataFolder: "./datafiles/",
-  resultsFolder: "./results/",
+  FeatureTestsFolder: "./featuretests/",
   // Files
   HistoryFilePrefix: "hist_",
   ResultFileSuffix: "results"
