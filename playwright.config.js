@@ -2,13 +2,14 @@ const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './test',
-  timeout: 30000,
+  timeout: 60000, // Increased timeout to 60 seconds for tests that trigger collection runs
   retries: 1,
   use: {
     baseURL: 'http://localhost:8080',
     headless: true,
     viewport: { width: 1280, height: 720 },
     ignoreHTTPSErrors: true,
+    trace: 'retain-on-failure', // Keep trace on failure for debugging
   },
   projects: [
     {
@@ -22,4 +23,8 @@ module.exports = defineConfig({
   ],
   globalSetup: './test/global-setup.js',
   globalTeardown: './test/global-teardown.js',
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }]
+  ],
 });

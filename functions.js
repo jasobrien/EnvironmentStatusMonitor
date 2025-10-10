@@ -58,9 +58,11 @@ exports.createJsonArrayFromFile = function (filename) {
       return myArr;
     } else {
       console.log("File does not exist");
+      return []; // Return empty array when file doesn't exist
     }
   } catch (err) {
     console.error("Error reading file:", err);
+    return []; // Return empty array on error
   }
 };
 

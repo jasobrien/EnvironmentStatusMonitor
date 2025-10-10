@@ -28,6 +28,12 @@ jobs:
         cache: 'npm'
     - run: npm ci
 
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+
+    - name: Setup test data
+      run: node test/setup-test-data.js
+
     - name: Run Playwright tests
       run: npx playwright test --project="API Tests"
 

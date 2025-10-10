@@ -2,17 +2,10 @@ const { spawn } = require('child_process');
 const waitOn = require('wait-on');
 const keepAlive = require('../server'); // Import the keepAlive function
 
-
-let serverProcess;
-
 module.exports = async () => {
   console.log('Starting server...');
-  // Start the server using spawn if keepAlive is not working
-  // serverProcess = spawn('node', ['server.js'], {
-  //   cwd: process.cwd(),
-  //   stdio: 'inherit',
-  // });
-  keepAlive();
+  // Start the server and store the instance
+  const serverInstance = keepAlive();
 
   try {
     // Wait for the server to be ready
@@ -26,5 +19,6 @@ module.exports = async () => {
     throw error;
   }
 
-  global.__SERVER_PROCESS__ = serverProcess;
+  // Store server instance globally for teardown
+  global.__SERVER_INSTANCE__ = serverInstance;
 };

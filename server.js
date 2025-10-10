@@ -299,9 +299,10 @@ function runMyTest(collection, environmentfile, environmentName, datafile, filen
 const port = process.env.PORT || 8080;
 
 function keepAlive() {
-    server.listen(port, () => {
+    const serverInstance = server.listen(port, () => {
         console.log(`Server is running and listening on http://localhost:${port}`);
     });
+    return serverInstance;
 }
 
 if (require.main === module) {
