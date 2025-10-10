@@ -22,4 +22,11 @@ module.exports = defineConfig({
   ],
   globalSetup: './test/global-setup.js',
   globalTeardown: './test/global-teardown.js',
+  // Alternative: use webServer for automatic server management
+  // webServer: {
+  //   command: 'node index.js',
+  //   port: 8080,
+  //   timeout: 120 * 1000,
+  //   reuseExistingServer: !process.env.CI,
+  // },
 });
