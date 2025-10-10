@@ -25,24 +25,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps chromium
-      
-    - name: Create test data files
-      run: |
-        mkdir -p results
-        echo '{"DateTime":"2025-10-10T08:00:00.000Z","Environment":"test","key":"starwars","value":"Green","TestCount":10,"FailedTestCount":0,"AvgResponseTime":150,"IncludeInStats":1,"RemoveComment":""}' > results/hist_testresults.json
-        echo '{"DateTime":"2025-10-10T08:00:00.000Z","Environment":"test","key":"starwars","value":"Green","TestCount":10,"FailedTestCount":0,"AvgResponseTime":150,"IncludeInStats":1,"RemoveComment":""}' > results/testresults.json
-        echo '{"DateTime":"2025-10-10T08:00:00.000Z","Environment":"dev","key":"starwars","value":"Green","TestCount":10,"FailedTestCount":0,"AvgResponseTime":150,"IncludeInStats":1,"RemoveComment":""}' > results/hist_devresults.json
-        echo '{"DateTime":"2025-10-10T08:00:00.000Z","Environment":"dev","key":"starwars","value":"Green","TestCount":10,"FailedTestCount":0,"AvgResponseTime":150,"IncludeInStats":1,"RemoveComment":""}' > results/devresults.json
-        echo '{"DateTime":"2025-10-10T08:00:00.000Z","Environment":"staging","key":"starwars","value":"Green","TestCount":10,"FailedTestCount":0,"AvgResponseTime":150,"IncludeInStats":1,"RemoveComment":""}' > results/hist_stagingresults.json
-        echo '{"DateTime":"2025-10-10T08:00:00.000Z","Environment":"staging","key":"starwars","value":"Green","TestCount":10,"FailedTestCount":0,"AvgResponseTime":150,"IncludeInStats":1,"RemoveComment":""}' > results/stagingresults.json
+    - run: npm ci
 
-    - name: Run API Tests
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run Playwright tests
       run: npx playwright test --project="API Tests"
       
     - name: Run UI Tests
