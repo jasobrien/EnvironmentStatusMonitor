@@ -66,6 +66,7 @@ Install Playwright and its dependencies:
 
 ```bash
 npm install -D @playwright/test wait-on
+npx playwright install --with-deps chromium
 ```
 
 #### 2. Run All Tests
@@ -100,6 +101,15 @@ To run tests in headed mode for debugging:
 npx playwright test --headed
 ```
 
+#### 6. Running Tests in CI
+
+The GitHub Actions workflow automatically:
+- Installs dependencies
+- Installs Playwright browsers
+- Creates necessary test data files
+- Runs both API and UI tests
+- Uploads test results as artifacts
+
 ---
 
 ## Test Configuration
@@ -108,11 +118,21 @@ npx playwright test --headed
 
 The Playwright tests use global setup and teardown scripts to start and stop the server automatically.
 
-- **Global Setup**: Starts the server before running the tests.
+- **Global Setup**: Starts the server before running the tests using `node index.js`
   - File: `test/global-setup.js`
-- **Global Teardown**: Stops the server after the tests complete.
+  - Waits up to 120 seconds for the server to be ready
+- **Global Teardown**: Stops the server after the tests complete using SIGTERM
   - File: `test/global-teardown.js`
 
 ### Playwright Configuration
 
-The Playwright configuration is defined in `playwright.config.js`. It includes separate projects for UI and API tests.
+The Playwright configuration is defined in `playwright.config.js`. It includes:
+- Separate projects for UI and API tests
+- BaseURL configuration for all tests
+- 30 second timeout per test
+- 1 retry on failure
+- Global setup/teardown for server management
+
+### Test Data Requirements
+
+Tests require sample data files in the `results/` directory. These are automatically created in CI, but for local testing you may need to run the application first to generate data, or create sample files.
