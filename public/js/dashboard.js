@@ -511,7 +511,7 @@ function updateFeatureLabels(featureLabels) {
     const containerRect = container.getBoundingClientRect();
     const centerX = container.offsetWidth / 2;
     const centerY = container.offsetHeight / 2;
-    const radius = Math.min(centerX, centerY) * 0.85; // Position labels between chart and edge
+    const radius = Math.min(centerX, centerY) * 1.1; // Position labels outside the chart
     
     featureLabels.forEach((feature, index) => {
         // Calculate the middle angle of each segment
