@@ -17,6 +17,27 @@ require('dotenv').config();
 // Setup config
 const config = cf.config;
 const { ExtendedLog, ENV1, ENV2, ENV3, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password, CronLocation, FeatureTestsFolder } = config;
+
+// Helper function to get environment file names
+function getEnvironmentFileNames() {
+    const fileNames = {};
+    const environments = config.environments || [
+        { id: ENV1 || 'dev' },
+        { id: ENV2 || 'test' },
+        { id: ENV3 || 'staging' }
+    ];
+    
+    environments.forEach(env => {
+        fileNames[env.id] = {
+            result: `${env.id}${ResultFileSuffix}`,
+            history: `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`
+        };
+    });
+    
+    return fileNames;
+}
+
+// Legacy environment file names for backward compatibility
 const Env1NameResultFileName = `${ENV1}${ResultFileSuffix}`;
 const Env2NameResultFileName = `${ENV2}${ResultFileSuffix}`;
 const Env3NameResultFileName = `${ENV3}${ResultFileSuffix}`;
@@ -53,7 +74,18 @@ server.use("/dashboard", dashboardRoute);
 server.use("/data", dataRoute);
 server.use("/readyToDeploy", deployRoute);
 server.use("/upload", uploadRoute);
-server.get("/config", (req, res) => res.send(config.web));
+server.get("/config", (req, res) => {
+    // Return web config plus environment configuration for dashboard
+    const dashboardConfig = {
+        ...config.web,
+        environments: config.environments || [
+            { id: ENV1, name: "Dev", displayName: "Development" },
+            { id: ENV2, name: "Test", displayName: "Test" },
+            { id: ENV3, name: "Staging", displayName: "Staging" }
+        ]
+    };
+    res.send(dashboardConfig);
+});
 
 // Configuration management API endpoints
 server.get("/api/config", (req, res) => {

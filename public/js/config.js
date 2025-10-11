@@ -21,29 +21,136 @@ function setupEventListeners() {
 }
 
 async function loadConfiguration() {
-    try {
-        showStatus('Loading configuration...', 'info');
-        
-        const response = await fetch('/api/config');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const config = await response.json();
-        originalConfig = JSON.parse(JSON.stringify(config)); // Deep copy
-        
-        populateForm(config);
-        showStatus('Configuration loaded successfully', 'success');
-        
-        // Hide status after 3 seconds
-        setTimeout(() => {
-            document.getElementById('saveStatus').innerHTML = '';
-        }, 3000);
-        
-    } catch (error) {
-        console.error('Error loading configuration:', error);
-        showStatus('Error loading configuration: ' + error.message, 'error');
+    fetch('/api/config')
+        .then(response => response.json())
+        .then(config => {
+            // Web configuration
+            document.getElementById('pageTitle').value = config.web?.page_title || '';
+            document.getElementById('refreshInterval').value = config.web?.refresh || '';
+            document.getElementById('email').value = config.web?.email || '';
+            document.getElementById('animation').value = config.web?.animation || 'true';
+
+            // Load environments
+            loadEnvironments(config.environments || []);
+
+            // System configuration
+            document.getElementById('greenThreshold').value = config.Green || '';
+            document.getElementById('amberThreshold').value = config.Amber || '';
+
+            // Authentication
+            document.getElementById('user').value = config.user || '';
+            document.getElementById('password').value = config.password || '';
+            document.getElementById('session').checked = config.session || false;
+
+            // Features
+            document.getElementById('influx').checked = config.Influx || false;
+            document.getElementById('extendedLog').checked = config.ExtendedLog || false;
+
+            showAlert('Configuration loaded successfully!', 'success');
+        })
+        .catch(error => {
+            console.error('Error loading configuration:', error);
+            showAlert('Error loading configuration!', 'danger');
+        });
+}
+
+function loadEnvironments(environments) {
+    const container = document.getElementById('environmentsContainer');
+    container.innerHTML = '';
+    
+    if (environments.length === 0) {
+        // Add default environments if none exist
+        environments = [
+            { id: "dev", name: "Dev", displayName: "Development" },
+            { id: "test", name: "Test", displayName: "Test" },
+            { id: "staging", name: "Staging", displayName: "Staging" }
+        ];
     }
+    
+    environments.forEach((env, index) => {
+        addEnvironmentRow(env, index);
+    });
+}
+
+function addEnvironmentRow(env = {}, index = null) {
+    const container = document.getElementById('environmentsContainer');
+    const envIndex = index !== null ? index : container.children.length;
+    
+    const envDiv = document.createElement('div');
+    envDiv.className = 'card mb-3 environment-config';
+    envDiv.innerHTML = `
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Environment ${envIndex + 1}</h6>
+            <button type="button" class="btn btn-sm btn-danger" onclick="removeEnvironment(${envIndex})">Remove</button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Environment ID</label>
+                        <input type="text" class="form-control" name="environments[${envIndex}].id" value="${env.id || ''}" placeholder="dev" required>
+                        <small class="form-text text-muted">Unique identifier used in URLs and file names</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Short Name</label>
+                        <input type="text" class="form-control" name="environments[${envIndex}].name" value="${env.name || ''}" placeholder="Dev" required>
+                        <small class="form-text text-muted">Brief label for UI elements</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Display Name</label>
+                        <input type="text" class="form-control" name="environments[${envIndex}].displayName" value="${env.displayName || ''}" placeholder="Development">
+                        <small class="form-text text-muted">Full name shown in dashboard</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(envDiv);
+    return envDiv;
+}
+
+function addEnvironment() {
+    addEnvironmentRow();
+}
+
+function removeEnvironment(index) {
+    const container = document.getElementById('environmentsContainer');
+    const envElements = container.querySelectorAll('.environment-config');
+    if (envElements[index] && envElements.length > 1) {
+        envElements[index].remove();
+        // Re-index remaining environments
+        reindexEnvironments();
+    } else if (envElements.length === 1) {
+        showAlert('At least one environment must be configured!', 'warning');
+    }
+}
+
+function reindexEnvironments() {
+    const container = document.getElementById('environmentsContainer');
+    const envElements = container.querySelectorAll('.environment-config');
+    
+    envElements.forEach((element, newIndex) => {
+        // Update header
+        const header = element.querySelector('.card-header h6');
+        header.textContent = `Environment ${newIndex + 1}`;
+        
+        // Update remove button
+        const removeBtn = element.querySelector('.btn-danger');
+        removeBtn.setAttribute('onclick', `removeEnvironment(${newIndex})`);
+        
+        // Update input names
+        const inputs = element.querySelectorAll('input[name^="environments"]');
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            const newName = name.replace(/environments\[\d+\]/, `environments[${newIndex}]`);
+            input.setAttribute('name', newName);
+        });
+    });
 }
 
 function populateForm(config) {
@@ -95,6 +202,23 @@ async function saveConfig() {
                 if (!config.web) config.web = {};
                 const webKey = key.replace('web.', '');
                 config.web[webKey] = value;
+            } else if (key.startsWith('environments[')) {
+                // Handle environment array
+                if (!config.environments) config.environments = [];
+                
+                // Parse environment index and field
+                const match = key.match(/environments\[(\d+)\]\.(.+)/);
+                if (match) {
+                    const envIndex = parseInt(match[1]);
+                    const fieldName = match[2];
+                    
+                    // Ensure environment object exists
+                    if (!config.environments[envIndex]) {
+                        config.environments[envIndex] = {};
+                    }
+                    
+                    config.environments[envIndex][fieldName] = value;
+                }
             } else {
                 // Convert string boolean values to actual booleans
                 if (value === 'true') {
@@ -108,6 +232,13 @@ async function saveConfig() {
                     config[key] = value;
                 }
             }
+        }
+        
+        // Update legacy environment properties for backward compatibility
+        if (config.environments && config.environments.length > 0) {
+            config.ENV1 = config.environments[0]?.id || 'dev';
+            config.ENV2 = config.environments[1]?.id || 'test';
+            config.ENV3 = config.environments[2]?.id || 'staging';
         }
         
         // Don't include password if it's empty (keep existing password)

@@ -7,6 +7,27 @@ const cf = require("../config/config");
 const myPath = path.join(__dirname, "..");
 const config = cf.config;
 const { ResultsFolder, HistoryFilePrefix, ENV1, ENV2, ENV3, ResultFileSuffix, FeatureTestsFolder } = config;
+
+// Helper function to get environment file names
+function getEnvironmentFileNames() {
+    const fileNames = {};
+    const environments = config.environments || [
+        { id: ENV1 || 'dev' },
+        { id: ENV2 || 'test' },
+        { id: ENV3 || 'staging' }
+    ];
+    
+    environments.forEach(env => {
+        fileNames[env.id] = {
+            result: `${env.id}${ResultFileSuffix}`,
+            history: `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`
+        };
+    });
+    
+    return fileNames;
+}
+
+// Legacy environment file names for backward compatibility
 const Env1NameResultHistFileName = `${HistoryFilePrefix}${ENV1}${ResultFileSuffix}`;
 const Env2NameResultHistFileName = `${HistoryFilePrefix}${ENV2}${ResultFileSuffix}`;
 const Env3NameResultHistFileName = `${HistoryFilePrefix}${ENV3}${ResultFileSuffix}`;
