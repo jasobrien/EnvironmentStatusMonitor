@@ -80,48 +80,57 @@ async function fetchStatus(environment, chart, lmdId) {
 }
 
 function updateMergedChart() {
+    console.log('Updating ring charts...', environmentData);
+    
+    if (!mergedCharts) {
+        console.error('Charts not initialized!');
+        return;
+    }
+    
     // Get all unique feature names across all environments
     const allFeatures = new Set();
     environments.forEach(env => {
-        environmentData[env].features.forEach(feature => allFeatures.add(feature));
+        console.log(`Environment ${env} has ${environmentData[env].features.length} features:`, environmentData[env].features);
+        if (environmentData[env].features.length > 0) {
+            environmentData[env].features.forEach(feature => allFeatures.add(feature));
+        }
     });
     const featureLabels = Array.from(allFeatures);
+    
+    console.log('All unique feature labels:', featureLabels);
 
-    // Update chart labels
-    mergedChart.data.labels = featureLabels;
-
-    // Create datasets for each environment
-    const datasets = environments.map((env, envIdx) => {
+    // Update each environment's chart
+    environments.forEach((env, envIdx) => {
+        const chart = mergedCharts[env];
         const envData = environmentData[env];
-        const dataValues = [];
-        const backgroundColors = [];
-        const uptimeData = [];
+        
+        if (!chart) {
+            console.log(`No chart found for ${env}`);
+            return;
+        }
+        
+        if (envData.features.length === 0) {
+            console.log(`No data for ${env}, keeping loading state`);
+            return;
+        }
 
-        featureLabels.forEach(feature => {
-            const featureIdx = envData.features.indexOf(feature);
-            if (featureIdx !== -1) {
-                dataValues.push(1);
-                backgroundColors.push(envData.colors[featureIdx]);
-                uptimeData.push(envData.uptimeData[featureIdx]);
-            } else {
-                dataValues.push(0);
-                backgroundColors.push('rgba(200, 200, 200, 0.3)');
-                uptimeData.push({ day1: 'N/A', day7: 'N/A', day30: 'N/A' });
-            }
-        });
-
-        return {
+        // Update this environment's chart
+        chart.data.labels = envData.features;
+        
+        const backgroundColors = envData.colors.map(color => getColorFromStatus(color));
+        
+        chart.data.datasets = [{
             label: environmentLabels[env],
-            data: dataValues,
+            data: envData.features.map(() => 1), // Equal segments
             backgroundColor: backgroundColors,
             borderWidth: 2,
             borderColor: 'white',
-            uptimeData: uptimeData
-        };
-    });
+            uptimeData: envData.uptimeData || envData.features.map(() => ({ day1: 'N/A', day7: 'N/A', day30: 'N/A' }))
+        }];
 
-    mergedChart.data.datasets = datasets;
-    mergedChart.update();
+        chart.update();
+        console.log(`Updated chart for ${env} with ${envData.features.length} features`);
+    });
 
     // Update last updated timestamp
     const latestUpdate = environments
@@ -133,6 +142,22 @@ function updateMergedChart() {
     const lastUpdatedElement = document.getElementById('lastUpdated');
     if (lastUpdatedElement && latestUpdate) {
         lastUpdatedElement.innerHTML = `Last Updated: ${latestUpdate}`;
+    } else if (lastUpdatedElement) {
+        const activeEnvs = environments.filter(env => environmentData[env].features.length > 0);
+        lastUpdatedElement.innerHTML = `Chart Status: ${activeEnvs.length} environments with data (${activeEnvs.join(', ')})`;
+    }
+}
+
+function getColorFromStatus(status) {
+    switch(status) {
+        case 'Green':
+            return '#28a745';
+        case 'Red':
+            return '#dc3545';
+        case 'Amber':
+            return '#ffc107';
+        default:
+            return '#6c757d';
     }
 }
 
@@ -141,61 +166,301 @@ function refreshPage() {
 }
 
 function initializeMergedChart() {
-    const ctx = document.getElementById("mergedChart");
-    Chart.register(ChartDataLabels);
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded!');
+        return null;
+    }
+    
+    console.log('Initializing ring charts...');
 
-    return new Chart(ctx, {
-        type: "polarArea",
-        data: {
-            labels: [],
-            datasets: []
-        },
-        options: {
-            animation: false,
-            responsive: true,
-            maintainAspectRatio: true,
-            scales: {
-                r: {
-                    beginAtZero: true,
-                    ticks: {
-                        display: false
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'right',
+    const charts = {};
+    
+    // Create individual charts for each environment as rings
+    const envConfigs = [
+        { id: 'stagingChart', env: 'staging', cutout: '70%', radius: '100%', label: 'Staging' },
+        { id: 'testChart', env: 'test', cutout: '40%', radius: '70%', label: 'Test' },
+        { id: 'devChart', env: 'dev', cutout: '0%', radius: '40%', label: 'Development' }
+    ];
+
+    envConfigs.forEach(config => {
+        const ctx = document.getElementById(config.id);
+        if (!ctx) {
+            console.error(`Canvas element "${config.id}" not found!`);
+            return;
+        }
+
+        try {
+            charts[config.env] = new Chart(ctx, {
+                type: "doughnut",
+                data: {
+                    labels: ['Loading...'],
+                    datasets: [{
+                        data: [1],
+                        backgroundColor: ['#e9ecef'],
+                        borderWidth: 2,
+                        borderColor: 'white'
+                    }]
                 },
-                datalabels: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        title: function(context) {
-                            return context[0].label;
+                options: {
+                    animation: false,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: config.cutout,
+                    radius: config.radius,
+                    plugins: {
+                        legend: {
+                            display: false
                         },
-                        label: function(context) {
-                            const envName = context.dataset.label;
-                            const featureName = context.label;
-                            const uptimeData = context.dataset.uptimeData?.[context.dataIndex];
-                            
-                            let tooltipLines = [`Environment: ${envName}`];
-                            if (uptimeData) {
-                                tooltipLines.push(`1 Day Uptime: ${uptimeData.day1}%`);
-                                tooltipLines.push(`7 Day Uptime: ${uptimeData.day7}%`);
-                                tooltipLines.push(`30 Day Uptime: ${uptimeData.day30}%`);
-                            }
-                            return tooltipLines;
+                        tooltip: {
+                            enabled: false // Disable default tooltips, we'll handle them manually
                         }
+                    },
+                    layout: {
+                        padding: 20
+                    },
+                    onHover: function(event, elements) {
+                        // Disable default hover behavior
                     }
                 }
+            });
+        } catch (error) {
+            console.error(`Error creating chart for ${config.env}:`, error);
+        }
+    });
+
+    // Add global mouse event handling for custom tooltips
+    setupGlobalTooltipHandling(charts);
+
+    return charts;
+}
+
+function setupGlobalTooltipHandling(charts) {
+    // Create a custom tooltip element
+    let customTooltip = document.getElementById('customTooltip');
+    if (!customTooltip) {
+        customTooltip = document.createElement('div');
+        customTooltip.id = 'customTooltip';
+        customTooltip.style.cssText = `
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            max-width: 200px;
+            line-height: 1.4;
+        `;
+        document.body.appendChild(customTooltip);
+    }
+
+    // Store original colors for each chart
+    const originalColors = {};
+    Object.keys(charts).forEach(env => {
+        originalColors[env] = null;
+    });
+
+    // Add mouse event listeners to the container
+    const container = document.querySelector('.col-12.col-md-8 div[style*="position: relative"]');
+    if (!container) return;
+
+    let currentHoveredChart = null;
+    let currentHoveredIndex = null;
+
+    container.addEventListener('mousemove', function(event) {
+        const rect = container.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        
+        // Calculate center and distance
+        const centerX = container.offsetWidth / 2;
+        const centerY = container.offsetHeight / 2;
+        const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        const maxRadius = Math.min(centerX, centerY) * 0.8;
+        
+        // Determine which ring the mouse is over
+        let activeEnv = null;
+        let activeChart = null;
+        
+        const ringConfigs = [
+            { env: 'dev', cutout: 0, radius: 40, label: 'Development' },
+            { env: 'test', cutout: 40, radius: 70, label: 'Test' },
+            { env: 'staging', cutout: 70, radius: 100, label: 'Staging' }
+        ];
+
+        for (const config of ringConfigs) {
+            const innerRadius = (config.cutout / 100) * maxRadius;
+            const outerRadius = (config.radius / 100) * maxRadius;
+            
+            if (distance >= innerRadius && distance <= outerRadius) {
+                activeEnv = config.env;
+                activeChart = charts[config.env];
+                break;
             }
         }
+
+        // Reset previous hover effects
+        if (currentHoveredChart && currentHoveredIndex !== null) {
+            resetHoverEffect(currentHoveredChart, currentHoveredIndex, originalColors[currentHoveredChart.config._config.id || currentHoveredChart.canvas.id.replace('Chart', '')]);
+        }
+
+        if (activeChart && activeEnv) {
+            // Get the chart element data
+            const canvasRect = activeChart.canvas.getBoundingClientRect();
+            const canvasX = event.clientX - canvasRect.left;
+            const canvasY = event.clientY - canvasRect.top;
+            
+            // Create a synthetic event for the chart
+            const syntheticEvent = {
+                type: 'mousemove',
+                clientX: event.clientX,
+                clientY: event.clientY,
+                offsetX: canvasX,
+                offsetY: canvasY
+            };
+            
+            const elements = activeChart.getElementsAtEventForMode(syntheticEvent, 'nearest', { intersect: true }, false);
+            
+            if (elements.length > 0) {
+                const element = elements[0];
+                const dataIndex = element.index;
+                const dataset = activeChart.data.datasets[0];
+                const label = activeChart.data.labels[dataIndex];
+                const uptimeData = dataset.uptimeData?.[dataIndex];
+                
+                // Store original colors if not already stored
+                if (!originalColors[activeEnv]) {
+                    originalColors[activeEnv] = [...dataset.backgroundColor];
+                }
+                
+                // Apply hover effect
+                applyHoverEffect(activeChart, dataIndex, originalColors[activeEnv]);
+                currentHoveredChart = activeChart;
+                currentHoveredIndex = dataIndex;
+                
+                // Show custom tooltip
+                let tooltipContent = `<strong>Environment:</strong> ${ringConfigs.find(c => c.env === activeEnv).label}<br>`;
+                tooltipContent += `<strong>Feature:</strong> ${label}`;
+                
+                if (uptimeData) {
+                    tooltipContent += `<br><strong>1 Day Uptime:</strong> ${uptimeData.day1}%`;
+                    tooltipContent += `<br><strong>7 Day Uptime:</strong> ${uptimeData.day7}%`;
+                    tooltipContent += `<br><strong>30 Day Uptime:</strong> ${uptimeData.day30}%`;
+                }
+                
+                customTooltip.innerHTML = tooltipContent;
+                customTooltip.style.display = 'block';
+                customTooltip.style.left = event.clientX + 'px';
+                customTooltip.style.top = event.clientY + 'px';
+                
+                // Change cursor to pointer
+                container.style.cursor = 'pointer';
+            } else {
+                customTooltip.style.display = 'none';
+                container.style.cursor = 'default';
+                currentHoveredChart = null;
+                currentHoveredIndex = null;
+            }
+        } else {
+            customTooltip.style.display = 'none';
+            container.style.cursor = 'default';
+            currentHoveredChart = null;
+            currentHoveredIndex = null;
+        }
+    });
+
+    container.addEventListener('mouseleave', function() {
+        customTooltip.style.display = 'none';
+        container.style.cursor = 'default';
+        
+        // Reset any hover effects
+        if (currentHoveredChart && currentHoveredIndex !== null) {
+            const env = currentHoveredChart.canvas.id.replace('Chart', '');
+            resetHoverEffect(currentHoveredChart, currentHoveredIndex, originalColors[env]);
+        }
+        currentHoveredChart = null;
+        currentHoveredIndex = null;
     });
 }
 
-const mergedChart = initializeMergedChart();
+function applyHoverEffect(chart, dataIndex, originalColors) {
+    const dataset = chart.data.datasets[0];
+    const newColors = [...originalColors];
+    
+    // Make the hovered segment brighter and add a border effect
+    const originalColor = originalColors[dataIndex];
+    newColors[dataIndex] = lightenColor(originalColor, 0.3); // Brighten by 30%
+    
+    // Slightly dim other segments
+    for (let i = 0; i < newColors.length; i++) {
+        if (i !== dataIndex) {
+            newColors[i] = darkenColor(originalColors[i], 0.2); // Darken by 20%
+        }
+    }
+    
+    dataset.backgroundColor = newColors;
+    chart.update('none'); // Update without animation for smooth hover
+}
+
+function resetHoverEffect(chart, dataIndex, originalColors) {
+    if (!originalColors) return;
+    
+    const dataset = chart.data.datasets[0];
+    dataset.backgroundColor = [...originalColors];
+    chart.update('none');
+}
+
+function lightenColor(color, factor) {
+    // Convert color to RGB and lighten it
+    if (color === 'transparent') return color;
+    
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    const newR = Math.min(255, Math.floor(r + (255 - r) * factor));
+    const newG = Math.min(255, Math.floor(g + (255 - g) * factor));
+    const newB = Math.min(255, Math.floor(b + (255 - b) * factor));
+    
+    return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+}
+
+function darkenColor(color, factor) {
+    // Convert color to RGB and darken it
+    if (color === 'transparent') return color;
+    
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    const newR = Math.floor(r * (1 - factor));
+    const newG = Math.floor(g * (1 - factor));
+    const newB = Math.floor(b * (1 - factor));
+    
+    return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+}
+
+const mergedCharts = initializeMergedChart();
+console.log('Charts initialized:', mergedCharts);
+
+if (!mergedCharts) {
+    console.error('Failed to initialize charts!');
+    // Show error message on page
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.col-12.col-md-8 div');
+        if (container) {
+            container.style.display = 'none';
+            const errorDiv = document.createElement('div');
+            errorDiv.innerHTML = '<p style="color: red; text-align: center;">Error: Charts failed to initialize. Check console for details.</p>';
+            container.parentNode.appendChild(errorDiv);
+        }
+    });
+}
 const environments = ["dev", "test", "staging"];
 const environmentLabels = {
     dev: "Development",
@@ -218,6 +483,15 @@ environments.forEach(env => {
 // Fetch and populate merged chart
 Promise.all(environments.map(env => fetchStatus(env, null, null)))
     .then(() => {
+        console.log('All environments fetched, environment data:', environmentData);
         updateMergedChart();
     })
-    .catch(console.log);
+    .catch(err => {
+        console.error('Error fetching environment data:', err);
+        // Show error on page
+        const lastUpdatedElement = document.getElementById('lastUpdated');
+        if (lastUpdatedElement) {
+            lastUpdatedElement.innerHTML = `Error loading data: ${err.message}`;
+            lastUpdatedElement.style.color = 'red';
+        }
+    });
