@@ -55,6 +55,44 @@ server.use("/readyToDeploy", deployRoute);
 server.use("/upload", uploadRoute);
 server.get("/config", (req, res) => res.send(config.web));
 
+// Configuration management API endpoints
+server.get("/api/config", (req, res) => {
+    try {
+        res.json(config);
+    } catch (error) {
+        console.error('Error reading configuration:', error);
+        res.status(500).json({ error: 'Failed to read configuration' });
+    }
+});
+
+server.post("/api/config", (req, res) => {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        const newConfig = req.body;
+        
+        // Merge with existing config to preserve structure
+        const updatedConfig = { ...config, ...newConfig };
+        
+        // Update the in-memory config
+        Object.assign(config, updatedConfig);
+        
+        // Write to config file
+        const configPath = path.join(__dirname, 'config', 'config.js');
+        const configContent = `exports.config = ${JSON.stringify(updatedConfig, null, 2)};`;
+        
+        fs.writeFileSync(configPath, configContent, 'utf8');
+        
+        fn.logOutput("Info", "Configuration updated successfully");
+        res.json({ success: true, message: 'Configuration updated successfully' });
+        
+    } catch (error) {
+        console.error('Error updating configuration:', error);
+        fn.logOutput("Error", `Configuration update failed: ${error.message}`);
+        res.status(500).json({ error: 'Failed to update configuration', details: error.message });
+    }
+});
+
 server.get('/', (req, res) => {
     if (SESSION_ON) {
         res.sendFile(path.join(__dirname, 'pages', 'login.html'));
