@@ -175,6 +175,11 @@ function initializeMergedChart() {
         return null;
     }
     
+    // Register the datalabels plugin
+    if (typeof ChartDataLabels !== 'undefined') {
+        Chart.register(ChartDataLabels);
+    }
+    
     console.log('Initializing ring charts...');
 
     const charts = {};
@@ -206,7 +211,6 @@ function initializeMergedChart() {
                     }]
                 },
                 options: {
-                    animation: false,
                     responsive: true,
                     maintainAspectRatio: false,
                     cutout: config.cutout,
@@ -216,7 +220,27 @@ function initializeMergedChart() {
                             display: false
                         },
                         tooltip: {
-                            enabled: false // Disable default tooltips, we'll handle them manually
+                            enabled: false // Disable default tooltips since we use custom ones
+                        },
+                        datalabels: {
+                            display: true,
+                            color: 'white',
+                            font: {
+                                weight: 'bold',
+                                size: 10
+                            },
+                            formatter: function(value, context) {
+                                const dataset = context.dataset;
+                                const dataIndex = context.dataIndex;
+                                const uptimeData = dataset.uptimeData?.[dataIndex];
+                                
+                                if (uptimeData && uptimeData.day1 !== 'N/A' && value > 0) {
+                                    return uptimeData.day1 + '%';
+                                }
+                                return '';
+                            },
+                            textStrokeColor: 'rgba(0,0,0,0.8)',
+                            textStrokeWidth: 1
                         }
                     },
                     layout: {

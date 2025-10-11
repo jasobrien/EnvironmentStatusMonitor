@@ -36,7 +36,7 @@
             </div>
             <div class="card-body">
               <div class="row">
-                <div class="col-12 col-md-8">
+                <div class="col-12">
                   <div style="position: relative; height: 500px;">
                     <canvas id="stagingChart" aria-label="Staging environment chart" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></canvas>
                     <canvas id="testChart" aria-label="Test environment chart" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></canvas>
@@ -55,24 +55,16 @@
                     </div>
                   </div>
                   <div id="lastUpdated" class="small text-muted mt-2 text-center">Last Updated: Loading...</div>
-                </div>
-                <div class="col-12 col-md-4">
-                  <h3 class="h6 mb-3">Environment Uptime (1 Day)</h3>
-                  <div class="list-group mb-3">
-                    <div class="list-group-item">
-                      <strong>Development</strong>
-                      <div id="DevEnvUptime1" aria-label="Development uptime 1 day">Loading...</div>
-                      <a href="/dashboard/performance/dev/1" class="btn btn-sm btn-primary mt-2">Performance Stats</a>
-                    </div>
-                    <div class="list-group-item">
-                      <strong>Test</strong>
-                      <div id="TestEnvUptime1" aria-label="Test uptime 1 day">Loading...</div>
-                      <a href="/dashboard/performance/test/1" class="btn btn-sm btn-primary mt-2">Performance Stats</a>
-                    </div>
-                    <div class="list-group-item">
-                      <strong>Staging</strong>
-                      <div id="StagingEnvUptime1" aria-label="Staging uptime 1 day">Loading...</div>
-                      <a href="/dashboard/performance/staging/1" class="btn btn-sm btn-primary mt-2">Performance Stats</a>
+                  
+                  <!-- Performance Stats Buttons -->
+                  <div class="row mt-4">
+                    <div class="col-12">
+                      <h5 class="text-center mb-3">Performance Statistics</h5>
+                      <div class="d-flex justify-content-center flex-wrap gap-3">
+                        <a href="/dashboard/performance/dev/1" class="btn btn-primary mr-2 mb-2">Development Performance</a>
+                        <a href="/dashboard/performance/test/1" class="btn btn-primary mr-2 mb-2">Test Performance</a>
+                        <a href="/dashboard/performance/staging/1" class="btn btn-primary mb-2">Staging Performance</a>
+                      </div>
                     </div>
                   </div>
                 </div>
