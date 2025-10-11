@@ -132,6 +132,9 @@ function updateMergedChart() {
         console.log(`Updated chart for ${env} with ${envData.features.length} features`);
     });
 
+    // Update feature labels around the chart
+    updateFeatureLabels(featureLabels);
+
     // Update last updated timestamp
     const latestUpdate = environments
         .map(env => environmentData[env].lastUpdated)
@@ -495,3 +498,51 @@ Promise.all(environments.map(env => fetchStatus(env, null, null)))
             lastUpdatedElement.style.color = 'red';
         }
     });
+
+function updateFeatureLabels(featureLabels) {
+    const container = document.getElementById('featureLabelsContainer');
+    if (!container) return;
+    
+    // Clear existing labels
+    container.innerHTML = '';
+    
+    if (featureLabels.length === 0) return;
+    
+    const containerRect = container.getBoundingClientRect();
+    const centerX = container.offsetWidth / 2;
+    const centerY = container.offsetHeight / 2;
+    const radius = Math.min(centerX, centerY) * 0.85; // Position labels between chart and edge
+    
+    featureLabels.forEach((feature, index) => {
+        // Calculate the middle angle of each segment
+        const segmentSize = (2 * Math.PI) / featureLabels.length;
+        const segmentStartAngle = (index * segmentSize) - (Math.PI / 2); // Start from top
+        const segmentMiddleAngle = segmentStartAngle + (segmentSize / 2); // Middle of the segment
+        
+        // Calculate position at the middle of the segment
+        const x = centerX + Math.cos(segmentMiddleAngle) * radius;
+        const y = centerY + Math.sin(segmentMiddleAngle) * radius;
+        
+        // Create label element
+        const label = document.createElement('div');
+        label.style.cssText = `
+            position: absolute;
+            left: ${x}px;
+            top: ${y}px;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 20;
+        `;
+        label.textContent = feature;
+        
+        container.appendChild(label);
+    });
+}
