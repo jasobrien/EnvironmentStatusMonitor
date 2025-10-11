@@ -56,11 +56,13 @@ async function fetchStatus(environment, chart, lmdId) {
         const testnames = data.map(index => index.key);
         const testresults = data.map(index => index.value);
         const dateTime = data.map(index => index.DateTime);
+        const avgResponseTimes = data.map(index => index.AvgResponseTime || 'N/A');
 
         // Store data for merged chart
         environmentData[environment].features = testnames;
         environmentData[environment].colors = testresults;
         environmentData[environment].lastUpdated = dateTime[0];
+        environmentData[environment].performanceData = avgResponseTimes;
 
         // Fetch uptime data for each feature
         const uptimePromises = [1, 7, 30].map(days => 
@@ -71,7 +73,8 @@ async function fetchStatus(environment, chart, lmdId) {
         environmentData[environment].uptimeData = testnames.map((_, idx) => ({
             day1: uptimeResults[0] ? ((uptimeResults[0].Green / uptimeResults[0].Total) * 100).toFixed(2) : 'N/A',
             day7: uptimeResults[1] ? ((uptimeResults[1].Green / uptimeResults[1].Total) * 100).toFixed(2) : 'N/A',
-            day30: uptimeResults[2] ? ((uptimeResults[2].Green / uptimeResults[2].Total) * 100).toFixed(2) : 'N/A'
+            day30: uptimeResults[2] ? ((uptimeResults[2].Green / uptimeResults[2].Total) * 100).toFixed(2) : 'N/A',
+            avgResponseTime: avgResponseTimes[idx]
         }));
 
     } catch (err) {
@@ -227,7 +230,7 @@ function initializeMergedChart() {
                             color: 'white',
                             font: {
                                 weight: 'bold',
-                                size: 10
+                                size: 9
                             },
                             formatter: function(value, context) {
                                 const dataset = context.dataset;
@@ -235,7 +238,10 @@ function initializeMergedChart() {
                                 const uptimeData = dataset.uptimeData?.[dataIndex];
                                 
                                 if (uptimeData && uptimeData.day1 !== 'N/A' && value > 0) {
-                                    return uptimeData.day1 + '%';
+                                    const uptime = uptimeData.day1 + '%';
+                                    const responseTime = uptimeData.avgResponseTime !== 'N/A' ? 
+                                        uptimeData.avgResponseTime + 'ms' : 'N/A';
+                                    return [uptime, responseTime];
                                 }
                                 return '';
                             },
