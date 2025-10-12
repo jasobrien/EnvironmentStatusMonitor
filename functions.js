@@ -2,20 +2,14 @@ const fs = require("fs");
 const cf = require("./config/config");
 
 const config = cf.config;
-const { ResultFileSuffix, ENV1, ENV2, ENV3, HistoryFilePrefix, ResultsFolder, log, CronLocation, Green, Amber } = config;
-const Env1NameResultFileName = `${ENV1}${ResultFileSuffix}`;
-const Env2NameResultFileName = `${ENV2}${ResultFileSuffix}`;
-const Env3NameResultFileName = `${ENV3}${ResultFileSuffix}`;
-const Env1NameResultHistFileName = `${HistoryFilePrefix}${ENV1}${ResultFileSuffix}`;
-const Env2NameResultHistFileName = `${HistoryFilePrefix}${ENV2}${ResultFileSuffix}`;
-const Env3NameResultHistFileName = `${HistoryFilePrefix}${ENV3}${ResultFileSuffix}`;
+const { ResultFileSuffix, HistoryFilePrefix, ResultsFolder, ExtendedLog, CronLocation, Green, Amber } = config;
 
 exports.myDateTime = function () {
   return new Date().toLocaleString("en-US", { timeZone: CronLocation });
 };
 
 exports.logOutput = function (type, output) {
-  if (log === 1) {
+  if (ExtendedLog === true) {
     console.log(`${type}: ${output}`);
   }
 };
@@ -110,29 +104,9 @@ exports.writeHistoryLogs = function (record, filename) {
 };
 
 exports.getHistFileName = function (ResultsEnv) {
-  switch (ResultsEnv) {
-    case ENV1:
-      return Env1NameResultHistFileName;
-    case ENV2:
-      return Env2NameResultHistFileName;
-    case ENV3:
-      return Env3NameResultHistFileName;
-    default:
-      console.log("Error: No correct environment file was called. Dev used as default");
-      return Env1NameResultHistFileName;
-  }
+  return `${HistoryFilePrefix}${ResultsEnv}${ResultFileSuffix}`;
 };
 
 exports.getResultFileName = function (ResultsEnv) {
-  switch (ResultsEnv) {
-    case ENV1:
-      return Env1NameResultFileName;
-    case ENV2:
-      return Env2NameResultFileName;
-    case ENV3:
-      return Env3NameResultFileName;
-    default:
-      console.log("Error: No correct environment file was called. Dev used as default");
-      return Env1NameResultFileName;
-  }
+  return `${ResultsEnv}${ResultFileSuffix}`;
 };

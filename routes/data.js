@@ -6,16 +6,12 @@ const fn = require("../functions");
 const cf = require("../config/config");
 const myPath = path.join(__dirname, "..");
 const config = cf.config;
-const { ResultsFolder, HistoryFilePrefix, ENV1, ENV2, ENV3, ResultFileSuffix, FeatureTestsFolder } = config;
+const { ResultsFolder, HistoryFilePrefix, ResultFileSuffix, FeatureTestsFolder } = config;
 
 // Helper function to get environment file names
 function getEnvironmentFileNames() {
     const fileNames = {};
-    const environments = config.environments || [
-        { id: ENV1 || 'dev' },
-        { id: ENV2 || 'test' },
-        { id: ENV3 || 'staging' }
-    ];
+    const environments = config.environments || [];
     
     environments.forEach(env => {
         fileNames[env.id] = {
@@ -26,11 +22,6 @@ function getEnvironmentFileNames() {
     
     return fileNames;
 }
-
-// Legacy environment file names for backward compatibility
-const Env1NameResultHistFileName = `${HistoryFilePrefix}${ENV1}${ResultFileSuffix}`;
-const Env2NameResultHistFileName = `${HistoryFilePrefix}${ENV2}${ResultFileSuffix}`;
-const Env3NameResultHistFileName = `${HistoryFilePrefix}${ENV3}${ResultFileSuffix}`;
 router.get("/schedule", function (req, res) {
   res.sendFile(myPath + "/pages/schedule.html");
 });
@@ -91,63 +82,34 @@ router.put("/editfile", (req, res) => {
 });
 
 
-// Edit history files
-// Dev
-router.get("/devresults", function (req, res) {
-  res.sendFile(myPath + "/pages/devresults.html");
-});
-
-router.get("/editfile/devresults", (req, res) => {
-  const rawdata = fs.readFileSync(`${ResultsFolder}${Env1NameResultHistFileName}.json`);
-  res.send(rawdata);
-});
-
-router.put("/editfile/devresults", (req, res) => {
-  const data = req.body;
-  fs.writeFile(`${ResultsFolder}${Env1NameResultHistFileName}.json`, data, (err) => {
-    if (err) throw err;
-    console.log('Data written to file');
-    res.send('Data written to file');
+// Edit history files - Dynamic routes based on environment configuration
+config.environments.forEach(env => {
+  router.get(`/${env.id}results`, function (req, res) {
+    res.sendFile(myPath + `/pages/${env.id}results.html`);
   });
-});
 
-// Test
-
-router.get("/testresults", function (req, res) {
-  res.sendFile(myPath + "/pages/testresults.html");
-});
-
-router.get("/editfile/testresults", (req, res) => {
-  const rawdata = fs.readFileSync(`${ResultsFolder}${Env2NameResultHistFileName}.json`);
-  res.send(rawdata);
-});
-
-router.put("/editfile/testresults", (req, res) => {
-  const data = req.body;
-  fs.writeFile(`${ResultsFolder}${Env2NameResultHistFileName}.json`, data, (err) => {
-    if (err) throw err;
-    console.log('Data written to file');
-    res.send('Data written to file');
+  router.get(`/editfile/${env.id}results`, (req, res) => {
+    const filename = `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`;
+    try {
+      const rawdata = fs.readFileSync(`${ResultsFolder}${filename}.json`);
+      res.send(rawdata);
+    } catch (error) {
+      res.status(404).send(`File not found for ${env.id} environment`);
+    }
   });
-});
 
-// Staging
-
-router.get("/stagingresults", function (req, res) {
-  res.sendFile(myPath + "/pages/stagingresults.html");
-});
-
-router.get("/editfile/stagingresults", (req, res) => {
-  const rawdata = fs.readFileSync(`${ResultsFolder}${Env3NameResultHistFileName}.json`);
-  res.send(rawdata);
-});
-
-router.put("/editfile/stagingresults", (req, res) => {
-  const data = req.body;
-  fs.writeFile(`${ResultsFolder}${Env3NameResultHistFileName}.json`, data, (err) => {
-    if (err) throw err;
-    console.log('Data written to file');
-    res.send('Data written to file');
+  router.put(`/editfile/${env.id}results`, (req, res) => {
+    const data = req.body;
+    const filename = `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`;
+    fs.writeFile(`${ResultsFolder}${filename}.json`, data, (err) => {
+      if (err) {
+        console.error('Error writing file:', err);
+        res.status(500).send('Error writing file');
+        return;
+      }
+      console.log('Data written to file');
+      res.send('Data written to file');
+    });
   });
 });
 
