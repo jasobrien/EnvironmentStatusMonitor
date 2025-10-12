@@ -732,14 +732,29 @@ function createDynamicChartContainer() {
 
         // Create environment label
         const labelDiv = document.createElement('div');
-        // Position labels at different heights based on ring position
-        const positions = ['50%', '35%', '20%', '65%', '80%']; // Supports up to 5 environments
-        const topPosition = positions[index] || `${15 + (index * 10)}%`;
+        // Position labels based on ring and angular position
+        // Calculate radial positioning - staging and production should align vertically but at different radii
+        let topPosition, leftPosition;
+        
+        if (envId === 'staging') {
+            // Staging position (reference point)
+            topPosition = '20%';
+            leftPosition = '50%';
+        } else if (envId === 'prod') {
+            // Production - same angular position as staging but moved up to outer ring area
+            topPosition = '8%'; // Much higher to be clearly in the outer ring without overlap
+            leftPosition = '50%'; // Same horizontal alignment
+        } else {
+            // Other environments use original positioning
+            const positions = ['50%', '35%', '20%', '65%', '80%'];
+            topPosition = positions[index] || `${15 + (index * 10)}%`;
+            leftPosition = '50%';
+        }
         
         labelDiv.style.cssText = `
             position: absolute; 
             top: ${topPosition}; 
-            left: 50%; 
+            left: ${leftPosition}; 
             transform: translate(-50%, -50%); 
             text-align: center; 
             pointer-events: none; 
