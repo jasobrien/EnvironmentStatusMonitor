@@ -3,19 +3,20 @@ exports.config = {
     page_title: "App Feature Status",
     refresh: "90",
     animation: "true",
-    Env1Name: "Dev",
-    Env2Name: "Test",
-    Env3Name: "Staging",
     email: "EnvironmentStatusMonitor@gmail.com"
   },
+  // Environment configuration - consolidated into arrays for consistency
+  environments: [
+    { id: "dev", name: "Dev", displayName: "Development" },
+    { id: "test", name: "Test", displayName: "Test" },
+    { id: "staging", name: "Staging", displayName: "Staging" },
+    { id: "prod", name: "Prod", displayName: "Production" }
+  ],
   Influx: false,
   ExtendedLog: false,
   session: false,
   user: "admin",
   password: "password",
-  ENV1: "dev",
-  ENV2: "test",
-  ENV3: "staging",
   // Dashboard colour % thresholds
   Green: 100,
   Amber: 90,

@@ -16,13 +16,22 @@ require('dotenv').config();
 
 // Setup config
 const config = cf.config;
-const { ExtendedLog, ENV1, ENV2, ENV3, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password, CronLocation, FeatureTestsFolder } = config;
-const Env1NameResultFileName = `${ENV1}${ResultFileSuffix}`;
-const Env2NameResultFileName = `${ENV2}${ResultFileSuffix}`;
-const Env3NameResultFileName = `${ENV3}${ResultFileSuffix}`;
-const Env1NameResultHistFileName = `${HistoryFilePrefix}${ENV1}${ResultFileSuffix}`;
-const Env2NameResultHistFileName = `${HistoryFilePrefix}${ENV2}${ResultFileSuffix}`;
-const Env3NameResultHistFileName = `${HistoryFilePrefix}${ENV3}${ResultFileSuffix}`;
+const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password, CronLocation, FeatureTestsFolder } = config;
+
+// Helper function to get environment file names
+function getEnvironmentFileNames() {
+    const fileNames = {};
+    const environments = config.environments || [];
+    
+    environments.forEach(env => {
+        fileNames[env.id] = {
+            result: `${env.id}${ResultFileSuffix}`,
+            history: `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`
+        };
+    });
+    
+    return fileNames;
+}
 
 const server = express().use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
@@ -53,7 +62,52 @@ server.use("/dashboard", dashboardRoute);
 server.use("/data", dataRoute);
 server.use("/readyToDeploy", deployRoute);
 server.use("/upload", uploadRoute);
-server.get("/config", (req, res) => res.send(config.web));
+server.get("/config", (req, res) => {
+    // Return web config plus environment configuration for dashboard
+    const dashboardConfig = {
+        ...config.web,
+        environments: config.environments || []
+    };
+    res.send(dashboardConfig);
+});
+
+// Configuration management API endpoints
+server.get("/api/config", (req, res) => {
+    try {
+        res.json(config);
+    } catch (error) {
+        console.error('Error reading configuration:', error);
+        res.status(500).json({ error: 'Failed to read configuration' });
+    }
+});
+
+server.post("/api/config", (req, res) => {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        const newConfig = req.body;
+        
+        // Merge with existing config to preserve structure
+        const updatedConfig = { ...config, ...newConfig };
+        
+        // Update the in-memory config
+        Object.assign(config, updatedConfig);
+        
+        // Write to config file
+        const configPath = path.join(__dirname, 'config', 'config.js');
+        const configContent = `exports.config = ${JSON.stringify(updatedConfig, null, 2)};`;
+        
+        fs.writeFileSync(configPath, configContent, 'utf8');
+        
+        fn.logOutput("Info", "Configuration updated successfully");
+        res.json({ success: true, message: 'Configuration updated successfully' });
+        
+    } catch (error) {
+        console.error('Error updating configuration:', error);
+        fn.logOutput("Error", `Configuration update failed: ${error.message}`);
+        res.status(500).json({ error: 'Failed to update configuration', details: error.message });
+    }
+});
 
 server.get('/', (req, res) => {
     if (SESSION_ON) {
@@ -185,7 +239,12 @@ server.get("/getSummaryStats/:ResultsEnv/:days", (req, res) => {
 
 server.get('/runDev', async (req, res) => {
     try {
-        const result = await runTests(0, "devresults");
+        const envIndex = config.environments.findIndex(env => env.id === 'dev');
+        if (envIndex === -1) {
+            res.status(404).send("Dev environment not found");
+            return;
+        }
+        const result = await runTests(envIndex, "devresults");
         fn.logOutput("Info", `Result : ${result}`);
         res.redirect("/");
     } catch (error) {
@@ -196,7 +255,12 @@ server.get('/runDev', async (req, res) => {
 
 server.get('/runTest', async (req, res) => {
     try {
-        const result = await runTests(1, "testresults");
+        const envIndex = config.environments.findIndex(env => env.id === 'test');
+        if (envIndex === -1) {
+            res.status(404).send("Test environment not found");
+            return;
+        }
+        const result = await runTests(envIndex, "testresults");
         fn.logOutput("Info", `Result : ${result}`);
         res.redirect("/");
     } catch (error) {
@@ -207,7 +271,12 @@ server.get('/runTest', async (req, res) => {
 
 server.get('/runStaging', async (req, res) => {
     try {
-        const result = await runTests(2, "stagingresults");
+        const envIndex = config.environments.findIndex(env => env.id === 'staging');
+        if (envIndex === -1) {
+            res.status(404).send("Staging environment not found");
+            return;
+        }
+        const result = await runTests(envIndex, "stagingresults");
         fn.logOutput("Info", `Result : ${result}`);
         res.redirect("/");
     } catch (error) {
@@ -216,10 +285,16 @@ server.get('/runStaging', async (req, res) => {
     }
 });
 
-// Cron jobs
-const job1 = new CronJob(everyMinute, () => runTests(0, "devresults"), null, true, CronLocation);
-const job2 = new CronJob(everyMinute, () => runTests(1, "testresults"), null, true, CronLocation);
-const job3 = new CronJob(everyMinute, () => runTests(2, "stagingresults"), null, true, CronLocation);
+// Dynamic cron jobs based on environments configuration
+const cronJobs = [];
+if (config.environments && config.environments.length > 0) {
+    config.environments.forEach((env, index) => {
+        const filename = `${env.id}results`;
+        const job = new CronJob(everyMinute, () => runTests(index, filename), null, true, CronLocation);
+        cronJobs.push(job);
+        fn.logOutput("Info", `Cron job created for environment: ${env.id}`);
+    });
+}
 
 function runTests(region, filename) {
     return new Promise((resolve, reject) => {

@@ -50,4 +50,16 @@ router.get("/performance/:env/:days", function (req, res) {
 
 });
 
+router.get("/config", function (req, res) {
+  if (SESSION_ON) {
+    if (req.session.loggedin || !SESSION_ON) {
+      res.sendFile(myPath + "/pages/config.html");
+    } else {
+      res.redirect('/');
+    }
+  } else {
+    res.sendFile(myPath + "/pages/config.html");
+  }
+});
+
 module.exports = router;
