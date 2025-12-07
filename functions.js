@@ -110,3 +110,25 @@ exports.getHistFileName = function (ResultsEnv) {
 exports.getResultFileName = function (ResultsEnv) {
   return `${ResultsEnv}${ResultFileSuffix}`;
 };
+
+/**
+ * Calculate status counts (Green, Amber, Red) from results array
+ * @param {Array} results - Array of result objects with 'value' property
+ * @returns {Object} Object containing Green, Amber, Red, and Total counts (capitalized for backward compatibility)
+ */
+exports.calculateStatusCounts = function(results) {
+  if (!Array.isArray(results)) {
+    return { Green: 0, Amber: 0, Red: 0, Total: 0 };
+  }
+  
+  const green = results.filter(r => r.value === "Green").length;
+  const amber = results.filter(r => r.value === "Amber").length;
+  const red = results.length - green - amber;
+  
+  return { 
+    Green: green, 
+    Amber: amber, 
+    Red: red, 
+    Total: results.length 
+  };
+};

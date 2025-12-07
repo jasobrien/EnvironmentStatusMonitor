@@ -1,10 +1,13 @@
 const fn = require("./functions");
 const influx = require("./influx");
 const cf = require("./config/config");
+const constants = require("./config/constants");
 const dashboardRoute = require("./routes/dashboards");
 const dataRoute = require("./routes/data");
 const deployRoute = require("./routes/deploy");
 const uploadRoute = require("./routes/upload");
+const { validateEnvironment } = require("./middleware/validation");
+const { globalErrorHandler, asyncHandler } = require("./middleware/errorHandler");
 const newman = require("newman");
 const CronJob = require("cron").CronJob;
 const express = require("express");
@@ -18,29 +21,17 @@ require('dotenv').config();
 const config = cf.config;
 const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password, CronLocation, FeatureTestsFolder } = config;
 
-// Helper function to get environment file names
-function getEnvironmentFileNames() {
-    const fileNames = {};
-    const environments = config.environments || [];
-    
-    environments.forEach(env => {
-        fileNames[env.id] = {
-            result: `${env.id}${ResultFileSuffix}`,
-            history: `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`
-        };
-    });
-    
-    return fileNames;
-}
-
 const server = express().use(bodyParser.json());
-server.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-server.use(bodyParser.json({ limit: '10mb' }));
+server.use(bodyParser.urlencoded({ extended: true, limit: constants.UPLOAD_LIMITS.MAX_FILE_SIZE }));
+server.use(bodyParser.json({ limit: constants.UPLOAD_LIMITS.MAX_FILE_SIZE }));
 server.use(express.static(path.join(__dirname, "public")));
-server.use(express.text({ limit: '10mb' }));
+server.use(express.text({ limit: constants.UPLOAD_LIMITS.MAX_FILE_SIZE }));
 
 if (SESSION_ON) {
     const session_secret = process.env.SECRET;
+    if (!session_secret) {
+        throw new Error('SESSION_SECRET environment variable must be set when session is enabled');
+    }
     server.use(session({
         secret: session_secret,
         resave: true,
@@ -50,12 +41,12 @@ if (SESSION_ON) {
 
 if (Influx) {
     const token = process.env.INFLUXDB_TOKEN;
+    if (!token) {
+        fn.logOutput("Warning", "INFLUXDB_TOKEN not set but Influx is enabled");
+    }
 }
 
 fn.logOutput("Info", "Server Running");
-
-const now = new Date();
-const sevenDaysAgoTimestamp = now.getTime() - 7 * 24 * 60 * 60 * 1000;
 
 // Express routes
 server.use("/dashboard", dashboardRoute);
@@ -158,7 +149,7 @@ server.get("/histresults/:ResultsEnv/:key", (req, res) => {
     res.send(data_filter);
 });
 
-server.get("/histresultsdays/:ResultsEnv/:key/:days", (req, res) => {
+server.get("/histresultsdays/:ResultsEnv/:key/:days", validateEnvironment, (req, res) => {
     const { ResultsEnv, key: myKey, days: numDays } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
@@ -170,7 +161,7 @@ server.get("/histresultsdays/:ResultsEnv/:key/:days", (req, res) => {
     res.send(graphHistory);
 });
 
-server.get("/histresults/:ResultsEnv/:key/:days", (req, res) => {
+server.get("/histresults/:ResultsEnv/:key/:days", validateEnvironment, (req, res) => {
     const { ResultsEnv, key: myKey, days: numDays } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
@@ -186,7 +177,7 @@ function parseIso8601Datetime(isoString) {
     return new Date(isoString);
 }
 
-server.get("/histresultskeys/:ResultsEnv", (req, res) => {
+server.get("/histresultskeys/:ResultsEnv", validateEnvironment, (req, res) => {
     const { ResultsEnv } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
@@ -195,7 +186,7 @@ server.get("/histresultskeys/:ResultsEnv", (req, res) => {
     res.send(distinctTrans);
 });
 
-server.get("/results/:ResultsEnv/", (req, res) => {
+server.get("/results/:ResultsEnv/", validateEnvironment, (req, res) => {
     const { ResultsEnv } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getResultFileName(ResultsEnv);
@@ -203,28 +194,26 @@ server.get("/results/:ResultsEnv/", (req, res) => {
     res.send(results);
 });
 
-server.get("/getStats/:ResultsEnv/:key", (req, res) => {
+server.get("/getStats/:ResultsEnv/:key", validateEnvironment, (req, res) => {
     const { ResultsEnv, key: myKey } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
     const results = fn.createJsonArrayFromFile(filename);
     const data = results.filter(element => element.key == myKey);
-    const green = data.reduce((acc, data) => data.value === "Green" ? acc + 1 : acc, 0);
-    const amber = data.reduce((acc, data) => data.value === "Amber" ? acc + 1 : acc, 0);
-    res.send({ Feature: myKey, Green: green, Amber: amber, Red: data.length - green - amber, Total: data.length });
+    const stats = fn.calculateStatusCounts(data);
+    res.send({ Feature: myKey, ...stats });
 });
 
-server.get("/getSummaryStats/:ResultsEnv", (req, res) => {
+server.get("/getSummaryStats/:ResultsEnv", validateEnvironment, (req, res) => {
     const { ResultsEnv } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
     const results = fn.createJsonArrayFromFile(filename);
-    const green = results.reduce((acc, results) => results.value === "Green" ? acc + 1 : acc, 0);
-    const amber = results.reduce((acc, results) => results.value === "Amber" ? acc + 1 : acc, 0);
-    res.send({ Environment: ResultsEnv, Green: green, Amber: amber, Red: results.length - green - amber, Total: results.length });
+    const stats = fn.calculateStatusCounts(results);
+    res.send({ Environment: ResultsEnv, ...stats });
 });
 
-server.get("/getSummaryStats/:ResultsEnv/:days", (req, res) => {
+server.get("/getSummaryStats/:ResultsEnv/:days", validateEnvironment, (req, res) => {
     const { ResultsEnv, days: numDays } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
@@ -232,57 +221,21 @@ server.get("/getSummaryStats/:ResultsEnv/:days", (req, res) => {
     const now = new Date();
     const DaysAgoTimestamp = now.getTime() - numDays * 24 * 60 * 60 * 1000;
     const data = results.filter(record => parseIso8601Datetime(record.DateTime).getTime() >= DaysAgoTimestamp);
-    const green = data.reduce((acc, data) => data.value === "Green" ? acc + 1 : acc, 0);
-    const amber = data.reduce((acc, data) => data.value === "Amber" ? acc + 1 : acc, 0);
-    res.send({ Environment: ResultsEnv, Green: green, Amber: amber, Red: data.length - green - amber, Total: data.length });
+    const stats = fn.calculateStatusCounts(data);
+    res.send({ Environment: ResultsEnv, ...stats });
 });
 
-server.get('/runDev', async (req, res) => {
-    try {
-        const envIndex = config.environments.findIndex(env => env.id === 'dev');
-        if (envIndex === -1) {
-            res.status(404).send("Dev environment not found");
-            return;
-        }
-        const result = await runTests(envIndex, "devresults");
+// Dynamic test run routes for all environments
+config.environments.forEach((env, index) => {
+    const routePath = `/run${env.name}`;
+    server.get(routePath, asyncHandler(async (req, res) => {
+        const filename = `${env.id}results`;
+        fn.logOutput("Info", `Running tests for ${env.displayName} environment`);
+        const result = await runTests(index, filename);
         fn.logOutput("Info", `Result : ${result}`);
         res.redirect("/");
-    } catch (error) {
-        fn.logOutput("Error", `Failed to run dev tests: ${error}`);
-        res.status(500).send("Failed to run dev tests");
-    }
-});
-
-server.get('/runTest', async (req, res) => {
-    try {
-        const envIndex = config.environments.findIndex(env => env.id === 'test');
-        if (envIndex === -1) {
-            res.status(404).send("Test environment not found");
-            return;
-        }
-        const result = await runTests(envIndex, "testresults");
-        fn.logOutput("Info", `Result : ${result}`);
-        res.redirect("/");
-    } catch (error) {
-        fn.logOutput("Error", `Failed to run test tests: ${error}`);
-        res.status(500).send("Failed to run test tests");
-    }
-});
-
-server.get('/runStaging', async (req, res) => {
-    try {
-        const envIndex = config.environments.findIndex(env => env.id === 'staging');
-        if (envIndex === -1) {
-            res.status(404).send("Staging environment not found");
-            return;
-        }
-        const result = await runTests(envIndex, "stagingresults");
-        fn.logOutput("Info", `Result : ${result}`);
-        res.redirect("/");
-    } catch (error) {
-        fn.logOutput("Error", `Failed to run staging tests: ${error}`);
-        res.status(500).send("Failed to run staging tests");
-    }
+    }));
+    fn.logOutput("Info", `Test route created: ${routePath}`);
 });
 
 // Dynamic cron jobs based on environments configuration
@@ -378,6 +331,9 @@ function keepAlive() {
         console.log(`Server is running and listening on http://localhost:${port}`);
     });
 }
+
+// Global error handler - must be last
+server.use(globalErrorHandler);
 
 if (require.main === module) {
     keepAlive(); // Automatically start the server if this file is run directly

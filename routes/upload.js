@@ -1,150 +1,78 @@
 const express = require("express");
 const router = express.Router();
-const path = require("path"); // used for path
+const path = require("path");
 const fs = require("fs");
 const fn = require("../functions");
 const cf = require("../config/config");
 const multer = require("multer");
+const { requireAuth } = require("../middleware/auth");
 const myPath = path.join(__dirname, "..");
 
+/**
+ * Factory function to create multer storage configuration
+ */
+function createMulterStorage(destinationFolder) {
+  return multer.diskStorage({
+    destination: (req, file, cb) => cb(null, path.join(myPath, destinationFolder)),
+    filename: (req, file, cb) => cb(null, file.originalname)
+  });
+}
 
-const environments_storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(myPath, '/environments'))
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
+/**
+ * Factory function to create JSON file filter
+ */
+function createJsonFileFilter() {
+  return function (req, file, callback) {
+    if (path.extname(file.originalname) !== '.json') {
+      return callback(new Error('Only json files are allowed'));
     }
-})
+    callback(null, true);
+  };
+}
 
-const data_storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(myPath, '/datafiles'))
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
-})
+/**
+ * Factory function to create upload middleware
+ */
+function createUploadMiddleware(destinationFolder) {
+  return multer({
+    storage: createMulterStorage(destinationFolder),
+    fileFilter: createJsonFileFilter()
+  });
+}
 
-const tests_storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(myPath, '/featuretests'))
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
-})
-
-const Collection_storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(myPath, '/collections'))
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
-})
-
-const uploadcollection = multer({
-    storage: Collection_storage,
-    fileFilter: function (req, file, callback) {
-        if (path.extname(file.originalname) !== '.json') {
-            return callback(new Error('Only json files are allowed'));
-        }
-        callback(null, true);
-    }
-});
-
-router.post('/collections', uploadcollection.array('files'), (req, res) => {
-    try {
-        // Handle the files here...
-        // If everything is OK, send back a success message
+/**
+ * Generic upload handler
+ */
+function createUploadHandler(uploadMiddleware) {
+  return [
+    requireAuth,
+    uploadMiddleware.array('files'),
+    (req, res) => {
+      try {
         res.redirect('/upload/success');
-    } catch (error) {
-        // If an error occurred, send back an error message
+      } catch (error) {
         console.error('Error:', error);
-        res.json({
-            error: 'An error occurred while uploading the files.'
+        res.status(500).json({
+          error: 'An error occurred while uploading the files.'
         });
+      }
     }
-});
+  ];
+}
 
+// Create upload middleware for each destination
+const uploadcollection = createUploadMiddleware('/collections');
+const uploadenvironments = createUploadMiddleware('/environments');
+const uploaddata = createUploadMiddleware('/datafiles');
+const uploadtests = createUploadMiddleware('/featuretests');
 
+// Upload routes with consolidated handlers
+router.post('/collections', ...createUploadHandler(uploadcollection));
+router.post('/environments', ...createUploadHandler(uploadenvironments));
+router.post('/data', ...createUploadHandler(uploaddata));
+router.post('/tests', ...createUploadHandler(uploadtests));
 
-const uploadenvironments = multer({
-    storage: environments_storage,
-    fileFilter: function (req, file, callback) {
-        if (path.extname(file.originalname) !== '.json') {
-            return callback(new Error('Only json files are allowed'));
-        }
-        callback(null, true);
-    }
-});
-
-const uploaddata = multer({
-    storage: data_storage,
-    fileFilter: function (req, file, callback) {
-        if (path.extname(file.originalname) !== '.json') {
-            return callback(new Error('Only json files are allowed'));
-        }
-        callback(null, true);
-    }
-});
-
-const uploadtests = multer({
-    storage: tests_storage,
-    fileFilter: function (req, file, callback) {
-        if (path.extname(file.originalname) !== '.json') {
-            return callback(new Error('Only json files are allowed'));
-        }
-        callback(null, true);
-    }
-});
-
-
-router.post('/environments', uploadenvironments.array('files'), (req, res) => {
-    try {
-        // Handle the files here...
-        // If everything is OK, send back a success message
-        res.redirect('/upload/success');
-    } catch (error) {
-        // If an error occurred, send back an error message
-        console.error('Error:', error);
-        res.json({
-            error: 'An error occurred while uploading the files.'
-        });
-    }
-});
-
-router.post('/data', uploaddata.array('files'), (req, res) => {
-    try {
-        // Handle the files here...
-        // If everything is OK, send back a success message
-        res.redirect('/upload/success');
-    } catch (error) {
-        // If an error occurred, send back an error message
-        console.error('Error:', error);
-        res.json({
-            error: 'An error occurred while uploading the files.'
-        });
-    }
-
-});
-
-router.post('/tests', uploadtests.array('files'), (req, res) => {
-    try {
-        // Handle the files here...
-        // If everything is OK, send back a success message
-        res.redirect('/upload/success');
-    } catch (error) {
-        // If an error occurred, send back an error message
-        console.error('Error:', error);
-        res.json({
-            error: 'An error occurred while uploading the files.'
-        });
-    }
-});
-
-router.get('/', (req, res) => {
+router.get('/', requireAuth, (req, res) => {
     res.sendFile(myPath + '/pages/upload.html');
 });
 
