@@ -1,0 +1,13 @@
+{
+  "id": "environment-qa",
+  "name": "Environment Status - Quality Assurance",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://qa.example.com",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

@@ -10,7 +10,8 @@ exports.config = {
     { id: "dev", name: "Dev", displayName: "Development" },
     { id: "test", name: "Test", displayName: "Test" },
     { id: "staging", name: "Staging", displayName: "Staging" },
-    { id: "prod", name: "Prod", displayName: "Production" }
+    { id: "prod", name: "Prod", displayName: "Production" },
+    { id: "qa", name: "QA", displayName: "Quality Assurance" }
   ],
   Influx: false,
   ExtendedLog: false,

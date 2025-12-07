@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Historical Results Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-N+5bpyvQlOrCK9BzJk8+wwm1fY03n5m5w5MN5ql/Chj+SN/7zS9SxRn7CYuN+lAe" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(function () {
+            // Load the header HTML file
+            $("#header-container").load("/data/header");
+            
+            // Get environment from URL path
+            const pathParts = window.location.pathname.split('/');
+            const envRoute = pathParts[pathParts.length - 1]; // e.g., "devresults"
+            const envId = envRoute.replace('results', ''); // e.g., "dev"
+            
+            // Fetch environment config to get display name
+            fetch('/config')
+                .then(response => response.json())
+                .then(config => {
+                    const env = config.environments.find(e => e.id === envId);
+                    const displayName = env ? env.displayName : envId.charAt(0).toUpperCase() + envId.slice(1);
+                    document.getElementById('env-title').textContent = `Results Editor - ${displayName} History`;
+                    document.getElementById('json-data').setAttribute('aria-label', `JSON data editor for ${displayName} results`);
+                })
+                .catch(error => console.error('Error loading config:', error));
+            
+            // Load the JSON data
+            fetch(`/data/editfile/${envId}results`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('json-data').value = data;
+                })
+                .catch(error => console.error('Error loading data:', error));
+            
+            // Save button handler
+            document.getElementById('save-button').addEventListener('click', function () {
+                const data = document.getElementById('json-data').value;
+                
+                fetch(`/data/editfile/${envId}results`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: data
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert('Data saved successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving the data.');
+                });
+            });
+        });
+    </script>
+</head>
+
+<body class="p-4">
+    <div id="header-container"></div>
+
+    <main class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h1 id="env-title">Results Editor - History</h1>
+                <label for="json-data" class="sr-only">Results data editor</label>
+                <textarea id="json-data" class="form-control" rows="30" style="font-size: 11px" aria-label="JSON data editor"></textarea>
+                <div class="text-center mt-4">
+                    <button id="save-button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>
