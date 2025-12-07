@@ -67,8 +67,9 @@ router.put("/editfile", requireAuth, (req, res) => {
 
 // Edit history files - Dynamic routes based on environment configuration
 config.environments.forEach(env => {
-  router.get(`/${env.id}results`, function (req, res) {
-    res.sendFile(myPath + `/pages/${env.id}results.html`);
+  router.get(`/${env.id}results`, requireAuth, function (req, res) {
+    // Use generic template for all environments
+    res.sendFile(myPath + `/pages/results-editor.html`);
   });
 
   router.get(`/editfile/${env.id}results`, (req, res) => {
