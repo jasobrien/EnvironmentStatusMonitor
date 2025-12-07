@@ -1,65 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const path = require("path"); // used for path
+const path = require("path");
 const myPath = path.join(__dirname, "..");
-const cf = require("../config/config.js");
+const { requireAuth } = require("../middleware/auth");
 
-const config = cf.config;
-const SESSION_ON = config.session;
-
-
-router.get("/", function (req, res) {
-  if (SESSION_ON) {
-    if (req.session.loggedin || !SESSION_ON) {
-      res.sendFile(myPath + "/pages/dashboard.html");
-    } else {
-      res.redirect('/');
-      // res.send("User not logged in");
-    }
-  } else {
-    res.sendFile(myPath + "/pages/dashboard.html");
-  }
-
+// All routes use authentication middleware
+router.get("/", requireAuth, function (req, res) {
+  res.sendFile(myPath + "/pages/dashboard.html");
 });
 
-router.get("/performance/:env/", function (req, res) {
-  if (SESSION_ON) {
-  if (req.session.loggedin || !SESSION_ON) {
-    res.sendFile(myPath + "/pages/performance.html");
-  } else {
-    res.redirect('/');
-    //res.send("User not logged in");
-  }
-}else{
+router.get("/performance/:env/", requireAuth, function (req, res) {
   res.sendFile(myPath + "/pages/performance.html");
-}
-
 });
 
-router.get("/performance/:env/:days", function (req, res) {
-  if (SESSION_ON) {
-  if (req.session.loggedin || !SESSION_ON) {
-    res.sendFile(myPath + "/pages/performance.html");
-  } else {
-    res.redirect('/');
-    //res.send("User not logged in");
-  }
-}else{
+router.get("/performance/:env/:days", requireAuth, function (req, res) {
   res.sendFile(myPath + "/pages/performance.html");
-}
-
 });
 
-router.get("/config", function (req, res) {
-  if (SESSION_ON) {
-    if (req.session.loggedin || !SESSION_ON) {
-      res.sendFile(myPath + "/pages/config.html");
-    } else {
-      res.redirect('/');
-    }
-  } else {
-    res.sendFile(myPath + "/pages/config.html");
-  }
+router.get("/config", requireAuth, function (req, res) {
+  res.sendFile(myPath + "/pages/config.html");
 });
 
 module.exports = router;

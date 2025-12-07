@@ -17,7 +17,7 @@ module.exports = defineConfig({
     },
     {
       name: 'API Tests',
-      testMatch: /.*api\.test\.js/,
+      testMatch: /.*api.*\.test\.js/,
     },
   ],
   globalSetup: './test/global-setup.js',

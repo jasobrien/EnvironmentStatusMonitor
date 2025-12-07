@@ -1,47 +1,30 @@
 const express = require("express");
 const router = express.Router();
-const path = require("path"); // used for path
+const path = require("path");
 const fs = require("fs");
 const fn = require("../functions");
 const cf = require("../config/config");
+const { requireAuth } = require("../middleware/auth");
 const myPath = path.join(__dirname, "..");
 const config = cf.config;
 const { ResultsFolder, HistoryFilePrefix, ResultFileSuffix, FeatureTestsFolder } = config;
 
-// Helper function to get environment file names
-function getEnvironmentFileNames() {
-    const fileNames = {};
-    const environments = config.environments || [];
-    
-    environments.forEach(env => {
-        fileNames[env.id] = {
-            result: `${env.id}${ResultFileSuffix}`,
-            history: `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`
-        };
-    });
-    
-    return fileNames;
-}
-router.get("/schedule", function (req, res) {
+router.get("/schedule", requireAuth, function (req, res) {
   res.sendFile(myPath + "/pages/schedule.html");
 });
 
-
-
-router.get("/scheduledata", function (req, res) {
-  // Refactor to be active file
+router.get("/scheduledata", requireAuth, function (req, res) {
   const rawdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
   const schedule = JSON.parse(rawdata);
   res.send(JSON.stringify(schedule));
 });
 
 router.get("/header", function (req, res) {
-  // Refactor to be active file
   res.sendFile(myPath + "/pages/header.html");
 });
 
 
-router.get("/directory", (req, res) => {
+router.get("/directory", requireAuth, (req, res) => {
   const directoryPath = myPath + "/collections"; // replace with your directory path
   fs.readdir(directoryPath, (err, files) => {
     if (err) {
@@ -61,17 +44,17 @@ router.get("/directory", (req, res) => {
   });
 });
 
-router.get("/edit", function (req, res) {
+router.get("/edit", requireAuth, function (req, res) {
   res.sendFile(myPath + "/pages/featuretests.html");
 });
 
-router.get("/editfile", (req, res) => {
+router.get("/editfile", requireAuth, (req, res) => {
   const rawdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
   const schedule = JSON.parse(rawdata);
   res.send(JSON.stringify(schedule));
 });
 
-router.put("/editfile", (req, res) => {
+router.put("/editfile", requireAuth, (req, res) => {
   const data = JSON.stringify(req.body);
   fs.writeFile(`${FeatureTestsFolder}collections.json`, data, (err) => {
     if (err) throw err;
