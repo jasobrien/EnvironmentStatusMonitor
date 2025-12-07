@@ -4,6 +4,7 @@ module.exports = defineConfig({
   testDir: './test',
   timeout: 30000,
   retries: 1,
+  reporter: [['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:8080',
     headless: true,
