@@ -8,6 +8,7 @@ const deployRoute = require("./routes/deploy");
 const uploadRoute = require("./routes/upload");
 const { validateEnvironment } = require("./middleware/validation");
 const { globalErrorHandler, asyncHandler } = require("./middleware/errorHandler");
+const { requireAuth } = require("./middleware/auth");
 const newman = require("newman");
 const CronJob = require("cron").CronJob;
 const express = require("express");
@@ -63,7 +64,7 @@ server.get("/config", (req, res) => {
 });
 
 // Configuration management API endpoints
-server.get("/api/config", (req, res) => {
+server.get("/api/config", requireAuth, (req, res) => {
     try {
         res.json(config);
     } catch (error) {
@@ -72,7 +73,7 @@ server.get("/api/config", (req, res) => {
     }
 });
 
-server.post("/api/config", (req, res) => {
+server.post("/api/config", requireAuth, (req, res) => {
     try {
         const fs = require('fs');
         const path = require('path');
