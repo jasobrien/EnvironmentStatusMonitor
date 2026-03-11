@@ -100,12 +100,6 @@ test.describe('API Tests for FeatureStatusMonitor', () => {
     expect([200, 302, 500]).toContain(response.status());
   });
 
-  test('should return 200 for /runQA endpoint', async ({ request, baseURL }) => {
-    test.setTimeout(60000);
-    const response = await request.get(`${baseURL}/runQA`);
-    // runQA triggers Newman tests and redirects; may also return 500 if Newman runner has no matching collections
-    expect([200, 302, 500]).toContain(response.status());
-  });
 });
 
 test.describe('Production Environment API Tests', () => {
@@ -174,68 +168,4 @@ test.describe('Production Environment API Tests', () => {
   });
 });
 
-test.describe('Quality Assurance Environment API Tests', () => {
-  test('should return summary stats for qa environment', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/getSummaryStats/qa`);
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(body).toHaveProperty('Environment', 'qa');
-    expect(body).toHaveProperty('Green');
-    expect(body).toHaveProperty('Amber');
-    expect(body).toHaveProperty('Red');
-    expect(body).toHaveProperty('Total');
-  });
 
-  test('should return result keys for qa environment', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/histresultskeys/qa`);
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(Array.isArray(body)).toBeTruthy();
-  });
-
-  test('should return results for qa environment', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/results/qa/`);
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(Array.isArray(body)).toBeTruthy();
-  });
-
-  test('should return summary stats with days for qa', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/getSummaryStats/qa/7`);
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(body).toHaveProperty('Environment', 'qa');
-    expect(body).toHaveProperty('Green');
-    expect(body).toHaveProperty('Amber');
-    expect(body).toHaveProperty('Red');
-    expect(body).toHaveProperty('Total');
-  });
-
-  test('should return deployment readiness for qa', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/readyToDeploy/qa`);
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(Array.isArray(body)).toBeTruthy();
-  });
-
-  test('should return valid stats structure for qa', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/getSummaryStats/qa`);
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(typeof body.Green).toBe('number');
-    expect(typeof body.Amber).toBe('number');
-    expect(typeof body.Red).toBe('number');
-    expect(typeof body.Total).toBe('number');
-    expect(body.Total).toBe(body.Green + body.Amber + body.Red);
-  });
-
-  test('should serve qa performance page with days', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/dashboard/performance/qa/1`);
-    expect(response.status()).toBe(200);
-  });
-
-  test('should serve qa performance page without days', async ({ request, baseURL }) => {
-    const response = await request.get(`${baseURL}/dashboard/performance/qa/`);
-    expect(response.status()).toBe(200);
-  });
-});

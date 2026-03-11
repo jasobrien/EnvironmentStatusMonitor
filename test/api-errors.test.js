@@ -188,7 +188,7 @@ test.describe('API Error Handling Tests', () => {
   });
 
   test.describe('Environment-specific Tests', () => {
-    const environments = ['dev', 'test', 'staging', 'prod', 'qa'];
+    const environments = ['dev', 'test', 'staging', 'prod'];
 
     environments.forEach(env => {
       test(`should handle results endpoint for ${env}`, async ({ request, baseURL }) => {
@@ -301,7 +301,7 @@ test.describe('API Error Handling Tests', () => {
   });
 
   test.describe('Deployment Readiness - All Environments', () => {
-    const environments = ['dev', 'test', 'staging', 'prod', 'qa'];
+    const environments = ['dev', 'test', 'staging', 'prod'];
 
     environments.forEach(env => {
       test(`should return deployment readiness for ${env}`, async ({ request, baseURL }) => {

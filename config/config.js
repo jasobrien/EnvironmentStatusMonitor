@@ -22,11 +22,6 @@ exports.config = {
       "id": "prod",
       "name": "Prod",
       "displayName": "Production"
-    },
-    {
-      "id": "qa",
-      "name": "QA",
-      "displayName": "Quality Assurance"
     }
   ],
   "Influx": false,
