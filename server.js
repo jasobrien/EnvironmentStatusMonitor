@@ -266,6 +266,13 @@ function runTests(region, filename) {
         try {
             const testdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
             const schedule = JSON.parse(testdata);
+
+            if (!schedule.ENV[region]) {
+                fn.logOutput("Warning", `No test collection configured for environment index ${region}. Skipping.`);
+                resolve("No tests configured for this environment.");
+                return;
+            }
+
             const totalTests = Object.keys(schedule.ENV[region].tests).length;
             const tests = schedule.ENV[region].tests;
             const filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
