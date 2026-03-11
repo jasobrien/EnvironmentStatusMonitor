@@ -4,8 +4,8 @@
   "description": "Visualise Application Feature status & Uptime in your Environments",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js", 
-    "test:ui": "playwright test --config=playwright.config.js", 
+    "start": "node index.js",
+    "test:ui": "playwright test --config=playwright.config.js",
     "test:api": "playwright test --config=playwright.config.js"
   },
   "keywords": [],
@@ -18,7 +18,9 @@
     "cron": "^3.1.7",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-rate-limit": "^8.3.1",
     "express-session": "^1.18",
+    "helmet": "^8.1.0",
     "multer": "^1.4.5-lts.1",
     "newman": "^6.1.2"
   },

@@ -116,3 +116,91 @@
           grid-template-columns: 1fr;
       }
   }
+
+  /* ── Target / Bullseye Dashboard ───────────────────────── */
+  .target-card .card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .target-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 700px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+  }
+
+  .target-wrapper canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+  }
+
+  .target-tooltip {
+      position: fixed;
+      display: none;
+      background: rgba(15, 23, 42, 0.94);
+      color: #f1f5f9;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 240px;
+      line-height: 1.5;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      backdrop-filter: blur(4px);
+  }
+
+  .tt-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 1px 0;
+  }
+  .tt-label { color: #94a3b8; font-size: 11px; }
+  .tt-value { font-weight: 600; text-align: right; }
+  .tt-divider { border-top: 1px solid rgba(148,163,184,0.25); margin: 4px 0; }
+  .tt-badge {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+  }
+  .tt-Green  { background: #22c55e; color: #fff; }
+  .tt-Red    { background: #ef4444; color: #fff; }
+  .tt-Amber  { background: #f59e0b; color: #fff; }
+
+  /* Legend */
+  .target-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #475569;
+  }
+  .legend-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+  }
+  .legend-title {
+      font-weight: 700;
+      margin-right: 2px;
+  }
+  .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+  }
+  .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+  }

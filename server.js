@@ -13,6 +13,8 @@ const newman = require("newman");
 const CronJob = require("cron").CronJob;
 const express = require("express");
 const session = require("express-session");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
@@ -20,9 +22,10 @@ require('dotenv').config();
 
 // Setup config
 const config = cf.config;
-const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password, CronLocation, FeatureTestsFolder } = config;
+const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password: configPassword, CronLocation, FeatureTestsFolder } = config;
 
-const server = express().use(bodyParser.json());
+const server = express();
+server.use(helmet({ contentSecurityPolicy: false }));
 server.use(bodyParser.urlencoded({ extended: true, limit: constants.UPLOAD_LIMITS.MAX_FILE_SIZE }));
 server.use(bodyParser.json({ limit: constants.UPLOAD_LIMITS.MAX_FILE_SIZE }));
 server.use(express.static(path.join(__dirname, "public")));
@@ -35,16 +38,18 @@ if (SESSION_ON) {
     }
     server.use(session({
         secret: session_secret,
-        resave: true,
-        saveUninitialized: true
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            sameSite: 'lax'
+        }
     }));
 }
 
-if (Influx) {
-    const token = process.env.INFLUXDB_TOKEN;
-    if (!token) {
-        fn.logOutput("Warning", "INFLUXDB_TOKEN not set but Influx is enabled");
-    }
+const influxToken = Influx ? process.env.INFLUXDB_TOKEN : null;
+if (Influx && !influxToken) {
+    fn.logOutput("Warning", "INFLUXDB_TOKEN not set but Influx is enabled");
 }
 
 fn.logOutput("Info", "Server Running");
@@ -66,7 +71,9 @@ server.get("/config", (req, res) => {
 // Configuration management API endpoints
 server.get("/api/config", requireAuth, (req, res) => {
     try {
-        res.json(config);
+        // Omit credentials from API response
+        const { password: _pw, user: _u, ...safeConfig } = config;
+        res.json(safeConfig);
     } catch (error) {
         console.error('Error reading configuration:', error);
         res.status(500).json({ error: 'Failed to read configuration' });
@@ -75,8 +82,6 @@ server.get("/api/config", requireAuth, (req, res) => {
 
 server.post("/api/config", requireAuth, (req, res) => {
     try {
-        const fs = require('fs');
-        const path = require('path');
         const newConfig = req.body;
         
         // Merge with existing config to preserve structure
@@ -117,9 +122,15 @@ server.get("/username", (req, res) => {
     }
 });
 
-server.post('/login', (req, res) => {
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: 'Too many login attempts, please try again later'
+});
+
+server.post('/login', loginLimiter, (req, res) => {
     const { username, password } = req.body;
-    if (username === user && password === password) {
+    if (username === user && password === configPassword) {
         req.session.loggedin = true;
         req.session.username = username;
         res.redirect('/dashboard');
@@ -141,7 +152,7 @@ server.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-server.get("/histresults/:ResultsEnv/:key", (req, res) => {
+server.get("/histresults/:ResultsEnv/:key", validateEnvironment, (req, res) => {
     const { ResultsEnv, key: myKey } = req.params;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
@@ -255,12 +266,20 @@ function runTests(region, filename) {
         try {
             const testdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
             const schedule = JSON.parse(testdata);
+
+            if (!schedule.ENV[region]) {
+                fn.logOutput("Warning", `No test collection configured for environment index ${region}. Skipping.`);
+                resolve("No tests configured for this environment.");
+                return;
+            }
+
             const totalTests = Object.keys(schedule.ENV[region].tests).length;
             const tests = schedule.ENV[region].tests;
             const filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
             fn.logOutput("Total number of test objects", totalTests);
             fn.logOutput("Total number of filtered test objects", filteredTests.length);
 
+            fn.clearCurrentLog(filename);
             for (let i = 0; i < totalTests; i++) {
                 const collection = `${PostmanCollectionFolder}${schedule.ENV[region].tests[i].script_name}`;
                 const envfile = schedule.ENV[region].tests[i].environment_name ? `${PostmanEnvFolder}${schedule.ENV[region].tests[i].environment_name}` : "";
@@ -278,7 +297,6 @@ function runTests(region, filename) {
 }
 
 function runMyTest(collection, environmentfile, environmentName, datafile, filename) {
-    fn.clearCurrentLog(filename);
     const options = {
         collection,
         reporters: "cli",
@@ -316,7 +334,7 @@ function runMyTest(collection, environmentfile, environmentName, datafile, filen
 
         fn.CreateJsonObjectForResults(testResult);
         fn.logOutput("Info", `Filename is ${filename}`);
-        if (Influx) influx.write(testResult, token);
+        if (Influx) influx.write(testResult, influxToken);
         fn.writeToCurrentLog(JSON.stringify(testResult) + "\n", filename);
         fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", `hist_${filename}`);
         fn.logOutput("Info", `${FailRate} % failed`);

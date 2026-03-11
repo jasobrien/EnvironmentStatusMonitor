@@ -20,6 +20,10 @@ module.exports = defineConfig({
       name: 'API Tests',
       testMatch: /.*api.*\.test\.js/,
     },
+    {
+      name: 'Unit Tests',
+      testMatch: /.*functions\.test\.js/,
+    },
   ],
   globalSetup: './test/global-setup.js',
   globalTeardown: './test/global-teardown.js',

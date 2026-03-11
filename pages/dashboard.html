@@ -7,19 +7,13 @@
   <title>Feature Status Monitor Dashboard</title>
   <link rel="stylesheet" href="/css/styles.css"/>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.1.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script>
     $(function () {
-        // Load the header HTML file
         $("#header-container").load("/data/header");
     });
-
-    function refreshPage() {
-        location.reload();
-    }
+    function refreshPage() { location.reload(); }
   </script>
 </head>
 <body class="p-4">
@@ -29,28 +23,27 @@
     <div class="container-fluid">
       <div class="row justify-content-center">
         <div class="col-12 col-lg-10 mb-4">
-          <div class="card">
+          <div class="card target-card">
             <div class="card-header text-center">
               <h2 class="h5 mb-0">All Environments Status</h2>
             </div>
             <div class="card-body">
-              <div class="row">
+              <!-- Target chart -->
+              <div class="target-wrapper">
+                <canvas id="targetCanvas" aria-label="Environment status target chart"></canvas>
+                <div id="targetTooltip" class="target-tooltip"></div>
+              </div>
+
+              <!-- Legend -->
+              <div id="targetLegend" class="target-legend"></div>
+
+              <div id="lastUpdated" class="small text-muted mt-3 text-center">Last Updated: Loading…</div>
+
+              <!-- Performance Stats Buttons -->
+              <div class="row mt-4">
                 <div class="col-12">
-                  <div id="chartContainer" style="position: relative; height: 500px;">
-                    <!-- Charts and labels will be dynamically created here -->
-                    <div id="featureLabelsContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15;"></div>
-                  </div>
-                  <div id="lastUpdated" class="small text-muted mt-2 text-center">Last Updated: Loading...</div>
-                  
-                  <!-- Performance Stats Buttons -->
-                  <div class="row mt-4">
-                    <div class="col-12">
-                      <h5 class="text-center mb-3">Performance Statistics</h5>
-                      <div id="performanceButtons" class="d-flex justify-content-center flex-wrap gap-3">
-                        <!-- Performance buttons will be dynamically created here -->
-                      </div>
-                    </div>
-                  </div>
+                  <h5 class="text-center mb-3">Performance Statistics</h5>
+                  <div id="performanceButtons" class="d-flex justify-content-center flex-wrap gap-3"></div>
                 </div>
               </div>
             </div>
@@ -67,7 +60,7 @@
         <div class="col-md-6 text-center text-md-start">
           <div class="mb-2">
             <button class="btn btn-primary btn-sm" onclick="refreshPage()" aria-label="Refresh the dashboard page">
-              <span aria-hidden="true">🔄</span> Refresh Dashboard
+              <span aria-hidden="true">&#x1f504;</span> Refresh Dashboard
             </button>
           </div>
         </div>
@@ -82,7 +75,7 @@
             </div>
             <div>
               <a href="mailto:EnvironmentStatusMonitor@gmail.com" class="text-decoration-none" aria-label="Contact us via email">
-                <span aria-hidden="true">✉️</span> Contact Support
+                <span aria-hidden="true">&#x2709;&#xfe0f;</span> Contact Support
               </a>
             </div>
           </div>
@@ -99,7 +92,6 @@
   </footer>
 
   <script>
-    // Set current year dynamically
     document.getElementById('currentYear').textContent = new Date().getFullYear();
   </script>
 </body>
