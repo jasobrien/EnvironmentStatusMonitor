@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 function setTitle(data) {
     const title = document.getElementById("pageTitle");
     if (title && data && data.page_title) {
-        title.innerHTML = data.page_title;
+        title.textContent = data.page_title;
     }
 }
 
@@ -89,7 +89,7 @@ function updateUpTimeStats(data, ElementID, Duration) {
     const uptime = (data.Green / data.Total) * 100;
     const element = document.getElementById(ElementID);
     if (element) {
-        element.innerHTML = !isNaN(uptime) ? `${Duration} Days: ${uptime.toFixed(2)} %` : "N/A";
+        element.textContent = !isNaN(uptime) ? `${Duration} Days: ${uptime.toFixed(2)} %` : "N/A";
     } else {
         console.warn(`Element with ID '${ElementID}' not found for uptime stats`);
     }
@@ -437,11 +437,14 @@ function setupGlobalTooltipHandling(charts) {
         let activeEnv = null;
         let activeChart = null;
         
-        const ringConfigs = [
-            { env: 'dev', cutout: 0, radius: 40, label: 'Development' },
-            { env: 'test', cutout: 40, radius: 70, label: 'Test' },
-            { env: 'staging', cutout: 70, radius: 100, label: 'Staging' }
-        ];
+        // Build ring configs dynamically from loaded environments
+        const ringWidth = environments.length > 0 ? 100 / environments.length : 100;
+        const ringConfigs = environments.map((envId, index) => ({
+            env: envId,
+            cutout: index * ringWidth,
+            radius: (index + 1) * ringWidth,
+            label: environmentLabels[envId] || envId
+        }));
 
         for (const config of ringConfigs) {
             const innerRadius = (config.cutout / 100) * maxRadius;
