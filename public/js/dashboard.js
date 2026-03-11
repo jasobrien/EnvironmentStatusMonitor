@@ -440,14 +440,19 @@ function setupGlobalTooltipHandling(charts) {
         let activeEnv = null;
         let activeChart = null;
         
-        // Build ring configs dynamically from loaded environments
-        const ringWidth = environments.length > 0 ? 100 / environments.length : 100;
-        const ringConfigs = environments.map((envId, index) => ({
-            env: envId,
-            cutout: index * ringWidth,
-            radius: (index + 1) * ringWidth,
-            label: environmentLabels[envId] || envId
-        }));
+        // Build ring configs dynamically — must match initializeMergedChart() algorithm
+        const baseRadius = 100;
+        const ringWidth = Math.min(30, baseRadius / (environments.length || 1));
+        const ringConfigs = environments.map((envId, index) => {
+            const outerRadius = baseRadius - (index * ringWidth);
+            const innerRadius = Math.max(0, outerRadius - ringWidth + 5);
+            return {
+                env: envId,
+                cutout: innerRadius,
+                radius: outerRadius,
+                label: environmentLabels[envId] || envId
+            };
+        });
 
         for (const config of ringConfigs) {
             const innerRadius = (config.cutout / 100) * maxRadius;
