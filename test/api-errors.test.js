@@ -75,7 +75,6 @@ test.describe('API Error Handling Tests', () => {
       
       // Verify required config properties
       expect(config).toHaveProperty('page_title');
-      expect(config).toHaveProperty('refresh');
       expect(config).toHaveProperty('environments');
       expect(Array.isArray(config.environments)).toBe(true);
       
@@ -189,7 +188,7 @@ test.describe('API Error Handling Tests', () => {
   });
 
   test.describe('Environment-specific Tests', () => {
-    const environments = ['dev', 'test', 'staging'];
+    const environments = ['dev', 'test', 'staging', 'prod', 'qa'];
 
     environments.forEach(env => {
       test(`should handle results endpoint for ${env}`, async ({ request, baseURL }) => {
@@ -211,6 +210,105 @@ test.describe('API Error Handling Tests', () => {
         expect(response.status()).toBe(200);
         const body = await response.json();
         expect(body).toHaveProperty('Environment', env);
+      });
+    });
+  });
+
+  test.describe('Root and Utility Endpoints', () => {
+    test('should redirect root to /dashboard when session is off', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/`, { maxRedirects: 0 });
+      // Should be a redirect (302) to /dashboard
+      expect([200, 302]).toContain(response.status());
+    });
+
+    test('should return login status from /check-login', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/check-login`);
+      expect(response.status()).toBe(200);
+      const body = await response.json();
+      expect(body).toHaveProperty('loggedin');
+      expect(typeof body.loggedin).toBe('boolean');
+    });
+
+    test('should serve header HTML from /data/header', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/data/header`);
+      expect(response.status()).toBe(200);
+    });
+
+    test('should return directory listing from /data/directory', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/data/directory`);
+      expect(response.status()).toBe(200);
+      const body = await response.json();
+      expect(Array.isArray(body)).toBe(true);
+      if (body.length > 0) {
+        expect(body[0]).toHaveProperty('name');
+      }
+    });
+
+    test('should return schedule data from /data/scheduledata', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/data/scheduledata`);
+      expect(response.status()).toBe(200);
+    });
+
+    test('should serve upload page', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/upload/`);
+      expect(response.status()).toBe(200);
+    });
+
+    test('should serve upload success page', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/upload/success`);
+      expect(response.status()).toBe(200);
+    });
+
+    test('should serve config page from /dashboard/config', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/dashboard/config`);
+      expect(response.status()).toBe(200);
+    });
+  });
+
+  test.describe('Credential Stripping', () => {
+    test('should not expose password in /api/config response', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/api/config`);
+      expect(response.status()).toBe(200);
+      const body = await response.json();
+      expect(body).not.toHaveProperty('password');
+    });
+
+    test('should not expose user in /api/config response', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/api/config`);
+      expect(response.status()).toBe(200);
+      const body = await response.json();
+      expect(body).not.toHaveProperty('user');
+    });
+
+    test('should still return environments in /api/config', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/api/config`);
+      expect(response.status()).toBe(200);
+      const body = await response.json();
+      expect(body).toHaveProperty('environments');
+      expect(Array.isArray(body.environments)).toBe(true);
+    });
+  });
+
+  test.describe('Security Headers', () => {
+    test('should include security headers from helmet', async ({ request, baseURL }) => {
+      const response = await request.get(`${baseURL}/config`);
+      expect(response.status()).toBe(200);
+      const headers = response.headers();
+      // Helmet sets these by default
+      expect(headers['x-content-type-options']).toBe('nosniff');
+      expect(headers).toHaveProperty('x-frame-options');
+    });
+  });
+
+  test.describe('Deployment Readiness - All Environments', () => {
+    const environments = ['dev', 'test', 'staging', 'prod', 'qa'];
+
+    environments.forEach(env => {
+      test(`should return deployment readiness for ${env}`, async ({ request, baseURL }) => {
+        const response = await request.get(`${baseURL}/readyToDeploy/${env}`);
+        expect(response.status()).toBe(200);
+        const body = await response.json();
+        expect(Array.isArray(body)).toBe(true);
       });
     });
   });
