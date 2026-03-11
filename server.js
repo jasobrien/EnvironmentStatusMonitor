@@ -13,6 +13,8 @@ const newman = require("newman");
 const CronJob = require("cron").CronJob;
 const express = require("express");
 const session = require("express-session");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
@@ -23,6 +25,7 @@ const config = cf.config;
 const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password: configPassword, CronLocation, FeatureTestsFolder } = config;
 
 const server = express();
+server.use(helmet({ contentSecurityPolicy: false }));
 server.use(bodyParser.urlencoded({ extended: true, limit: constants.UPLOAD_LIMITS.MAX_FILE_SIZE }));
 server.use(bodyParser.json({ limit: constants.UPLOAD_LIMITS.MAX_FILE_SIZE }));
 server.use(express.static(path.join(__dirname, "public")));
@@ -119,7 +122,13 @@ server.get("/username", (req, res) => {
     }
 });
 
-server.post('/login', (req, res) => {
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: 'Too many login attempts, please try again later'
+});
+
+server.post('/login', loginLimiter, (req, res) => {
     const { username, password } = req.body;
     if (username === user && password === configPassword) {
         req.session.loggedin = true;

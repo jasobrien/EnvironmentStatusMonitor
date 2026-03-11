@@ -1,15 +1,18 @@
+const DEBUG = false;
+function debugLog(...args) { if (DEBUG) console.log(...args); }
+
 async function fetchConfig() {
     try {
-        console.log('Attempting to fetch config from /config...');
+        debugLog('Attempting to fetch config from /config...');
         const response = await fetch("/config");
-        console.log('Fetch response status:', response.status);
+        debugLog('Fetch response status:', response.status);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Config loaded:', data);
+        debugLog('Config loaded:', data);
         
         // Update environment arrays based on configuration
         if (data.environments && data.environments.length > 0) {
@@ -30,8 +33,8 @@ async function fetchConfig() {
                 };
             });
             
-            console.log('Updated environments from config:', environments);
-            console.log('Updated environment labels:', environmentLabels);
+            debugLog('Updated environments from config:', environments);
+            debugLog('Updated environment labels:', environmentLabels);
         } else {
             console.warn('No environments found in config:', data);
         }
@@ -45,7 +48,7 @@ async function fetchConfig() {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('DOM Content Loaded - starting initialization...');
+    debugLog('DOM Content Loaded - starting initialization...');
     
     const config = await fetchConfig();
     if (config) {
@@ -54,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Initialize dashboard if environments were loaded
         if (environments.length > 0) {
-            console.log('Initializing dashboard with', environments.length, 'environments');
+            debugLog('Initializing dashboard with', environments.length, 'environments');
             initializeDynamicDashboard();
         } else {
             console.error('No environments loaded from config');
@@ -73,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 lastUpdated: null 
             };
         });
-        console.log('Using fallback environments:', environments);
+        debugLog('Using fallback environments:', environments);
         initializeDynamicDashboard();
     }
 });
@@ -93,17 +96,17 @@ function updateUpTimeStats(data, ElementID, Duration) {
     } else {
         console.warn(`Element with ID '${ElementID}' not found for uptime stats`);
     }
-    console.log(data);
+    debugLog(data);
 }
 
 async function fetchUptimeStats(environment, days) {
     try {
         const response = await fetch(`/getSummaryStats/${environment}/${days}`);
         const data = await response.json();
-        console.log(data);
+        debugLog(data);
         return data;
     } catch (err) {
-        console.log(err);
+        console.error('Error fetching uptime stats:', err);
     }
 }
 
@@ -111,10 +114,10 @@ async function fetchStats(environment) {
     try {
         const response = await fetch(`/getSummaryStats/${environment}`);
         const data = await response.json();
-        console.log(data);
+        debugLog(data);
         return data;
     } catch (err) {
-        console.log(err);
+        console.error('Error fetching stats:', err);
     }
 }
 
@@ -122,7 +125,7 @@ async function fetchStatus(environment, chart, lmdId) {
     try {
         const response = await fetch(`/results/${environment}/`);
         const data = await response.json();
-        console.log(data);
+        debugLog(data);
 
         const testnames = data.map(index => index.key);
         const testresults = data.map(index => index.value);
@@ -149,10 +152,10 @@ async function fetchStatus(environment, chart, lmdId) {
         }));
 
     } catch (err) {
-        console.log('Error fetching data for', environment, ':', err);
+        console.error('Error fetching data for', environment, ':', err);
         
         // Add fallback mock data for testing when API is unavailable
-        console.log('Using fallback mock data for', environment);
+        debugLog('Using fallback mock data for', environment);
         const mockFeatures = ['dashboard', 'deploy', 'data', 'performance'];
         const mockColors = ['Green', 'Green', 'Green', 'Green'];
         const mockResponseTimes = [45, 55, 65, 75];
@@ -168,12 +171,12 @@ async function fetchStatus(environment, chart, lmdId) {
             avgResponseTime: mockResponseTimes[idx]
         }));
         
-        console.log('Mock data set for', environment, ':', environmentData[environment]);
+        debugLog('Mock data set for', environment, ':', environmentData[environment]);
     }
 }
 
 function updateMergedChart() {
-    console.log('Updating ring charts...', environmentData);
+    debugLog('Updating ring charts...', environmentData);
     
     if (!mergedCharts) {
         console.error('Charts not initialized!');
@@ -183,14 +186,14 @@ function updateMergedChart() {
     // Get all unique feature names across all environments
     const allFeatures = new Set();
     environments.forEach(env => {
-        console.log(`Environment ${env} has ${environmentData[env].features.length} features:`, environmentData[env].features);
+        debugLog(`Environment ${env} has ${environmentData[env].features.length} features:`, environmentData[env].features);
         if (environmentData[env].features.length > 0) {
             environmentData[env].features.forEach(feature => allFeatures.add(feature));
         }
     });
     const featureLabels = Array.from(allFeatures);
     
-    console.log('All unique feature labels:', featureLabels);
+    debugLog('All unique feature labels:', featureLabels);
 
     // Update each environment's chart
     environments.forEach((env, envIdx) => {
@@ -198,12 +201,12 @@ function updateMergedChart() {
         const envData = environmentData[env];
         
         if (!chart) {
-            console.log(`No chart found for ${env}`);
+            debugLog(`No chart found for ${env}`);
             return;
         }
         
         if (envData.features.length === 0) {
-            console.log(`No data for ${env}, keeping loading state`);
+            debugLog(`No data for ${env}, keeping loading state`);
             return;
         }
 
@@ -222,7 +225,7 @@ function updateMergedChart() {
         }];
 
         chart.update();
-        console.log(`Updated chart for ${env} with ${envData.features.length} features`);
+        debugLog(`Updated chart for ${env} with ${envData.features.length} features`);
     });
 
     // Update feature labels around the chart
@@ -270,7 +273,7 @@ function initializeMergedChart() {
     
     // Destroy existing charts if they exist
     if (mergedCharts) {
-        console.log('Destroying existing charts...');
+        debugLog('Destroying existing charts...');
         Object.values(mergedCharts).forEach(chart => {
             if (chart && typeof chart.destroy === 'function') {
                 chart.destroy();
@@ -284,7 +287,7 @@ function initializeMergedChart() {
         Chart.register(ChartDataLabels);
     }
     
-    console.log('Initializing ring charts for environments:', environments);
+    debugLog('Initializing ring charts for environments:', environments);
 
     if (environments.length === 0) {
         console.warn('No environments loaded yet');
@@ -311,7 +314,7 @@ function initializeMergedChart() {
         });
     });
 
-    console.log('Environment configurations:', envConfigs);
+    debugLog('Environment configurations:', envConfigs);
 
     envConfigs.forEach(config => {
         const ctx = document.getElementById(config.id);

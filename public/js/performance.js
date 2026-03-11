@@ -3,14 +3,8 @@ const currentPath = path.split("/");
 const lastTwoParts = currentPath.slice(-2);
 const [environmentName, days] = lastTwoParts;
 
-console.log(currentPath);
-console.log(lastTwoParts);
-
 const URLKeys = `/histresultskeys/${environmentName}`;
-console.log("URLKeys are: " + URLKeys);
-
 const apiUrl = `/histresultsdays/${environmentName}/${days}`;
-console.log("apiUrl are: " + apiUrl);
 
 // Fetch environment display names dynamically from config
 let environmentDisplayNames = {};
@@ -96,7 +90,7 @@ async function createCharts() {
       continue;
     }
 
-    console.log(`Response for ${value}: `, mydata);
+
 
     const chartCard = document.createElement("div");
     chartCard.classList.add("col-12", "col-md-6", "col-lg-4", "mb-4");
@@ -106,7 +100,7 @@ async function createCharts() {
 
     const cardHeader = document.createElement("div");
     cardHeader.classList.add("card-header", "text-center");
-    cardHeader.innerHTML = value;
+    cardHeader.textContent = value;
     card.appendChild(cardHeader);
 
     const cardBody = document.createElement("div");
