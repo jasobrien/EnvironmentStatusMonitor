@@ -91,6 +91,28 @@ exports.writeToCurrentLog = function (record, filename) {
   });
 };
 
+// Upsert a result into the current log, replacing any existing entry with the same key.
+// Used by the scheduler so that multiple schedule groups for one environment don't overwrite
+// each other's results — each key is kept at its latest value only.
+exports.upsertResultInLog = function (record, filename) {
+  const logfile = `${ResultsFolder}${filename}.json`;
+  let incoming;
+  try { incoming = JSON.parse(record); } catch (e) { return; }
+  try {
+    let lines = [];
+    if (fs.existsSync(logfile)) {
+      lines = fs.readFileSync(logfile, "utf8")
+        .split("\n")
+        .filter(l => l.trim() !== "")
+        .filter(l => { try { return JSON.parse(l).key !== incoming.key; } catch { return true; } });
+    }
+    lines.push(JSON.stringify(incoming));
+    fs.writeFileSync(logfile, lines.join("\n") + "\n");
+  } catch (e) {
+    console.error("Error upserting result in log:", e);
+  }
+};
+
 exports.writeHistoryLogs = function (record, filename) {
   const logfile = `${ResultsFolder}${filename}.json`;
 

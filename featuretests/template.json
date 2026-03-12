@@ -10,13 +10,16 @@
 					"script_name": "{Collection Name from Collections folder }.json",
 					"environment_name": "{Environment Name from Environments folder }.json",
 					"datafile": "{data Name from data folder }.json",
-					"Active": "1"
+					"Active": "1",
+					"runner": "newman",
+					"schedule": "everyMinute"
 				},
 				{
-					"script_name": "{Collection Name from Collections folder }.json",
+					"script_name": "{Playwright spec file from runners/playwright/specs/ }.spec.js",
 					"environment_name": "{Environment Name from Environments folder }.json",
-					"datafile": "{Environment Name from data folder }.json",
-					"Active": "1"
+					"Active": "1",
+					"runner": "playwright",
+					"schedule": "Every15"
 				}
 			]
 		},

@@ -1,3 +1,108 @@
+/* ── Navbar ─────────────────────────────────────────────── */
+.esm-navbar {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-bottom: 2px solid #4f46e5;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+}
+
+.esm-brand {
+    text-decoration: none;
+}
+
+.esm-brand-logo {
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+}
+
+.esm-brand:hover .esm-brand-logo {
+    transform: rotate(-6deg) scale(1.05);
+}
+
+.esm-brand-text {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #f1f5f9;
+}
+
+.esm-brand-accent {
+    color: #a5b4fc;
+}
+
+.esm-nav-link {
+    color: #e2e8f0 !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem !important;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.esm-nav-link:hover,
+.esm-nav-link:focus {
+    color: #ffffff !important;
+    background: #3730a3;
+}
+
+.esm-nav-link.show {
+    color: #ffffff !important;
+    background: #3730a3;
+}
+
+/* ── Dropdowns ──────────────────────────────────────────── */
+.esm-dropdown {
+    background: #ffffff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    padding: 0.35rem 0;
+    min-width: 190px;
+}
+
+.esm-dropdown .dropdown-item {
+    color: #1e293b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 1.1rem;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.esm-dropdown .dropdown-item:hover,
+.esm-dropdown .dropdown-item:focus {
+    background: #4f46e5;
+    color: #ffffff;
+}
+
+.esm-dropdown .dropdown-divider {
+    border-color: #e2e8f0;
+    margin: 0.3rem 0;
+}
+
+.esm-divider-v {
+    width: 1px;
+    height: 22px;
+    background: rgba(148, 163, 184, 0.35);
+    margin: 0 0.25rem;
+    align-self: center;
+}
+
+.esm-logout {
+    color: #fca5a5 !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem !important;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.esm-logout:hover,
+.esm-logout:focus {
+    color: #ffffff !important;
+    background: #dc2626;
+}
+
 #chart-wrapper {
     display: inline-block;
     position: relative;

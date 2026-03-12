@@ -12,85 +12,93 @@
 
 <body>
     <header role="banner">
-        <nav class="navbar navbar-expand-md navbar-light bg-light" aria-label="Main navigation">
-            <div class="container">
-                <a class="navbar-brand d-flex align-items-center" href="/dashboard" aria-label="EnvironmentStatus.com - Go to Dashboard">
-                    <img src="/images/dash.png" width="50" height="50" alt="Environment Status Monitor Logo" class="me-2">
-                    <span>EnvironmentStatus.com</span>
+        <nav class="navbar navbar-expand-md navbar-dark esm-navbar" aria-label="Main navigation">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand esm-brand d-flex align-items-center gap-2" href="/dashboard" aria-label="EnvironmentStatus.com - Go to Dashboard">
+                    <img src="/images/dash.png" width="36" height="36" alt="Environment Status Monitor Logo" class="esm-brand-logo">
+                    <span class="esm-brand-text">Environment<span class="esm-brand-accent">Status</span></span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto" role="menubar">
+                    <ul class="navbar-nav ms-auto align-items-md-center gap-md-1" role="menubar">
                         <li class="nav-item" role="none">
-                            <a class="nav-link" href="/dashboard" role="menuitem" aria-current="page">
-                                <span aria-hidden="true">📊</span> Dashboard
+                            <a class="nav-link esm-nav-link" href="/dashboard" role="menuitem">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4zM3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707zM2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10zm9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5zm.754-4.246a.389.389 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.389.389 0 0 0-.029-.518z"/><path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A7.988 7.988 0 0 1 0 10zm8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3z"/></svg>
+                                Dashboard
                             </a>
                         </li>
 
                         <li class="nav-item dropdown" role="none">
-                            <a class="nav-link dropdown-toggle" href="#" id="resultsDropdown" role="menuitem button"
+                            <a class="nav-link esm-nav-link dropdown-toggle" href="#" id="dashboardsDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
-                                <span aria-hidden="true">📝</span> Results Management
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M0 0h1v15h15v1H0V0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5z"/></svg>
+                                Dashboards
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="resultsDropdown" role="menu">
-                                <li role="none"><a class="dropdown-item" href="/data/devresults" role="menuitem">Development Results</a></li>
-                                <li role="none"><a class="dropdown-item" href="/data/testresults" role="menuitem">Test Results</a></li>
-                                <li role="none"><a class="dropdown-item" href="/data/stagingresults" role="menuitem">Staging Results</a></li>
+                            <ul class="dropdown-menu esm-dropdown" aria-labelledby="dashboardsDropdown" role="menu" id="dashboardsMenu">
+                                <li role="none"><a class="dropdown-item" href="/dashboard" role="menuitem">All Environments</a></li>
+                                <li role="none"><hr class="dropdown-divider"></li>
+                                <li role="none"><a class="dropdown-item" href="/dashboard/manage" role="menuitem">⚙️ Manage Dashboards</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown" role="none">
+                            <a class="nav-link esm-nav-link dropdown-toggle" href="#" id="resultsDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3z"/></svg>
+                                Results
+                            </a>
+                            <ul class="dropdown-menu esm-dropdown" aria-labelledby="resultsDropdown" role="menu">
+                                <li role="none"><a class="dropdown-item" href="/data/devresults" role="menuitem">Development</a></li>
+                                <li role="none"><a class="dropdown-item" href="/data/testresults" role="menuitem">Test</a></li>
+                                <li role="none"><a class="dropdown-item" href="/data/stagingresults" role="menuitem">Staging</a></li>
                             </ul>
                         </li>
                         
                         <li class="nav-item dropdown" role="none">
-                            <a class="nav-link dropdown-toggle" href="#" id="scheduleDropdown" role="menuitem button"
+                            <a class="nav-link esm-nav-link dropdown-toggle" href="#" id="scheduleDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
-                                <span aria-hidden="true">⏰</span> Schedule
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+                                Schedule
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="scheduleDropdown" role="menu">
+                            <ul class="dropdown-menu esm-dropdown" aria-labelledby="scheduleDropdown" role="menu">
                                 <li role="none"><a class="dropdown-item" href="/data/schedule" role="menuitem">View Schedule</a></li>
                                 <li role="none"><a class="dropdown-item" href="/data/edit" role="menuitem">Edit Schedule</a></li>
                             </ul>
                         </li>
                         
                         <li class="nav-item" role="none">
-                            <a class="nav-link" href="/upload" role="menuitem">
-                                <span aria-hidden="true">📁</span> Upload Files
+                            <a class="nav-link esm-nav-link" href="/upload" role="menuitem">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+                                Upload
                             </a>
                         </li>
                         
                         <li class="nav-item" role="none">
-                            <a class="nav-link" href="/dashboard/config" role="menuitem">
-                                <span aria-hidden="true">⚙️</span> Configuration
+                            <a class="nav-link esm-nav-link" href="/dashboard/config" role="menuitem">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.892 3.433-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.892-1.64-.901-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/></svg>
+                                Config
                             </a>
                         </li>
+
+                        <li class="nav-item esm-divider-v d-none d-md-flex" aria-hidden="true"></li>
                         
                         <li class="nav-item" role="none">
-                            <a class="nav-link" href="http://www.environmentstatus.com/support" role="menuitem" target="_blank" rel="noopener noreferrer">
-                                <span aria-hidden="true">❓</span> Support
-                                <span class="visually-hidden">(opens in new tab)</span>
+                            <a id="login" class="nav-link esm-logout" href="/logout" role="menuitem">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/></svg>
+                                Logout
                             </a>
                         </li>
-                        
-                        <li class="nav-item" role="none">
-                            <a class="nav-link" href="mailto:EnvironmentStatusMonitor@gmail.com" role="menuitem">
-                                <span aria-hidden="true">✉️</span> Contact
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item" role="none">
-                            <a id="login" class="nav-link btn btn-outline-secondary ms-2" href="/logout" role="menuitem">
-                                <span aria-hidden="true">🚪</span> Logout
-                            </a>
-                        </li> 
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
     <script src="/js/header.js"></script>
 </body>
+</html>
 
 </html>

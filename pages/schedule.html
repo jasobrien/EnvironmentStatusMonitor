@@ -37,7 +37,9 @@
           <tr>
             <td>${test.script_name}</td>
             <td>${test.environment_name}</td>
-            <td>${test.datafile}</td>
+            <td>${test.datafile || '\u2014'}</td>
+            <td><span class="badge badge-info">${test.runner || 'newman'}</span></td>
+            <td><code>${test.schedule || 'everyMinute'}</code></td>
             <td>${test.Active}</td>
           </tr>
         `).join("");
@@ -57,6 +59,8 @@
                       <th scope="col">Script Name</th>
                       <th scope="col">Environment Name</th>
                       <th scope="col">Datafile</th>
+                      <th scope="col">Runner</th>
+                      <th scope="col">Schedule</th>
                       <th scope="col">Active</th>
                     </tr>
                   </thead>

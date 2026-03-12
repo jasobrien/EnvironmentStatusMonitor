@@ -1,0 +1,54 @@
+{
+  "dashboards": [
+    {
+      "id": "default",
+      "name": "All Environments",
+      "description": "Shows all environments and all tests",
+      "environments": [],
+      "tests": [],
+      "isDefault": true
+    },
+    {
+      "id": "demo-all-runners",
+      "name": "Demo — All Runners",
+      "description": "Dev environment showing results from all three runners: Newman, Playwright and Supertest",
+      "environments": ["dev"],
+      "tests": [],
+      "isDefault": false
+    },
+    {
+      "id": "newman-tests",
+      "name": "Newman Tests",
+      "description": "Postman/Newman collection results across all environments",
+      "environments": [],
+      "tests": [
+        "dashboard",
+        "deploy",
+        "performance",
+        "data"
+      ],
+      "isDefault": false
+    },
+    {
+      "id": "playwright-tests",
+      "name": "Playwright Tests",
+      "description": "Scheduled Playwright spec results",
+      "environments": ["dev"],
+      "tests": [
+        "example-health.spec"
+      ],
+      "isDefault": false
+    },
+    {
+      "id": "supertest-dashboard",
+      "name": "Supertest Tests",
+      "description": "Mocha/Supertest API test suite results",
+      "environments": ["dev"],
+      "tests": [
+        "api-health.test",
+        "dashboard-routes.test"
+      ],
+      "isDefault": false
+    }
+  ]
+}

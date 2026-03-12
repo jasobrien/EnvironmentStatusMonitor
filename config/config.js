@@ -45,9 +45,9 @@ exports.config = {
   "Customtime3": "",
   "CronLocation": "Australia/Sydney",
   "ResultsFolder": "./results/",
-  "PostmanCollectionFolder": "./collections/",
-  "PostmanEnvFolder": "./environments/",
-  "PostmanDataFolder": "./datafiles/",
+  "PostmanCollectionFolder": "./runners/newman/collections/",
+  "PostmanEnvFolder": "./runners/newman/environments/",
+  "PostmanDataFolder": "./runners/newman/datafiles/",
   "FeatureTestsFolder": "./featuretests/",
   "HistoryFilePrefix": "hist_",
   "ResultFileSuffix": "results"

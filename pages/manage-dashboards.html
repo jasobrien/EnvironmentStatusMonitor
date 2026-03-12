@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Dashboards - Environment Status Monitor</title>
+  <link rel="stylesheet" href="/css/styles.css"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(function () { $("#header-container").load("/data/header"); });
+  </script>
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <main class="container-fluid mt-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h4 mb-0">Manage Dashboards</h2>
+            <button class="btn btn-primary btn-sm" onclick="showCreateForm()" aria-label="Create a new dashboard">
+              <span aria-hidden="true">➕</span> New Dashboard
+            </button>
+          </div>
+          <div class="card-body">
+
+            <!-- Create / Edit Form (hidden by default) -->
+            <div id="dashboardForm" class="card mb-4" style="display:none;">
+              <div class="card-header">
+                <h3 class="h5 mb-0" id="formTitle">Create Dashboard</h3>
+              </div>
+              <div class="card-body">
+                <input type="hidden" id="editId" value="">
+                <div class="form-group">
+                  <label for="dashName">Dashboard Name</label>
+                  <input type="text" class="form-control" id="dashName" placeholder="e.g. Production Services" required>
+                </div>
+                <div class="form-group">
+                  <label for="dashDesc">Description</label>
+                  <input type="text" class="form-control" id="dashDesc" placeholder="Optional description">
+                </div>
+
+                <div class="form-group">
+                  <label>Environments to Include</label>
+                  <small class="form-text text-muted mb-2 d-block">Select which environments appear on this dashboard. Leave all unchecked to show every environment.</small>
+                  <div id="envCheckboxes" class="d-flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="form-group">
+                  <label>Tests to Include</label>
+                  <small class="form-text text-muted mb-2 d-block">Select which test keys appear on this dashboard. Leave all unchecked to show every test.</small>
+                  <div id="testCheckboxes" class="d-flex flex-wrap gap-2"></div>
+                </div>
+
+                <button class="btn btn-success btn-sm" onclick="saveDashboard()">
+                  <span aria-hidden="true">💾</span> Save
+                </button>
+                <button class="btn btn-secondary btn-sm ml-2" onclick="hideForm()">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Dashboard List -->
+            <div id="dashboardList"></div>
+            <div id="statusMsg" class="mt-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light border-top mt-5 py-4" role="contentinfo">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          <a href="/dashboard" class="btn btn-primary btn-sm">
+            <span aria-hidden="true">🏠</span> Back to Dashboard
+          </a>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <small class="text-muted">Dashboard Management - Environment Status Monitor</small>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let allEnvironments = [];
+    let allTestKeys = [];
+    let dashboards = [];
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    async function init() {
+      await loadEnvironments();
+      await loadTestKeys();
+      await loadDashboards();
+    }
+
+    async function loadEnvironments() {
+      try {
+        const res = await fetch('/config');
+        const data = await res.json();
+        allEnvironments = data.environments || [];
+      } catch (e) { console.error('Failed to load environments', e); }
+    }
+
+    async function loadTestKeys() {
+      // Gather distinct test keys from all environments
+      const keys = new Set();
+      for (const env of allEnvironments) {
+        try {
+          const res = await fetch('/results/' + env.id + '/');
+          const data = await res.json();
+          data.forEach(d => keys.add(d.key));
+        } catch (_) { /* environment may have no results yet */ }
+      }
+      allTestKeys = Array.from(keys).sort();
+    }
+
+    async function loadDashboards() {
+      try {
+        const res = await fetch('/api/dashboards');
+        dashboards = await res.json();
+        renderList();
+      } catch (e) { console.error('Failed to load dashboards', e); }
+    }
+
+    function renderList() {
+      const el = document.getElementById('dashboardList');
+      if (!dashboards.length) {
+        el.innerHTML = '<p class="text-muted">No dashboards configured.</p>';
+        return;
+      }
+      let html = '<table class="table table-striped table-bordered"><thead><tr>' +
+        '<th>Name</th><th>Description</th><th>Environments</th><th>Tests</th><th>Actions</th>' +
+        '</tr></thead><tbody>';
+      dashboards.forEach(d => {
+        const envLabel = d.environments && d.environments.length
+          ? d.environments.map(id => { const e = allEnvironments.find(x => x.id === id); return e ? e.displayName || e.name : id; }).join(', ')
+          : '<em>All</em>';
+        const testLabel = d.tests && d.tests.length ? d.tests.join(', ') : '<em>All</em>';
+        const viewLink = d.isDefault ? '/dashboard' : '/dashboard/view/' + encodeURIComponent(d.id);
+        html += '<tr>' +
+          '<td><a href="' + viewLink + '">' + escapeHtml(d.name) + '</a></td>' +
+          '<td>' + escapeHtml(d.description || '') + '</td>' +
+          '<td>' + envLabel + '</td>' +
+          '<td>' + testLabel + '</td>' +
+          '<td>' +
+            '<button class="btn btn-sm btn-outline-primary mr-1" onclick="editDashboard(\'' + d.id + '\')">Edit</button>' +
+            (d.isDefault ? '' : '<button class="btn btn-sm btn-outline-danger" onclick="deleteDashboard(\'' + d.id + '\')">Delete</button>') +
+          '</td></tr>';
+      });
+      html += '</tbody></table>';
+      el.innerHTML = html;
+    }
+
+    function buildCheckboxes() {
+      const envContainer = document.getElementById('envCheckboxes');
+      envContainer.innerHTML = allEnvironments.map(env =>
+        '<div class="form-check form-check-inline">' +
+        '<input class="form-check-input env-cb" type="checkbox" value="' + env.id + '" id="env-' + env.id + '">' +
+        '<label class="form-check-label" for="env-' + env.id + '">' + escapeHtml(env.displayName || env.name) + '</label>' +
+        '</div>'
+      ).join('');
+
+      const testContainer = document.getElementById('testCheckboxes');
+      testContainer.innerHTML = allTestKeys.map(key =>
+        '<div class="form-check form-check-inline">' +
+        '<input class="form-check-input test-cb" type="checkbox" value="' + key + '" id="test-' + key + '">' +
+        '<label class="form-check-label" for="test-' + key + '">' + escapeHtml(key) + '</label>' +
+        '</div>'
+      ).join('');
+    }
+
+    function showCreateForm() {
+      document.getElementById('editId').value = '';
+      document.getElementById('dashName').value = '';
+      document.getElementById('dashDesc').value = '';
+      document.getElementById('formTitle').textContent = 'Create Dashboard';
+      buildCheckboxes();
+      document.getElementById('dashboardForm').style.display = 'block';
+    }
+
+    function editDashboard(id) {
+      const d = dashboards.find(x => x.id === id);
+      if (!d) return;
+      document.getElementById('editId').value = d.id;
+      document.getElementById('dashName').value = d.name;
+      document.getElementById('dashDesc').value = d.description || '';
+      document.getElementById('formTitle').textContent = 'Edit Dashboard';
+      buildCheckboxes();
+      // Pre-check the boxes
+      (d.environments || []).forEach(envId => {
+        const cb = document.getElementById('env-' + envId);
+        if (cb) cb.checked = true;
+      });
+      (d.tests || []).forEach(key => {
+        const cb = document.getElementById('test-' + key);
+        if (cb) cb.checked = true;
+      });
+      document.getElementById('dashboardForm').style.display = 'block';
+    }
+
+    function hideForm() {
+      document.getElementById('dashboardForm').style.display = 'none';
+    }
+
+    async function saveDashboard() {
+      const id = document.getElementById('editId').value;
+      const name = document.getElementById('dashName').value.trim();
+      if (!name) { alert('Dashboard name is required'); return; }
+      const description = document.getElementById('dashDesc').value.trim();
+      const envs = Array.from(document.querySelectorAll('.env-cb:checked')).map(cb => cb.value);
+      const tests = Array.from(document.querySelectorAll('.test-cb:checked')).map(cb => cb.value);
+
+      const body = { name, description, environments: envs, tests };
+      try {
+        const url = id ? '/api/dashboards/' + encodeURIComponent(id) : '/api/dashboards';
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+        });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error); }
+        showStatus('Dashboard saved successfully.', 'success');
+        hideForm();
+        await loadDashboards();
+      } catch (e) {
+        showStatus('Error: ' + e.message, 'danger');
+      }
+    }
+
+    async function deleteDashboard(id) {
+      if (!confirm('Are you sure you want to delete this dashboard?')) return;
+      try {
+        const res = await fetch('/api/dashboards/' + encodeURIComponent(id), { method: 'DELETE' });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.error); }
+        showStatus('Dashboard deleted.', 'success');
+        await loadDashboards();
+      } catch (e) {
+        showStatus('Error: ' + e.message, 'danger');
+      }
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('statusMsg');
+      el.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible fade show">' +
+        escapeHtml(msg) + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>';
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.appendChild(document.createTextNode(str));
+      return d.innerHTML;
+    }
+  </script>
+</body>
+</html>
