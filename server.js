@@ -9,7 +9,7 @@ const uploadRoute = require("./routes/upload");
 const { validateEnvironment } = require("./middleware/validation");
 const { globalErrorHandler, asyncHandler } = require("./middleware/errorHandler");
 const { requireAuth } = require("./middleware/auth");
-const newman = require("newman");
+const { getRunner, listRunners } = require("./runners");
 const CronJob = require("cron").CronJob;
 const express = require("express");
 const session = require("express-session");
@@ -22,7 +22,12 @@ require('dotenv').config();
 
 // Setup config
 const config = cf.config;
-const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password: configPassword, CronLocation, FeatureTestsFolder } = config;
+const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, Influx, session: SESSION_ON, user, password: configPassword, CronLocation, FeatureTestsFolder } = config;
+// Support both new generic names and legacy Postman-prefixed names
+const ScriptFolder = config.ScriptFolder || config.PostmanCollectionFolder;
+const EnvironmentFolder = config.EnvironmentFolder || config.PostmanEnvFolder;
+const DataFolder = config.DataFolder || config.PostmanDataFolder;
+const DefaultRunner = config.DefaultRunner || 'newman';
 
 const server = express();
 server.use(helmet({ contentSecurityPolicy: false }));
@@ -262,7 +267,7 @@ if (config.environments && config.environments.length > 0) {
 }
 
 function runTests(region, filename) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             const testdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
             const schedule = JSON.parse(testdata);
@@ -281,11 +286,13 @@ function runTests(region, filename) {
 
             fn.clearCurrentLog(filename);
             for (let i = 0; i < totalTests; i++) {
-                const collection = `${PostmanCollectionFolder}${schedule.ENV[region].tests[i].script_name}`;
-                const envfile = schedule.ENV[region].tests[i].environment_name ? `${PostmanEnvFolder}${schedule.ENV[region].tests[i].environment_name}` : "";
-                const datafile = schedule.ENV[region].tests[i].datafile ? `${PostmanDataFolder}${schedule.ENV[region].tests[i].datafile}` : "";
-                runMyTest(collection, envfile, schedule.ENV[region], datafile, filename);
-                const log = `${fn.myDateTime()},${schedule.ENV[region].tests[i].script_name},${schedule.ENV[region].tests[i].environment_name}`;
+                const testConfig = schedule.ENV[region].tests[i];
+                const script = `${ScriptFolder}${testConfig.script_name}`;
+                const envfile = testConfig.environment_name ? `${EnvironmentFolder}${testConfig.environment_name}` : "";
+                const datafile = testConfig.datafile ? `${DataFolder}${testConfig.datafile}` : "";
+                const runnerName = testConfig.runner || DefaultRunner;
+                await runMyTest(script, envfile, schedule.ENV[region], datafile, filename, runnerName);
+                const log = `${fn.myDateTime()},${testConfig.script_name},${testConfig.environment_name},${runnerName}`;
                 fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
                 fn.logOutput("Info", `Log : ${log}`);
             }
@@ -296,34 +303,30 @@ function runTests(region, filename) {
     });
 }
 
-function runMyTest(collection, environmentfile, environmentName, datafile, filename) {
-    const options = {
-        collection,
-        reporters: "cli",
-        environment: environmentfile || undefined,
-        iterationData: datafile || undefined
-    };
+async function runMyTest(script, environmentfile, environmentName, datafile, filename, runnerName) {
+    try {
+        const runner = getRunner(runnerName);
+        const result = await runner.run({
+            script,
+            environment: environmentfile || undefined,
+            datafile: datafile || undefined
+        });
 
-    newman.run(options, (err, res) => {
-        if (err) {
-            fn.logOutput("Error", `An error has occurred: ${err}`);
-            throw err;
-        }
-        res.run.executions.forEach(exec => fn.logOutput("Info", `API Request call: ${exec.item.name}`));
-        const myCollectionString = collection.split("/");
-        const myKey = myCollectionString[2].split(".");
-        const failedTestCount = res.run.stats.assertions.failed;
-        const totalTestCount = res.run.stats.assertions.total;
+        result.executionNames.forEach(name => fn.logOutput("Info", `Test executed: ${name}`));
+        const scriptParts = script.split("/");
+        const myKey = scriptParts[scriptParts.length - 1].split(".")[0];
+        const failedTestCount = result.failedTests;
+        const totalTestCount = result.totalTests;
         const FailRate = fn.calculatePercentage(failedTestCount, totalTestCount);
         const statusString = fn.RAG(100 - FailRate);
-        const runTiming = res.run.timings.responseAverage;
+        const runTiming = result.avgResponseTime;
         const IncludeInStats = statusString !== "Green" ? 0 : 1;
         const RemoveComment = statusString !== "Green" ? "Test failures have distorted timing." : "";
 
         const testResult = {
             DateTime: fn.myDateTime(),
             Environment: environmentName.Name,
-            key: myKey[0],
+            key: myKey,
             value: statusString,
             TestCount: totalTestCount,
             FailedTestCount: failedTestCount,
@@ -339,8 +342,10 @@ function runMyTest(collection, environmentfile, environmentName, datafile, filen
         fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", `hist_${filename}`);
         fn.logOutput("Info", `${FailRate} % failed`);
         fn.logOutput("Info", `RAG Status ${statusString}`);
-        if (ExtendedLog) fn.writeToCurrentLog(JSON.stringify(res.run) + "\n", `_ExtendedLog_${filename}`);
-    });
+        if (ExtendedLog) fn.writeToCurrentLog(JSON.stringify(result.rawResult) + "\n", `_ExtendedLog_${filename}`);
+    } catch (err) {
+        fn.logOutput("Error", `Runner "${runnerName}" error: ${err.message}`);
+    }
 }
 
 const port = process.env.PORT || 8080;
