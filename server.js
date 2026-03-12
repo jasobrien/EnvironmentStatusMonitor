@@ -9,9 +9,7 @@ const uploadRoute = require("./routes/upload");
 const { validateEnvironment } = require("./middleware/validation");
 const { globalErrorHandler, asyncHandler } = require("./middleware/errorHandler");
 const { requireAuth } = require("./middleware/auth");
-const { runPlaywrightSpec } = require("./runners/playwright/playwright");
-const { runSupertestSpec } = require("./runners/supertest/supertest");
-const { runNewmanCollection } = require("./runners/newman/newman");
+const { getRunner, listRunners } = require("./runners");
 const CronJob = require("cron").CronJob;
 const express = require("express");
 const session = require("express-session");
@@ -24,7 +22,12 @@ require('dotenv').config();
 
 // Setup config
 const config = cf.config;
-const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, PostmanCollectionFolder, PostmanEnvFolder, PostmanDataFolder, Influx, session: SESSION_ON, user, password: configPassword, CronLocation, FeatureTestsFolder } = config;
+const { ExtendedLog, ResultFileSuffix, HistoryFilePrefix, everyMinute, every10Minutes, Every15, Every5, Every30, Every60, every6hours, ResultsFolder, Influx, session: SESSION_ON, user, password: configPassword, CronLocation, FeatureTestsFolder } = config;
+// Support both new generic names and legacy Postman-prefixed names
+const ScriptFolder = config.ScriptFolder || config.PostmanCollectionFolder;
+const EnvironmentFolder = config.EnvironmentFolder || config.PostmanEnvFolder;
+const DataFolder = config.DataFolder || config.PostmanDataFolder;
+const DefaultRunner = config.DefaultRunner || 'newman';
 
 const server = express();
 server.use(helmet({ contentSecurityPolicy: false }));
@@ -382,8 +385,8 @@ if (config.environments && config.environments.length > 0) {
     });
 }
 
-function runTests(region, filename, scheduleKey = "everyMinute") {
-    return new Promise((resolve, reject) => {
+function runTests(region, filename) {
+    return new Promise(async (resolve, reject) => {
         try {
             const testdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
             const schedule = JSON.parse(testdata);
@@ -394,19 +397,21 @@ function runTests(region, filename, scheduleKey = "everyMinute") {
                 return;
             }
 
-            const tests = schedule.ENV[region].tests.filter(
-                t => t.Active == 1 && (t.schedule || "everyMinute") === scheduleKey
-            );
-            fn.logOutput("Info", `Schedule: ${scheduleKey} — ${tests.length} test(s) for env index ${region}`);
-            if (tests.length === 0) {
-                resolve("No tests assigned to this schedule.");
-                return;
-            }
+            const totalTests = Object.keys(schedule.ENV[region].tests).length;
+            const tests = schedule.ENV[region].tests;
+            const filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
+            fn.logOutput("Total number of test objects", totalTests);
+            fn.logOutput("Total number of filtered test objects", filteredTests.length);
 
-            for (let i = 0; i < tests.length; i++) {
-                const testEntry = tests[i];
-                const runner = (testEntry.runner || "newman").toLowerCase();
-                const log = `${fn.myDateTime()},${testEntry.script_name},${testEntry.environment_name}`;
+            fn.clearCurrentLog(filename);
+            for (let i = 0; i < totalTests; i++) {
+                const testConfig = schedule.ENV[region].tests[i];
+                const script = `${ScriptFolder}${testConfig.script_name}`;
+                const envfile = testConfig.environment_name ? `${EnvironmentFolder}${testConfig.environment_name}` : "";
+                const datafile = testConfig.datafile ? `${DataFolder}${testConfig.datafile}` : "";
+                const runnerName = testConfig.runner || DefaultRunner;
+                await runMyTest(script, envfile, schedule.ENV[region], datafile, filename, runnerName);
+                const log = `${fn.myDateTime()},${testConfig.script_name},${testConfig.environment_name},${runnerName}`;
                 fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
                 fn.logOutput("Info", `Log : ${log}`);
 
@@ -483,6 +488,51 @@ function runTests(region, filename, scheduleKey = "everyMinute") {
             reject(error);
         }
     });
+}
+
+async function runMyTest(script, environmentfile, environmentName, datafile, filename, runnerName) {
+    try {
+        const runner = getRunner(runnerName);
+        const result = await runner.run({
+            script,
+            environment: environmentfile || undefined,
+            datafile: datafile || undefined
+        });
+
+        result.executionNames.forEach(name => fn.logOutput("Info", `Test executed: ${name}`));
+        const scriptParts = script.split("/");
+        const myKey = scriptParts[scriptParts.length - 1].split(".")[0];
+        const failedTestCount = result.failedTests;
+        const totalTestCount = result.totalTests;
+        const FailRate = fn.calculatePercentage(failedTestCount, totalTestCount);
+        const statusString = fn.RAG(100 - FailRate);
+        const runTiming = result.avgResponseTime;
+        const IncludeInStats = statusString !== "Green" ? 0 : 1;
+        const RemoveComment = statusString !== "Green" ? "Test failures have distorted timing." : "";
+
+        const testResult = {
+            DateTime: fn.myDateTime(),
+            Environment: environmentName.Name,
+            key: myKey,
+            value: statusString,
+            TestCount: totalTestCount,
+            FailedTestCount: failedTestCount,
+            AvgResponseTime: runTiming,
+            IncludeInStats,
+            RemoveComment
+        };
+
+        fn.CreateJsonObjectForResults(testResult);
+        fn.logOutput("Info", `Filename is ${filename}`);
+        if (Influx) influx.write(testResult, influxToken);
+        fn.writeToCurrentLog(JSON.stringify(testResult) + "\n", filename);
+        fn.writeHistoryLogs(JSON.stringify(testResult) + "\n", `hist_${filename}`);
+        fn.logOutput("Info", `${FailRate} % failed`);
+        fn.logOutput("Info", `RAG Status ${statusString}`);
+        if (ExtendedLog) fn.writeToCurrentLog(JSON.stringify(result.rawResult) + "\n", `_ExtendedLog_${filename}`);
+    } catch (err) {
+        fn.logOutput("Error", `Runner "${runnerName}" error: ${err.message}`);
+    }
 }
 
 const port = process.env.PORT || 8080;

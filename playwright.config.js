@@ -24,6 +24,10 @@ module.exports = defineConfig({
       name: 'Unit Tests',
       testMatch: /.*functions\.test\.js/,
     },
+    {
+      name: 'Runner Tests',
+      testMatch: /.*runners\.test\.js/,
+    },
   ],
   globalSetup: './test/global-setup.js',
   globalTeardown: './test/global-teardown.js',
