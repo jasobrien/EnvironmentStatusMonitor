@@ -85,3 +85,5 @@ function parseBrunoOutput(stdout, err) {
         rawResult: { stdout, exitCode: err ? err.code : 0 }
     };
 }
+
+module.exports.parseBrunoOutput = parseBrunoOutput;

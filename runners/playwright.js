@@ -113,3 +113,6 @@ function flattenTests(suites) {
     }
     return tests;
 }
+
+module.exports.parsePlaywrightOutput = parsePlaywrightOutput;
+module.exports.flattenTests = flattenTests;
