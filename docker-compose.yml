@@ -1,0 +1,18 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./results:/usr/src/app/results
+      - ./collections:/usr/src/app/collections
+      - ./environments:/usr/src/app/environments
+      - ./datafiles:/usr/src/app/datafiles
+      - ./featuretests:/usr/src/app/featuretests
+      - ./config:/usr/src/app/config
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped

@@ -22,3 +22,6 @@ playwright-report/
 playwright.config.js
 debug-env.js
 *.md
+
+# Ignore Docker files
+docker-compose.yml

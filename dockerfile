@@ -16,6 +16,18 @@ RUN npm ci --omit=dev
 # Bundle app source
 COPY . .
 
+# Create writable directories for volume mounts and set ownership to node user
+RUN mkdir -p results collections environments datafiles featuretests config \
+    && chown -R node:node results collections environments datafiles featuretests config
+
+# Declare volumes for mutable data directories
+VOLUME ["/usr/src/app/results", \
+        "/usr/src/app/collections", \
+        "/usr/src/app/environments", \
+        "/usr/src/app/datafiles", \
+        "/usr/src/app/featuretests", \
+        "/usr/src/app/config"]
+
 # Run as non-root user for security
 USER node
 

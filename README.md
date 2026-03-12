@@ -70,30 +70,62 @@
 
 **Docker Setup:**
 
-1. **Build the image:**
+The app runs in Docker with mutable data (results, collections, config, etc.) stored on the host via volume mounts. This keeps the container stateless — you can rebuild or redeploy without losing data.
+
+1. **Using Docker Compose (recommended):**
+   ```bash
+   docker compose up -d
+   ```
+   This builds the image, starts the container, and mounts all data directories from your local project. Any changes to results, collections, environments, datafiles, featuretests, or config persist on your host.
+
+2. **Stop / restart:**
+   ```bash
+   docker compose down      # stop and remove container
+   docker compose up -d     # start again (data is preserved)
+   ```
+
+3. **Using plain Docker** (without Compose):
    ```bash
    docker build -f dockerfile -t env-status-monitor .
-   ```
 
-2. **Run the container:**
-   ```bash
-   docker run -d -p 8080:8080 --name env-status-monitor env-status-monitor
-   ```
-
-3. **Run with environment variables** (e.g. session auth or InfluxDB enabled):
-   ```bash
-   docker run -d -p 8080:8080 \
-     -e SECRET=your-session-secret \
-     -e INFLUXDB_TOKEN=your-influx-token \
-     --name env-status-monitor \
+   docker run -d -p 8080:8080 --name env-status-monitor \
+     -v ./results:/usr/src/app/results \
+     -v ./collections:/usr/src/app/collections \
+     -v ./environments:/usr/src/app/environments \
+     -v ./datafiles:/usr/src/app/datafiles \
+     -v ./featuretests:/usr/src/app/featuretests \
+     -v ./config:/usr/src/app/config \
      env-status-monitor
    ```
 
-4. **Stop / remove the container:**
+4. **With environment variables** (e.g. session auth or InfluxDB):
    ```bash
-   docker stop env-status-monitor
-   docker rm env-status-monitor
+   docker compose up -d  # reads from .env file automatically
    ```
+   Or with plain Docker:
+   ```bash
+   docker run -d -p 8080:8080 --name env-status-monitor \
+     -v ./results:/usr/src/app/results \
+     -v ./collections:/usr/src/app/collections \
+     -v ./environments:/usr/src/app/environments \
+     -v ./datafiles:/usr/src/app/datafiles \
+     -v ./featuretests:/usr/src/app/featuretests \
+     -v ./config:/usr/src/app/config \
+     -e SECRET=your-session-secret \
+     -e INFLUXDB_TOKEN=your-influx-token \
+     env-status-monitor
+   ```
+
+**Mounted Directories:**
+
+| Directory | Contents | Mutated at runtime |
+|-----------|----------|-------------------|
+| `results/` | Test results and history files | Yes — every cron cycle |
+| `collections/` | Postman collection files | Yes — via uploads |
+| `environments/` | Postman environment files | Yes — via uploads |
+| `datafiles/` | Postman data files | Yes — via uploads |
+| `featuretests/` | Test schedule configuration | Yes — via schedule editor |
+| `config/` | Application configuration | Yes — via config API |
 
 The app will be available at `http://localhost:8080`.
 
