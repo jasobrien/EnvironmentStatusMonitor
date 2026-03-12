@@ -1,20 +1,21 @@
-**EnvironmentStatus: Monitor Application Uptime and Performance with Postman Collections**
+**EnvironmentStatus: Monitor Application Uptime and Performance with Automated Test Collections**
 
 **Overview:**
 
 - Gain insights into your application/feature uptime across multiple environments with customizable dashboards.
 - Track historical uptime trends and recent performance metrics (last 30 days, 14 days, 7 days, 24 hrs).
-- Analyse response time graphs for each collection, with the option to exclude outliers.
+- Analyse response time graphs for each test suite, with the option to exclude outliers.
 - **Fully dynamic environment support** - add unlimited environments without code changes.
+- **Pluggable test runners** - use Newman (Postman), Bruno, Playwright, or add your own.
 
 **Key Features:**
 
-- **Uptime Dashboard (Dashboard.html):** Visualize uptime with doughnut charts, with each collection having segments for different environments/regions/apps/features.
+- **Uptime Dashboard (Dashboard.html):** Visualize uptime with doughnut charts, with each test suite having segments for different environments/regions/apps/features.
 - **Performance Dashboard:** View time-series graphs of response times, excluding failures.
 - **Dynamic Environment Support:** Add/remove environments through simple configuration - all routes, validation, and UI adapt automatically.
 - **Environment Initialization Script:** One-command setup for new environments with `scripts/init-environment.js`.
 - **Flexible Scheduling:** Adjust test execution frequency with cron expressions.
-- **Postman Integration:** Reuse existing Postman collections, environments, and data files.
+- **Multi-Runner Support:** Run tests with Newman (Postman), Bruno, Playwright, or add custom adapters. Mix runners per test within the same schedule.
 - **Outlier Management:** Edit history files to refine performance graphs and add comments for transparency.
 - **Deployment Readiness API:** Query uptime status before deployment using `/readyToDeploy/{env}` and `/readyToDeploy/{env}/{collection name}` endpoints.
 - **Security Hardened:** Path traversal prevention, input validation, and authentication middleware.
@@ -42,15 +43,17 @@
    # Example: node scripts/init-environment.js qa QA "Quality Assurance"
    ```
 
-2. **Add Postman Files:**
+2. **Add Test Files:**
 
-   - Place collections into the `collections` folder.
-   - Place environments into the `environments` folder.
+   - Place test scripts/collections into the `collections` folder.
+   - Place environment files into the `environments` folder.
    - Place data files into the `datafiles` folder.
 
 3. **Edit Schedule (`Edit Schedule` menu):**
 
-   - Specify Postman collection, environment, and data file names for each environment.
+   - Specify script name, environment, data file, and **runner** for each test.
+   - Supported runners: `newman` (default), `bruno`, `playwright`.
+   - Different tests in the same environment can use different runners.
    - The dashboard automatically detects all configured environments.
 
 4. **Customize Run Frequency:**
@@ -121,9 +124,9 @@ The app runs in Docker with mutable data (results, collections, config, etc.) st
 | Directory | Contents | Mutated at runtime |
 |-----------|----------|-------------------|
 | `results/` | Test results and history files | Yes — every cron cycle |
-| `collections/` | Postman collection files | Yes — via uploads |
-| `environments/` | Postman environment files | Yes — via uploads |
-| `datafiles/` | Postman data files | Yes — via uploads |
+| `collections/` | Test scripts and collection files | Yes — via uploads |
+| `environments/` | Environment configuration files | Yes — via uploads |
+| `datafiles/` | Test data files | Yes — via uploads |
 | `featuretests/` | Test schedule configuration | Yes — via schedule editor |
 | `config/` | Application configuration | Yes — via config API |
 
@@ -138,6 +141,7 @@ The app will be available at `http://localhost:8080`.
 **Configuration (config/config.js):**
 
 - `environments`: Array of environment configurations (supports unlimited environments)
+- `DefaultRunner`: Which test runner to use when not specified per-test (default: `newman`)
 - `session`: Enable/disable authentication (default: false)
 - `Influx`: Enable/disable InfluxDB integration (default: false)
 - `ExtendedLog`: Enable detailed logging (default: false)
@@ -162,6 +166,34 @@ The application is fully dynamic - add as many environments as needed:
 
 See `ADDING_ENVIRONMENTS.md` for detailed documentation.
 
+**Test Runners:**
+
+The app supports multiple test runners via a pluggable adapter pattern. Set a per-test runner in `featuretests/collections.json`, or set a default in `config/config.js`:
+
+```javascript
+"DefaultRunner": "newman"  // Options: "newman", "bruno", "playwright"
+```
+
+Each test in the schedule can specify its own runner:
+
+```json
+{
+  "script_name": "api-checks.json",
+  "environment_name": "envstatus_dev.json",
+  "datafile": "data.json",
+  "runner": "newman",
+  "Active": "1"
+}
+```
+
+| Runner | Script type | Environment file | Notes |
+|--------|-------------|-----------------|-------|
+| `newman` | Postman collection JSON | Postman environment JSON | Default. Uses Newman CLI. |
+| `bruno` | Bruno collection directory | Bruno environment JSON | Requires `@usebruno/cli`. |
+| `playwright` | Playwright spec file (`.spec.js`) | Passed via `TEST_ENVIRONMENT_FILE` env var | Requires `@playwright/test`. |
+
+To add a custom runner, create a module in `runners/` that exports a `run(options)` method returning `{ passed, totalTests, failedTests, avgResponseTime, executionNames, rawResult }`, then register it in `runners/index.js`.
+
 **API Endpoints:**
 
 Dynamic endpoints available for each configured environment:
@@ -179,7 +211,7 @@ All endpoints include automatic validation and security checks.
 
 **Additional Notes:**
 
-- Sample tests are provided; replace them with your own Postman collections.
+- Sample tests are provided; replace them with your own test scripts.
 - All environments are validated to prevent path traversal and injection attacks.
 - Frontend utilities available in `public/js/api.js` for consistent API interactions.
 - Constants centralized in `config/constants.js` for easy maintenance.
@@ -189,6 +221,7 @@ All endpoints include automatic validation and security checks.
 **Architecture Highlights:**
 
 - **Middleware-based security**: Authentication, validation, and error handling
+- **Pluggable runner adapters**: Newman, Bruno, Playwright with a common interface
 - **Factory patterns**: Reusable upload configurations and route handlers
 - **Dynamic route generation**: All endpoints auto-created from config
 - **Centralized constants**: No magic numbers scattered in code
@@ -300,6 +333,11 @@ Tests require sample data files in the `results/` directory. These are automatic
 │   ├── data.js            # Data management routes
 │   ├── deploy.js          # Deployment readiness API
 │   └── upload.js          # File upload handling
+├── runners/               # Pluggable test runner adapters
+│   ├── index.js           # Runner registry and factory
+│   ├── newman.js          # Newman (Postman) adapter
+│   ├── bruno.js           # Bruno CLI adapter
+│   └── playwright.js      # Playwright adapter
 ├── public/
 │   └── js/
 │       ├── api.js         # NEW - Shared frontend utilities
@@ -317,8 +355,8 @@ Tests require sample data files in the `results/` directory. These are automatic
 │   ├── api.test.js        # Core API tests
 │   ├── api-errors.test.js # NEW - Error handling tests
 │   └── ui.test.js         # UI tests
-├── collections/           # Postman collections
-├── environments/          # Postman environments
+├── collections/           # Test scripts and collections
+├── environments/          # Environment configuration files
 ├── results/              # Test results (generated)
 └── server.js             # Main server with dynamic routing
 ```
