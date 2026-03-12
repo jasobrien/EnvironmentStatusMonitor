@@ -14,4 +14,11 @@ build/
 dist/
 *.log
 *.pid
-*.lock
+
+# Ignore test and development files
+test/
+test-results/
+playwright-report/
+playwright.config.js
+debug-env.js
+*.md

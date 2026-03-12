@@ -68,6 +68,35 @@
 2. **Install Dependencies:** `npm install`
 3. **Run:** `node index.js`
 
+**Docker Setup:**
+
+1. **Build the image:**
+   ```bash
+   docker build -f dockerfile -t env-status-monitor .
+   ```
+
+2. **Run the container:**
+   ```bash
+   docker run -d -p 8080:8080 --name env-status-monitor env-status-monitor
+   ```
+
+3. **Run with environment variables** (e.g. session auth or InfluxDB enabled):
+   ```bash
+   docker run -d -p 8080:8080 \
+     -e SECRET=your-session-secret \
+     -e INFLUXDB_TOKEN=your-influx-token \
+     --name env-status-monitor \
+     env-status-monitor
+   ```
+
+4. **Stop / remove the container:**
+   ```bash
+   docker stop env-status-monitor
+   docker rm env-status-monitor
+   ```
+
+The app will be available at `http://localhost:8080`.
+
 **Environment Variables (.env file):**
 
 - `PORT=<Your desired port>` (default: 8080)
