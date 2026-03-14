@@ -111,6 +111,112 @@ server.post("/api/config", requireAuth, (req, res) => {
     }
 });
 
+// Dashboard management API endpoints
+const dashboardsFilePath = path.join(__dirname, 'config', 'dashboards.json');
+
+function readDashboards() {
+    try {
+        const data = fs.readFileSync(dashboardsFilePath, 'utf8');
+        return JSON.parse(data);
+    } catch {
+        return { dashboards: [] };
+    }
+}
+
+function writeDashboards(data) {
+    fs.writeFileSync(dashboardsFilePath, JSON.stringify(data, null, 2), 'utf8');
+}
+
+server.get("/api/dashboards", requireAuth, (req, res) => {
+    try {
+        const data = readDashboards();
+        res.json(data.dashboards);
+    } catch (error) {
+        console.error('Error reading dashboards:', error);
+        res.status(500).json({ error: 'Failed to read dashboards' });
+    }
+});
+
+server.get("/api/dashboards/:id", requireAuth, (req, res) => {
+    try {
+        const data = readDashboards();
+        const dashboard = data.dashboards.find(d => d.id === req.params.id);
+        if (!dashboard) return res.status(404).json({ error: 'Dashboard not found' });
+        res.json(dashboard);
+    } catch (error) {
+        console.error('Error reading dashboard:', error);
+        res.status(500).json({ error: 'Failed to read dashboard' });
+    }
+});
+
+server.post("/api/dashboards", requireAuth, (req, res) => {
+    try {
+        const { name, description, environments: envs, tests } = req.body;
+        if (!name || typeof name !== 'string' || name.trim().length === 0) {
+            return res.status(400).json({ error: 'Dashboard name is required' });
+        }
+        const data = readDashboards();
+        const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now();
+        const newDashboard = {
+            id,
+            name: name.trim(),
+            description: (description || '').trim(),
+            environments: Array.isArray(envs) ? envs : [],
+            tests: Array.isArray(tests) ? tests : [],
+            isDefault: false
+        };
+        data.dashboards.push(newDashboard);
+        writeDashboards(data);
+        fn.logOutput("Info", `Dashboard created: ${newDashboard.name}`);
+        res.status(201).json(newDashboard);
+    } catch (error) {
+        console.error('Error creating dashboard:', error);
+        res.status(500).json({ error: 'Failed to create dashboard' });
+    }
+});
+
+server.put("/api/dashboards/:id", requireAuth, (req, res) => {
+    try {
+        const data = readDashboards();
+        const idx = data.dashboards.findIndex(d => d.id === req.params.id);
+        if (idx === -1) return res.status(404).json({ error: 'Dashboard not found' });
+        const { name, description, environments: envs, tests } = req.body;
+        if (name !== undefined) {
+            if (typeof name !== 'string' || name.trim().length === 0) {
+                return res.status(400).json({ error: 'Dashboard name cannot be empty' });
+            }
+            data.dashboards[idx].name = name.trim();
+        }
+        if (description !== undefined) data.dashboards[idx].description = (description || '').trim();
+        if (envs !== undefined) data.dashboards[idx].environments = Array.isArray(envs) ? envs : [];
+        if (tests !== undefined) data.dashboards[idx].tests = Array.isArray(tests) ? tests : [];
+        writeDashboards(data);
+        fn.logOutput("Info", `Dashboard updated: ${data.dashboards[idx].name}`);
+        res.json(data.dashboards[idx]);
+    } catch (error) {
+        console.error('Error updating dashboard:', error);
+        res.status(500).json({ error: 'Failed to update dashboard' });
+    }
+});
+
+server.delete("/api/dashboards/:id", requireAuth, (req, res) => {
+    try {
+        const data = readDashboards();
+        const idx = data.dashboards.findIndex(d => d.id === req.params.id);
+        if (idx === -1) return res.status(404).json({ error: 'Dashboard not found' });
+        if (data.dashboards[idx].isDefault) {
+            return res.status(400).json({ error: 'Cannot delete the default dashboard' });
+        }
+        const removed = data.dashboards.splice(idx, 1)[0];
+        writeDashboards(data);
+        fn.logOutput("Info", `Dashboard deleted: ${removed.name}`);
+        res.json({ success: true, message: `Dashboard '${removed.name}' deleted` });
+    } catch (error) {
+        console.error('Error deleting dashboard:', error);
+        res.status(500).json({ error: 'Failed to delete dashboard' });
+    }
+});
+
 server.get('/', (req, res) => {
     if (SESSION_ON) {
         res.sendFile(path.join(__dirname, 'pages', 'login.html'));
@@ -255,14 +361,27 @@ config.environments.forEach((env, index) => {
     fn.logOutput("Info", `Test route created: ${routePath}`);
 });
 
-// Dynamic cron jobs based on environments configuration
+// Dynamic cron jobs — one job per (environment × schedule) pair
 const cronJobs = [];
 if (config.environments && config.environments.length > 0) {
+    let scheduleData;
+    try {
+        scheduleData = JSON.parse(fs.readFileSync(`${FeatureTestsFolder}collections.json`));
+    } catch (e) {
+        fn.logOutput("Warning", `Could not read collections.json at startup: ${e.message}. Defaulting all jobs to everyMinute.`);
+    }
     config.environments.forEach((env, index) => {
         const filename = `${env.id}results`;
-        const job = new CronJob(everyMinute, () => runTests(index, filename), null, true, CronLocation);
-        cronJobs.push(job);
-        fn.logOutput("Info", `Cron job created for environment: ${env.id}`);
+        const envTests = scheduleData?.ENV?.[index]?.tests?.filter(t => t.Active == 1) || [];
+        const uniqueSchedules = envTests.length > 0
+            ? [...new Set(envTests.map(t => t.schedule || "everyMinute"))]
+            : ["everyMinute"];
+        uniqueSchedules.forEach(scheduleKey => {
+            const cronExpr = config[scheduleKey] || everyMinute;
+            const job = new CronJob(cronExpr, () => runTests(index, filename, scheduleKey), null, true, CronLocation);
+            cronJobs.push(job);
+            fn.logOutput("Info", `Cron job created for env: ${env.id}, schedule: ${scheduleKey} (${cronExpr})`);
+        });
     });
 }
 
@@ -295,6 +414,74 @@ function runTests(region, filename) {
                 const log = `${fn.myDateTime()},${testConfig.script_name},${testConfig.environment_name},${runnerName}`;
                 fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
                 fn.logOutput("Info", `Log : ${log}`);
+
+                if (runner === "playwright") {
+                    const specFile = path.resolve(__dirname, "runners/playwright/specs", testEntry.script_name);
+                    const envfile = testEntry.environment_name
+                        ? path.resolve(__dirname, PostmanEnvFolder, testEntry.environment_name)
+                        : "";
+                    const stem = path.basename(testEntry.script_name, path.extname(testEntry.script_name));
+                    runPlaywrightSpec({
+                        specFile,
+                        envFile: envfile,
+                        environmentName: schedule.ENV[region].Name,
+                        key: stem,
+                        RAG: fn.RAG,
+                        calculatePercentage: fn.calculatePercentage,
+                        myDateTime: fn.myDateTime,
+                    }).then(result => {
+                        fn.CreateJsonObjectForResults(result);
+                        fn.logOutput("Info", `Playwright result for ${stem}: ${result.value}`);
+                        if (Influx) influx.write(result, influxToken);
+                        fn.upsertResultInLog(JSON.stringify(result), filename);
+                        fn.writeHistoryLogs(JSON.stringify(result) + "\n", `hist_${filename}`);
+                    }).catch(err => fn.logOutput("Error", `Playwright runner error: ${err.message}`));
+                } else if (runner === "supertest") {
+                    const specFile = path.resolve(__dirname, "runners/supertest/specs", testEntry.script_name);
+                    const envfile = testEntry.environment_name
+                        ? path.resolve(__dirname, PostmanEnvFolder, testEntry.environment_name)
+                        : "";
+                    const stem = path.basename(testEntry.script_name, path.extname(testEntry.script_name));
+                    runSupertestSpec({
+                        specFile,
+                        envFile: envfile,
+                        environmentName: schedule.ENV[region].Name,
+                        key: stem,
+                        RAG: fn.RAG,
+                        calculatePercentage: fn.calculatePercentage,
+                        myDateTime: fn.myDateTime,
+                    }).then(result => {
+                        fn.CreateJsonObjectForResults(result);
+                        fn.logOutput("Info", `Supertest result for ${stem}: ${result.value}`);
+                        if (Influx) influx.write(result, influxToken);
+                        fn.upsertResultInLog(JSON.stringify(result), filename);
+                        fn.writeHistoryLogs(JSON.stringify(result) + "\n", `hist_${filename}`);
+                    }).catch(err => fn.logOutput("Error", `Supertest runner error: ${err.message}`));
+                } else {
+                    // Default: Newman / Postman
+                    const collection = `${PostmanCollectionFolder}${testEntry.script_name}`;
+                    const envfile = testEntry.environment_name ? `${PostmanEnvFolder}${testEntry.environment_name}` : "";
+                    const datafile = testEntry.datafile ? `${PostmanDataFolder}${testEntry.datafile}` : "";
+                    const stem = path.basename(testEntry.script_name, path.extname(testEntry.script_name));
+                    runNewmanCollection({
+                        collection,
+                        environmentFile: envfile,
+                        dataFile: datafile,
+                        environmentName: schedule.ENV[region].Name,
+                        key: stem,
+                        RAG: fn.RAG,
+                        calculatePercentage: fn.calculatePercentage,
+                        myDateTime: fn.myDateTime,
+                        extendedLog: ExtendedLog,
+                    }).then(({ result, run, extendedLog: extended }) => {
+                        fn.CreateJsonObjectForResults(result);
+                        fn.logOutput("Info", `Newman result for ${stem}: ${result.value}`);
+                        if (Influx) influx.write(result, influxToken);
+                        fn.upsertResultInLog(JSON.stringify(result), filename);
+                        fn.writeHistoryLogs(JSON.stringify(result) + "\n", `hist_${filename}`);
+                        if (extended) fn.writeToCurrentLog(JSON.stringify(run) + "\n", `_ExtendedLog_${filename}`);
+                    }).catch(err => fn.logOutput("Error", `Newman runner error: ${err.message}`));
+                }
             }
             resolve("Tests completed successfully.");
         } catch (error) {

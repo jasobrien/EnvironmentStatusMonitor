@@ -12,6 +12,30 @@
         <div class="row">
             <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                 <h1 class="text-center mb-4">Feature Test Suite Editor</h1>
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="font-weight-bold">Available Schedule Keys</span>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#scheduleRefBody">Show / Hide</button>
+                    </div>
+                    <div id="scheduleRefBody" class="collapse">
+                        <div class="card-body py-2">
+                            <small class="text-muted">Set the <code>"schedule"</code> field on each test entry to one of these keys. Omitting it defaults to <code>everyMinute</code>.</small>
+                            <table class="table table-sm table-bordered mt-2 mb-0">
+                                <thead class="thead-light"><tr><th>Key</th><th>Runs every</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>everyMinute</code></td><td>1 minute (default)</td></tr>
+                                    <tr><td><code>Every5</code></td><td>5 minutes</td></tr>
+                                    <tr><td><code>every10Minutes</code></td><td>10 minutes</td></tr>
+                                    <tr><td><code>Every15</code></td><td>15 minutes</td></tr>
+                                    <tr><td><code>Every30</code></td><td>30 minutes</td></tr>
+                                    <tr><td><code>Every60</code></td><td>60 minutes</td></tr>
+                                    <tr><td><code>every6hours</code></td><td>6 hours</td></tr>
+                                    <tr><td><code>every12hours</code></td><td>12 hours</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 <label for="json-data" class="sr-only">Feature test suite JSON editor</label>
                 <textarea id="json-data" class="form-control" rows="100" style="font-size: 11px" aria-label="JSON data editor for feature test suite"></textarea>
                 <div class="text-center mt-4">

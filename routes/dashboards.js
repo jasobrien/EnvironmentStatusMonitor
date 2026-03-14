@@ -9,6 +9,14 @@ router.get("/", requireAuth, function (req, res) {
   res.sendFile(myPath + "/pages/dashboard.html");
 });
 
+router.get("/view/:id", requireAuth, function (req, res) {
+  res.sendFile(myPath + "/pages/dashboard.html");
+});
+
+router.get("/manage", requireAuth, function (req, res) {
+  res.sendFile(myPath + "/pages/manage-dashboards.html");
+});
+
 router.get("/performance/:env/", requireAuth, function (req, res) {
   res.sendFile(myPath + "/pages/performance.html");
 });

@@ -37,6 +37,29 @@ async function fetchConfig() {
       console.log(err);
     });
 
+    // Populate dashboards dropdown dynamically
+    fetch('/api/dashboards')
+      .then(r => r.json())
+      .then(dashboards => {
+        const menu = document.getElementById('dashboardsMenu');
+        if (!menu || !dashboards.length) return;
+        // Insert custom dashboards before the divider
+        const divider = menu.querySelector('.dropdown-divider');
+        dashboards.filter(d => !d.isDefault).forEach(d => {
+          const li = document.createElement('li');
+          li.setAttribute('role', 'none');
+          const a = document.createElement('a');
+          a.className = 'dropdown-item';
+          a.setAttribute('role', 'menuitem');
+          a.href = '/dashboard/view/' + encodeURIComponent(d.id);
+          a.textContent = d.name;
+          li.appendChild(a);
+          if (divider) menu.insertBefore(li, divider.parentElement);
+          else menu.appendChild(li);
+        });
+      })
+      .catch(err => console.log('Failed to load dashboards for nav', err));
+
     checkLoggedIn()
     .then(data => {
         if (data.loggedin) {

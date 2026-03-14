@@ -12,6 +12,8 @@ const environments = [];
 const environmentLabels = {};
 const environmentData = {};
 let dashboardInitialized = false;
+let activeDashboard = null;  // loaded dashboard filter config
+let allowedTests = null;     // null = show all, array = filter
 
 // ── Colour helpers ──────────────────────────────────────────
 const STATUS_COLOURS = { Green: '#22c55e', Red: '#ef4444', Amber: '#f59e0b' };
@@ -55,6 +57,23 @@ async function fetchConfig() {
     }
 }
 
+// ── Dashboard ID from URL ────────────────────────────────────
+function getDashboardId() {
+    const parts = window.location.pathname.split('/');
+    // /dashboard/view/:id
+    const viewIdx = parts.indexOf('view');
+    if (viewIdx >= 0 && parts[viewIdx + 1]) return decodeURIComponent(parts[viewIdx + 1]);
+    return null;
+}
+
+async function fetchDashboardConfig(id) {
+    try {
+        const r = await fetch('/api/dashboards/' + encodeURIComponent(id));
+        if (!r.ok) return null;
+        return await r.json();
+    } catch (err) { console.error('Error loading dashboard config:', err); return null; }
+}
+
 // ── DOM bootstrap ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function () {
     const config = await fetchConfig();
@@ -66,10 +85,39 @@ document.addEventListener('DOMContentLoaded', async function () {
             environmentData[env] = { features: [], colors: [], uptimeData: [], lastUpdated: null };
         });
     }
-    if (config && config.page_title) {
-        const t = document.getElementById('pageTitle');
-        if (t) t.textContent = config.page_title;
+
+    // Load dashboard filter if viewing a specific dashboard
+    const dashId = getDashboardId();
+    if (dashId) {
+        activeDashboard = await fetchDashboardConfig(dashId);
+        if (activeDashboard) {
+            // Filter environments if dashboard specifies them
+            if (activeDashboard.environments && activeDashboard.environments.length > 0) {
+                const keep = new Set(activeDashboard.environments);
+                const toRemove = environments.filter(e => !keep.has(e));
+                toRemove.forEach(e => {
+                    environments.splice(environments.indexOf(e), 1);
+                    delete environmentLabels[e];
+                    delete environmentData[e];
+                });
+            }
+            // Set test filter
+            if (activeDashboard.tests && activeDashboard.tests.length > 0) {
+                allowedTests = activeDashboard.tests;
+            }
+            // Update page title to dashboard name
+            const t = document.getElementById('pageTitle');
+            if (t) t.textContent = activeDashboard.name;
+            const h = document.querySelector('.card-header h2');
+            if (h) h.textContent = activeDashboard.name;
+        }
+    } else {
+        if (config && config.page_title) {
+            const t = document.getElementById('pageTitle');
+            if (t) t.textContent = config.page_title;
+        }
     }
+
     if (environments.length > 0) initDashboard();
 });
 
@@ -84,7 +132,11 @@ async function fetchUptimeStats(environment, days) {
 async function fetchStatus(environment) {
     try {
         const r = await fetch(`/results/${environment}/`);
-        const data = await r.json();
+        let data = await r.json();
+        // Apply test key filter if dashboard specifies it
+        if (allowedTests) {
+            data = data.filter(d => allowedTests.includes(d.key));
+        }
         const ed = environmentData[environment];
         ed.features = data.map(d => d.key);
         ed.colors = data.map(d => d.value);
