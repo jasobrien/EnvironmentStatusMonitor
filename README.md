@@ -98,6 +98,7 @@ The app runs in Docker with mutable data (results, collections, config, etc.) st
      -v ./datafiles:/usr/src/app/datafiles \
      -v ./featuretests:/usr/src/app/featuretests \
      -v ./config:/usr/src/app/config \
+     -v ./bruno:/usr/src/app/bruno \
      env-status-monitor
    ```
 
@@ -114,6 +115,7 @@ The app runs in Docker with mutable data (results, collections, config, etc.) st
      -v ./datafiles:/usr/src/app/datafiles \
      -v ./featuretests:/usr/src/app/featuretests \
      -v ./config:/usr/src/app/config \
+     -v ./bruno:/usr/src/app/bruno \
      -e SECRET=your-session-secret \
      -e INFLUXDB_TOKEN=your-influx-token \
      env-status-monitor
@@ -129,6 +131,7 @@ The app runs in Docker with mutable data (results, collections, config, etc.) st
 | `datafiles/` | Test data files | Yes — via uploads |
 | `featuretests/` | Test schedule configuration | Yes — via schedule editor |
 | `config/` | Application configuration | Yes — via config API |
+| `bruno/` | Bruno collection directories | Yes — via uploads or manual edits |
 
 The app will be available at `http://localhost:8080`.
 
@@ -191,6 +194,7 @@ Each test in the schedule can specify its own runner:
 | `newman` | Postman collection JSON | Postman environment JSON | Default. Uses Newman CLI. |
 | `bruno` | Bruno collection directory | Bruno environment JSON | Requires `@usebruno/cli`. |
 | `playwright` | Playwright spec file (`.spec.js`) | Passed via `TEST_ENVIRONMENT_FILE` env var | Requires `@playwright/test`. |
+| `supertest` | Mocha/Supertest spec file (`.test.js`) | Postman-style environment JSON | Requires `supertest` + `mocha`. Sets `MONITOR_BASE_URL`. |
 
 To add a custom runner, create a module in `runners/` that exports a `run(options)` method returning `{ passed, totalTests, failedTests, avgResponseTime, executionNames, rawResult }`, then register it in `runners/index.js`.
 
@@ -266,6 +270,60 @@ To run only the API tests (includes error handling tests):
 npx playwright test --project="API Tests"
 ```
 
+#### 5. Run Collection Tests (Playwright)
+
+Dedicated tests modelling the 4 Postman collections using Page Object Model (UI) and Playwright `request` (API):
+
+```bash
+# UI tests using Page Object Model
+npx playwright test --project="Collections UI Tests"
+
+# API tests using Playwright request
+npx playwright test --project="Collections API Tests"
+```
+
+**Collection Test Coverage:**
+
+| Postman Collection | Endpoints | UI Tests | API Tests |
+|---|---|---|---|
+| Dashboard | `GET /dashboard` | 1 | 1 |
+| Data | `GET /data/directory`, `GET /data/schedule` | 2 | 2 |
+| Deploy | `GET /readyToDeploy/:env`, `GET /readyToDeploy/:env/:trans` | 2 | 2 |
+| Performance | `GET /dashboard/performance/:env/All`, `GET /dashboard/performance/:env/30` | 2 | 2 |
+
+Page Object Models are located in `test/pages/` with classes for each page (DashboardPage, DataPage, DeployPage, PerformancePage).
+
+### Supertest Tests
+
+Supertest tests provide direct HTTP testing against the Express app without starting a server. They model the same 4 Postman collections:
+
+```bash
+npm run test:supertest
+```
+
+Uses Mocha + Supertest + Chai. Tests are in `test/collections-supertest.test.js`.
+
+### Bruno Tests
+
+Bruno collections provide API testing using the Bruno CLI. They model the same 4 Postman collections:
+
+```bash
+# Requires the server to be running on port 8080
+npm run test:bruno
+```
+
+Bruno collections are in `bruno/collections-api/` organized by collection folder (dashboard, data, deploy, performance). Each `.bru` file contains the request definition, assertions, and tests.
+
+### All Test Commands
+
+| Command | Runner | Description |
+|---------|--------|-------------|
+| `npx playwright test` | Playwright | All Playwright tests (UI + API) |
+| `npx playwright test --project="Collections UI Tests"` | Playwright | Collection UI tests with Page Object Model |
+| `npx playwright test --project="Collections API Tests"` | Playwright | Collection API tests with Playwright request |
+| `npm run test:supertest` | Supertest | Collection API tests with Mocha/Supertest/Chai |
+| `npm run test:bruno` | Bruno | Collection API tests with Bruno CLI |
+
 **Test Coverage:**
 - 12 core API functionality tests
 - 29 error handling and security tests
@@ -337,7 +395,18 @@ Tests require sample data files in the `results/` directory. These are automatic
 │   ├── index.js           # Runner registry and factory
 │   ├── newman.js          # Newman (Postman) adapter
 │   ├── bruno.js           # Bruno CLI adapter
-│   └── playwright.js      # Playwright adapter
+│   ├── playwright.js      # Playwright adapter
+│   └── supertest/         # Supertest adapter
+│       └── supertest.js   # Mocha/Supertest runner
+├── bruno/                 # Bruno test collections
+│   └── collections-api/   # API collection modelling Postman tests
+│       ├── bruno.json
+│       ├── collection.bru
+│       ├── environments/  # Bruno environment files
+│       ├── dashboard/     # Dashboard collection requests
+│       ├── data/          # Data collection requests
+│       ├── deploy/        # Deploy collection requests
+│       └── performance/   # Performance collection requests
 ├── public/
 │   └── js/
 │       ├── api.js         # NEW - Shared frontend utilities
@@ -354,7 +423,15 @@ Tests require sample data files in the `results/` directory. These are automatic
 ├── test/
 │   ├── api.test.js        # Core API tests
 │   ├── api-errors.test.js # NEW - Error handling tests
-│   └── ui.test.js         # UI tests
+│   ├── ui.test.js         # UI tests
+│   ├── collections-ui.test.js    # Collection UI tests (Page Object Model)
+│   ├── collections-api.test.js   # Collection API tests (Playwright request)
+│   ├── collections-supertest.test.js # Collection API tests (Supertest)
+│   └── pages/             # Page Object Models
+│       ├── DashboardPage.js
+│       ├── DataPage.js
+│       ├── DeployPage.js
+│       └── PerformancePage.js
 ├── collections/           # Test scripts and collections
 ├── environments/          # Environment configuration files
 ├── results/              # Test results (generated)
@@ -387,6 +464,9 @@ Tests require sample data files in the `results/` directory. These are automatic
 - ✅ Comprehensive error scenario testing
 - ✅ Security validation tests
 - ✅ Multi-environment test coverage
+- ✅ Collection tests modelling all 4 Postman collections across Playwright (UI + API), Supertest, and Bruno
+- ✅ Page Object Model pattern for UI test maintainability
+- ✅ Multiple test runner support: Playwright, Supertest (Mocha/Chai), Bruno CLI
 
 ---
 

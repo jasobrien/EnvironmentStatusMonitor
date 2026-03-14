@@ -551,3 +551,4 @@ if (require.main === module) {
 }
 
 module.exports = keepAlive;
+module.exports.app = server;

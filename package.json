@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "test:ui": "playwright test --config=playwright.config.js",
-    "test:api": "playwright test --config=playwright.config.js"
+    "test:api": "playwright test --config=playwright.config.js",
+    "test:supertest": "mocha test/collections-supertest.test.js --timeout 10000 --exit",
+    "test:bruno": "cd bruno/collections-api && bru run --env local"
   },
   "keywords": [],
   "author": "Jim O'Brien",

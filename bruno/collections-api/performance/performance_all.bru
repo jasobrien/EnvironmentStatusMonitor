@@ -1,0 +1,22 @@
+meta {
+  name: Performance_All
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/dashboard/performance/dev/All
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains Feature Collection Performance
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

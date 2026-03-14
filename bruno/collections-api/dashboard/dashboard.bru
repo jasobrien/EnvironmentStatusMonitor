@@ -1,0 +1,22 @@
+meta {
+  name: Dashboard
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/dashboard
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains Feature Status Monitor Dashboard
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

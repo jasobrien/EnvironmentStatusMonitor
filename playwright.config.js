@@ -28,6 +28,14 @@ module.exports = defineConfig({
       name: 'Runner Tests',
       testMatch: /.*runners\.test\.js/,
     },
+    {
+      name: 'Collections UI Tests',
+      testMatch: /.*collections-ui\.test\.js/,
+    },
+    {
+      name: 'Collections API Tests',
+      testMatch: /.*collections-api\.test\.js/,
+    },
   ],
   globalSetup: './test/global-setup.js',
   globalTeardown: './test/global-teardown.js',

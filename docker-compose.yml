@@ -12,6 +12,7 @@ services:
       - ./datafiles:/usr/src/app/datafiles
       - ./featuretests:/usr/src/app/featuretests
       - ./config:/usr/src/app/config
+      - ./bruno:/usr/src/app/bruno
     env_file:
       - path: .env
         required: false
