@@ -1,0 +1,21 @@
+{
+	"id": "48e166b7-7038-461f-af0a-7c64eb1b4ff4",
+	"name": "envstatus_test",
+	"values": [
+		{
+			"key": "env",
+			"value": "test",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "trans_name",
+			"value": "env_performance",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2023-05-04T12:15:19.939Z",
+	"_postman_exported_using": "Postman/10.13.5"
+}
