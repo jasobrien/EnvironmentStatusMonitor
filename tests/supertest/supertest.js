@@ -22,7 +22,7 @@ const { execFile } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
-const ROOT = path.join(__dirname, "..");
+const ROOT = path.join(__dirname, "../..");
 
 /**
  * Parse Mocha JSON reporter output into a simplified stats object.

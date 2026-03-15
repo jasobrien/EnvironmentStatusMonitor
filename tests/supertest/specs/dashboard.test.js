@@ -1,12 +1,12 @@
 /**
- * dashboard-routes.test.js
+ * dashboard.test.js
  *
  * Supertest suite: dashboard page route checks.
- * Shows up on the dashboard as the key "dashboard-routes".
+ * Shows up on the dashboard as the key "dashboard".
  *
  * Schedule entry:
  *   {
- *     "script_name": "dashboard-routes.test.js",
+ *     "script_name": "dashboard.test.js",
  *     "environment_name": "envstatus_dev.json",
  *     "Active": "1",
  *     "runner": "supertest"

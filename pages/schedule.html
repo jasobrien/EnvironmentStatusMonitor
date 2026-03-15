@@ -39,6 +39,7 @@
             <td>${test.environment_name}</td>
             <td>${test.datafile}</td>
             <td>${test.runner || 'newman'}</td>
+            <td>${test.schedule || 'everyMinute'}</td>
             <td>${test.Active}</td>
           </tr>
         `).join("");
@@ -59,6 +60,7 @@
                       <th scope="col">Environment Name</th>
                       <th scope="col">Datafile</th>
                       <th scope="col">Runner</th>
+                      <th scope="col">Schedule</th>
                       <th scope="col">Active</th>
                     </tr>
                   </thead>

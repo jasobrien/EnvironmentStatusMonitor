@@ -151,7 +151,7 @@ server.get("/api/dashboards/:id", requireAuth, (req, res) => {
 
 server.post("/api/dashboards", requireAuth, (req, res) => {
     try {
-        const { name, description, environments: envs, tests } = req.body;
+        const { name, description, environments: envs, tests, runner } = req.body;
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             return res.status(400).json({ error: 'Dashboard name is required' });
         }
@@ -163,6 +163,7 @@ server.post("/api/dashboards", requireAuth, (req, res) => {
             description: (description || '').trim(),
             environments: Array.isArray(envs) ? envs : [],
             tests: Array.isArray(tests) ? tests : [],
+            runner: (typeof runner === 'string') ? runner.trim() : '',
             isDefault: false
         };
         data.dashboards.push(newDashboard);
@@ -180,7 +181,7 @@ server.put("/api/dashboards/:id", requireAuth, (req, res) => {
         const data = readDashboards();
         const idx = data.dashboards.findIndex(d => d.id === req.params.id);
         if (idx === -1) return res.status(404).json({ error: 'Dashboard not found' });
-        const { name, description, environments: envs, tests } = req.body;
+        const { name, description, environments: envs, tests, runner } = req.body;
         if (name !== undefined) {
             if (typeof name !== 'string' || name.trim().length === 0) {
                 return res.status(400).json({ error: 'Dashboard name cannot be empty' });
@@ -190,6 +191,7 @@ server.put("/api/dashboards/:id", requireAuth, (req, res) => {
         if (description !== undefined) data.dashboards[idx].description = (description || '').trim();
         if (envs !== undefined) data.dashboards[idx].environments = Array.isArray(envs) ? envs : [];
         if (tests !== undefined) data.dashboards[idx].tests = Array.isArray(tests) ? tests : [];
+        if (runner !== undefined) data.dashboards[idx].runner = (typeof runner === 'string') ? runner.trim() : '';
         writeDashboards(data);
         fn.logOutput("Info", `Dashboard updated: ${data.dashboards[idx].name}`);
         res.json(data.dashboards[idx]);
@@ -274,10 +276,12 @@ server.get("/histresults/:ResultsEnv/:key", validateEnvironment, (req, res) => {
 
 server.get("/histresultsdays/:ResultsEnv/:key/:days", validateEnvironment, (req, res) => {
     const { ResultsEnv, key: myKey, days: numDays } = req.params;
+    const { runner } = req.query;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
     const results = fn.createJsonArrayFromFile(filename);
-    const data_filter = results.filter(element => element.key == myKey && element.IncludeInStats == 1);
+    let data_filter = results.filter(element => element.key == myKey && element.IncludeInStats == 1);
+    if (runner) data_filter = data_filter.filter(r => r.runner === runner);
     const now = new Date();
     const DaysAgoTimestamp = now.getTime() - (numDays === "All" ? 1000 : numDays) * 24 * 60 * 60 * 1000;
     const graphHistory = data_filter.filter(record => parseIso8601Datetime(record.DateTime).getTime() >= DaysAgoTimestamp);
@@ -302,10 +306,12 @@ function parseIso8601Datetime(isoString) {
 
 server.get("/histresultskeys/:ResultsEnv", validateEnvironment, (req, res) => {
     const { ResultsEnv } = req.params;
+    const { runner } = req.query;
     fn.logOutput("Info", `Environment Passed was : ${ResultsEnv}`);
     const filename = fn.getHistFileName(ResultsEnv);
     const results = fn.createJsonArrayFromFile(filename);
-    const distinctTrans = Array.from(new Set(results.map(trans => trans.key)));
+    const filtered = runner ? results.filter(r => r.runner === runner) : results;
+    const distinctTrans = Array.from(new Set(filtered.map(trans => trans.key)));
     res.send(distinctTrans);
 });
 
@@ -346,6 +352,32 @@ server.get("/getSummaryStats/:ResultsEnv/:days", validateEnvironment, (req, res)
     const data = results.filter(record => parseIso8601Datetime(record.DateTime).getTime() >= DaysAgoTimestamp);
     const stats = fn.calculateStatusCounts(data);
     res.send({ Environment: ResultsEnv, ...stats });
+});
+
+// ── Runner API endpoints ────────────────────────────────────
+server.get("/api/runners", (req, res) => {
+    res.json(listRunners());
+});
+
+server.get("/results/:ResultsEnv/:runner/", validateEnvironment, (req, res) => {
+    const { ResultsEnv, runner } = req.params;
+    const filename = fn.getResultFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const filtered = results.filter(r => r.runner === runner);
+    res.send(filtered);
+});
+
+server.get("/getSummaryStats/:ResultsEnv/:runner/:days", validateEnvironment, (req, res) => {
+    const { ResultsEnv, runner, days: numDays } = req.params;
+    const filename = fn.getHistFileName(ResultsEnv);
+    const results = fn.createJsonArrayFromFile(filename);
+    const now = new Date();
+    const DaysAgoTimestamp = now.getTime() - numDays * 24 * 60 * 60 * 1000;
+    const data = results
+        .filter(r => r.runner === runner)
+        .filter(record => parseIso8601Datetime(record.DateTime).getTime() >= DaysAgoTimestamp);
+    const stats = fn.calculateStatusCounts(data);
+    res.send({ Environment: ResultsEnv, Runner: runner, ...stats });
 });
 
 // Dynamic test run routes for all environments
@@ -397,92 +429,44 @@ function runTests(region, filename) {
                 return;
             }
 
-            const totalTests = Object.keys(schedule.ENV[region].tests).length;
             const tests = schedule.ENV[region].tests;
-            const filteredTests = Object.keys(tests).filter(key => tests[key].Active == 1);
-            fn.logOutput("Total number of test objects", totalTests);
-            fn.logOutput("Total number of filtered test objects", filteredTests.length);
+            const activeTests = tests.filter(t => t.Active == 1);
+            fn.logOutput("Total number of test objects", tests.length);
+            fn.logOutput("Total number of active test objects", activeTests.length);
 
             fn.clearCurrentLog(filename);
-            for (let i = 0; i < totalTests; i++) {
-                const testConfig = schedule.ENV[region].tests[i];
-                const script = `${ScriptFolder}${testConfig.script_name}`;
-                const envfile = testConfig.environment_name ? `${EnvironmentFolder}${testConfig.environment_name}` : "";
-                const datafile = testConfig.datafile ? `${DataFolder}${testConfig.datafile}` : "";
-                const runnerName = testConfig.runner || DefaultRunner;
-                await runMyTest(script, envfile, schedule.ENV[region], datafile, filename, runnerName);
-                const log = `${fn.myDateTime()},${testConfig.script_name},${testConfig.environment_name},${runnerName}`;
-                fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
-                fn.logOutput("Info", `Log : ${log}`);
 
-                if (runner === "playwright") {
-                    const specFile = path.resolve(__dirname, "runners/playwright/specs", testEntry.script_name);
-                    const envfile = testEntry.environment_name
-                        ? path.resolve(__dirname, PostmanEnvFolder, testEntry.environment_name)
-                        : "";
-                    const stem = path.basename(testEntry.script_name, path.extname(testEntry.script_name));
-                    runPlaywrightSpec({
-                        specFile,
-                        envFile: envfile,
-                        environmentName: schedule.ENV[region].Name,
-                        key: stem,
-                        RAG: fn.RAG,
-                        calculatePercentage: fn.calculatePercentage,
-                        myDateTime: fn.myDateTime,
-                    }).then(result => {
-                        fn.CreateJsonObjectForResults(result);
-                        fn.logOutput("Info", `Playwright result for ${stem}: ${result.value}`);
-                        if (Influx) influx.write(result, influxToken);
-                        fn.upsertResultInLog(JSON.stringify(result), filename);
-                        fn.writeHistoryLogs(JSON.stringify(result) + "\n", `hist_${filename}`);
-                    }).catch(err => fn.logOutput("Error", `Playwright runner error: ${err.message}`));
-                } else if (runner === "supertest") {
-                    const specFile = path.resolve(__dirname, "runners/supertest/specs", testEntry.script_name);
-                    const envfile = testEntry.environment_name
-                        ? path.resolve(__dirname, PostmanEnvFolder, testEntry.environment_name)
-                        : "";
-                    const stem = path.basename(testEntry.script_name, path.extname(testEntry.script_name));
-                    runSupertestSpec({
-                        specFile,
-                        envFile: envfile,
-                        environmentName: schedule.ENV[region].Name,
-                        key: stem,
-                        RAG: fn.RAG,
-                        calculatePercentage: fn.calculatePercentage,
-                        myDateTime: fn.myDateTime,
-                    }).then(result => {
-                        fn.CreateJsonObjectForResults(result);
-                        fn.logOutput("Info", `Supertest result for ${stem}: ${result.value}`);
-                        if (Influx) influx.write(result, influxToken);
-                        fn.upsertResultInLog(JSON.stringify(result), filename);
-                        fn.writeHistoryLogs(JSON.stringify(result) + "\n", `hist_${filename}`);
-                    }).catch(err => fn.logOutput("Error", `Supertest runner error: ${err.message}`));
-                } else {
-                    // Default: Newman / Postman
-                    const collection = `${PostmanCollectionFolder}${testEntry.script_name}`;
-                    const envfile = testEntry.environment_name ? `${PostmanEnvFolder}${testEntry.environment_name}` : "";
-                    const datafile = testEntry.datafile ? `${PostmanDataFolder}${testEntry.datafile}` : "";
-                    const stem = path.basename(testEntry.script_name, path.extname(testEntry.script_name));
-                    runNewmanCollection({
-                        collection,
-                        environmentFile: envfile,
-                        dataFile: datafile,
-                        environmentName: schedule.ENV[region].Name,
-                        key: stem,
-                        RAG: fn.RAG,
-                        calculatePercentage: fn.calculatePercentage,
-                        myDateTime: fn.myDateTime,
-                        extendedLog: ExtendedLog,
-                    }).then(({ result, run, extendedLog: extended }) => {
-                        fn.CreateJsonObjectForResults(result);
-                        fn.logOutput("Info", `Newman result for ${stem}: ${result.value}`);
-                        if (Influx) influx.write(result, influxToken);
-                        fn.upsertResultInLog(JSON.stringify(result), filename);
-                        fn.writeHistoryLogs(JSON.stringify(result) + "\n", `hist_${filename}`);
-                        if (extended) fn.writeToCurrentLog(JSON.stringify(run) + "\n", `_ExtendedLog_${filename}`);
-                    }).catch(err => fn.logOutput("Error", `Newman runner error: ${err.message}`));
+            // Group active tests by runner for concurrent execution
+            const runnerGroups = {};
+            activeTests.forEach(testConfig => {
+                const runnerName = testConfig.runner || DefaultRunner;
+                if (!runnerGroups[runnerName]) runnerGroups[runnerName] = [];
+                runnerGroups[runnerName].push(testConfig);
+            });
+
+            // Run each runner group concurrently; tests within a group run sequentially
+            const groupPromises = Object.entries(runnerGroups).map(([runnerName, groupTests]) => {
+                return (async () => {
+                    for (const testConfig of groupTests) {
+                        const script = `${ScriptFolder}${testConfig.script_name}`;
+                        const envfile = testConfig.environment_name ? `${EnvironmentFolder}${testConfig.environment_name}` : "";
+                        const datafile = testConfig.datafile ? `${DataFolder}${testConfig.datafile}` : "";
+                        await runMyTest(script, envfile, schedule.ENV[region], datafile, filename, runnerName);
+                        const log = `${fn.myDateTime()},${testConfig.script_name},${testConfig.environment_name},${runnerName}`;
+                        fn.writeToCurrentLog(JSON.stringify(log) + "\n", 'logs');
+                        fn.logOutput("Info", `Log : ${log}`);
+                    }
+                })();
+            });
+
+            const results = await Promise.allSettled(groupPromises);
+            results.forEach((r, i) => {
+                if (r.status === 'rejected') {
+                    const rName = Object.keys(runnerGroups)[i];
+                    fn.logOutput("Error", `Runner group "${rName}" failed: ${r.reason}`);
                 }
-            }
+            });
+
             resolve("Tests completed successfully.");
         } catch (error) {
             reject(error);
@@ -519,7 +503,8 @@ async function runMyTest(script, environmentfile, environmentName, datafile, fil
             FailedTestCount: failedTestCount,
             AvgResponseTime: runTiming,
             IncludeInStats,
-            RemoveComment
+            RemoveComment,
+            runner: runnerName
         };
 
         fn.CreateJsonObjectForResults(testResult);

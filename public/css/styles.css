@@ -309,3 +309,13 @@
       border-radius: 50%;
       display: inline-block;
   }
+
+  /* Runner dashboard tabs */
+  #runnerTabs .nav-link.active {
+      background-color: #4f46e5;
+      color: #fff;
+  }
+  #runnerTabs .nav-link:not(.active) {
+      color: #4f46e5;
+      border: 1px solid #4f46e5;
+  }

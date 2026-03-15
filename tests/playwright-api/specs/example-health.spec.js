@@ -2,7 +2,7 @@
  * example-health.spec.js
  *
  * Example Playwright spec designed to run as a scheduled dashboard test.
- * Add this to featuretests/collections.json like this:
+ * Add this to schedules/collections.json like this:
  *
  *   {
  *     "script_name": "example-health.spec.js",

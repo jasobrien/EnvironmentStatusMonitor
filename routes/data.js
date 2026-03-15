@@ -7,7 +7,7 @@ const cf = require("../config/config");
 const { requireAuth } = require("../middleware/auth");
 const myPath = path.join(__dirname, "..");
 const config = cf.config;
-const { ResultsFolder, HistoryFilePrefix, ResultFileSuffix, FeatureTestsFolder } = config;
+const { ResultsFolder, HistoryFilePrefix, ResultFileSuffix, FeatureTestsFolder, ScriptFolder } = config;
 
 router.get("/schedule", requireAuth, function (req, res) {
   res.sendFile(myPath + "/pages/schedule.html");
@@ -16,7 +16,7 @@ router.get("/schedule", requireAuth, function (req, res) {
 router.get("/scheduledata", requireAuth, function (req, res) {
   const rawdata = fs.readFileSync(`${FeatureTestsFolder}collections.json`);
   const schedule = JSON.parse(rawdata);
-  res.send(JSON.stringify(schedule));
+  res.json(schedule);
 });
 
 router.get("/header", function (req, res) {
@@ -25,7 +25,7 @@ router.get("/header", function (req, res) {
 
 
 router.get("/directory", requireAuth, (req, res) => {
-  const directoryPath = myPath + "/collections"; // replace with your directory path
+  const directoryPath = path.resolve(ScriptFolder);
   fs.readdir(directoryPath, (err, files) => {
     if (err) {
       fn.logOutput("Error", err);
@@ -45,7 +45,7 @@ router.get("/directory", requireAuth, (req, res) => {
 });
 
 router.get("/edit", requireAuth, function (req, res) {
-  res.sendFile(myPath + "/pages/featuretests.html");
+  res.sendFile(myPath + "/pages/schedules.html");
 });
 
 router.get("/editfile", requireAuth, (req, res) => {

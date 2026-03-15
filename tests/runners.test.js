@@ -69,8 +69,8 @@ test.describe('Newman Adapter', () => {
 
     test('should run a real Postman collection and return standardized result', async () => {
         test.setTimeout(30000);
-        const collectionPath = path.resolve(__dirname, '..', 'collections', 'dashboard.json');
-        const envPath = path.resolve(__dirname, '..', 'environments', 'envstatus_dev.json');
+        const collectionPath = path.resolve(__dirname, 'postman', 'collections', 'dashboard.json');
+        const envPath = path.resolve(__dirname, 'postman', 'environments', 'envstatus_dev.json');
 
         const result = await newmanAdapter.run({
             script: collectionPath,
@@ -94,8 +94,8 @@ test.describe('Newman Adapter', () => {
 
     test('should report passed=true when all assertions pass', async () => {
         test.setTimeout(30000);
-        const collectionPath = path.resolve(__dirname, '..', 'collections', 'dashboard.json');
-        const envPath = path.resolve(__dirname, '..', 'environments', 'envstatus_dev.json');
+        const collectionPath = path.resolve(__dirname, 'postman', 'collections', 'dashboard.json');
+        const envPath = path.resolve(__dirname, 'postman', 'environments', 'envstatus_dev.json');
 
         const result = await newmanAdapter.run({
             script: collectionPath,
@@ -117,7 +117,7 @@ test.describe('Newman Adapter', () => {
 
     test('should work without environment or datafile', async () => {
         test.setTimeout(30000);
-        const collectionPath = path.resolve(__dirname, '..', 'collections', 'dashboard.json');
+        const collectionPath = path.resolve(__dirname, 'postman', 'collections', 'dashboard.json');
 
         // Should not throw even without environment
         const result = await newmanAdapter.run({
@@ -478,8 +478,8 @@ test.describe('Result Shape Consistency', () => {
 
     test('Newman adapter returns correct shape from real run', async () => {
         test.setTimeout(30000);
-        const collectionPath = path.resolve(__dirname, '..', 'collections', 'dashboard.json');
-        const envPath = path.resolve(__dirname, '..', 'environments', 'envstatus_dev.json');
+        const collectionPath = path.resolve(__dirname, 'postman', 'collections', 'dashboard.json');
+        const envPath = path.resolve(__dirname, 'postman', 'environments', 'envstatus_dev.json');
 
         const result = await newmanAdapter.run({ script: collectionPath, environment: envPath });
         for (const field of requiredFields) {

@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test:ui": "playwright test --config=playwright.config.js",
-    "test:api": "playwright test --config=playwright.config.js",
-    "test:supertest": "mocha test/collections-supertest.test.js --timeout 10000 --exit",
-    "test:bruno": "cd bruno/collections-api && bru run --env local"
+    "test:ui": "playwright test --config=playwright.config.js --project=\"UI Tests\" --project=\"Collections UI Tests\"",
+    "test:api": "playwright test --config=playwright.config.js --project=\"API Tests\" --project=\"Collections API Tests\"",
+    "test:supertest": "mocha tests/supertest/collections-supertest.test.js --timeout 10000 --exit",
+    "test:bruno": "cd tests/bruno/collections-api && bru run --env local"
   },
   "keywords": [],
   "author": "Jim O'Brien",

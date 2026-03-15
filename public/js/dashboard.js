@@ -14,6 +14,7 @@ const environmentData = {};
 let dashboardInitialized = false;
 let activeDashboard = null;  // loaded dashboard filter config
 let allowedTests = null;     // null = show all, array = filter
+let activeRunner = null;     // null = all runners, string = filter by runner
 
 // ── Colour helpers ──────────────────────────────────────────
 const STATUS_COLOURS = { Green: '#22c55e', Red: '#ef4444', Amber: '#f59e0b' };
@@ -105,6 +106,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (activeDashboard.tests && activeDashboard.tests.length > 0) {
                 allowedTests = activeDashboard.tests;
             }
+            // Set runner filter
+            if (activeDashboard.runner) {
+                activeRunner = activeDashboard.runner;
+            }
             // Update page title to dashboard name
             const t = document.getElementById('pageTitle');
             if (t) t.textContent = activeDashboard.name;
@@ -124,14 +129,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 // ── Data fetching (unchanged API surface) ───────────────────
 async function fetchUptimeStats(environment, days) {
     try {
-        const r = await fetch(`/getSummaryStats/${environment}/${days}`);
+        const url = activeRunner
+            ? `/getSummaryStats/${environment}/${activeRunner}/${days}`
+            : `/getSummaryStats/${environment}/${days}`;
+        const r = await fetch(url);
         return await r.json();
     } catch (err) { console.error('Uptime stats error:', err); return null; }
 }
 
 async function fetchStatus(environment) {
     try {
-        const r = await fetch(`/results/${environment}/`);
+        const url = activeRunner
+            ? `/results/${environment}/${activeRunner}/`
+            : `/results/${environment}/`;
+        const r = await fetch(url);
         let data = await r.json();
         // Apply test key filter if dashboard specifies it
         if (allowedTests) {
@@ -184,7 +195,8 @@ function buildPerformanceButtons() {
     c.innerHTML = '';
     environments.forEach(envId => {
         const a = document.createElement('a');
-        a.href = `/dashboard/performance/${envId}/1`;
+        const runnerParam = activeRunner ? `?runner=${encodeURIComponent(activeRunner)}` : '';
+        a.href = `/dashboard/performance/${envId}/1${runnerParam}`;
         a.className = 'btn btn-primary btn-sm mr-2 mb-2';
         a.textContent = `${environmentLabels[envId] || envId} Performance`;
         c.appendChild(a);

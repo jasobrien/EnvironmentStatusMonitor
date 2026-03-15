@@ -54,6 +54,18 @@
                   <div id="testCheckboxes" class="d-flex flex-wrap gap-2"></div>
                 </div>
 
+                <div class="form-group">
+                  <label for="dashRunner">Runner Filter</label>
+                  <small class="form-text text-muted mb-2 d-block">Optionally filter results to a specific test runner. Leave blank to show results from all runners.</small>
+                  <select class="form-control" id="dashRunner">
+                    <option value="">All Runners</option>
+                    <option value="newman">Newman</option>
+                    <option value="bruno">Bruno</option>
+                    <option value="playwright">Playwright</option>
+                    <option value="supertest">Supertest</option>
+                  </select>
+                </div>
+
                 <button class="btn btn-success btn-sm" onclick="saveDashboard()">
                   <span aria-hidden="true">💾</span> Save
                 </button>
@@ -135,19 +147,21 @@
         return;
       }
       let html = '<table class="table table-striped table-bordered"><thead><tr>' +
-        '<th>Name</th><th>Description</th><th>Environments</th><th>Tests</th><th>Actions</th>' +
+        '<th>Name</th><th>Description</th><th>Environments</th><th>Tests</th><th>Runner</th><th>Actions</th>' +
         '</tr></thead><tbody>';
       dashboards.forEach(d => {
         const envLabel = d.environments && d.environments.length
           ? d.environments.map(id => { const e = allEnvironments.find(x => x.id === id); return e ? e.displayName || e.name : id; }).join(', ')
           : '<em>All</em>';
         const testLabel = d.tests && d.tests.length ? d.tests.join(', ') : '<em>All</em>';
+        const runnerLabel = d.runner ? d.runner : '<em>All</em>';
         const viewLink = d.isDefault ? '/dashboard' : '/dashboard/view/' + encodeURIComponent(d.id);
         html += '<tr>' +
           '<td><a href="' + viewLink + '">' + escapeHtml(d.name) + '</a></td>' +
           '<td>' + escapeHtml(d.description || '') + '</td>' +
           '<td>' + envLabel + '</td>' +
           '<td>' + testLabel + '</td>' +
+          '<td>' + runnerLabel + '</td>' +
           '<td>' +
             '<button class="btn btn-sm btn-outline-primary mr-1" onclick="editDashboard(\'' + d.id + '\')">Edit</button>' +
             (d.isDefault ? '' : '<button class="btn btn-sm btn-outline-danger" onclick="deleteDashboard(\'' + d.id + '\')">Delete</button>') +
@@ -179,6 +193,7 @@
       document.getElementById('editId').value = '';
       document.getElementById('dashName').value = '';
       document.getElementById('dashDesc').value = '';
+      document.getElementById('dashRunner').value = '';
       document.getElementById('formTitle').textContent = 'Create Dashboard';
       buildCheckboxes();
       document.getElementById('dashboardForm').style.display = 'block';
@@ -190,6 +205,7 @@
       document.getElementById('editId').value = d.id;
       document.getElementById('dashName').value = d.name;
       document.getElementById('dashDesc').value = d.description || '';
+      document.getElementById('dashRunner').value = d.runner || '';
       document.getElementById('formTitle').textContent = 'Edit Dashboard';
       buildCheckboxes();
       // Pre-check the boxes
@@ -215,8 +231,9 @@
       const description = document.getElementById('dashDesc').value.trim();
       const envs = Array.from(document.querySelectorAll('.env-cb:checked')).map(cb => cb.value);
       const tests = Array.from(document.querySelectorAll('.test-cb:checked')).map(cb => cb.value);
+      const runner = document.getElementById('dashRunner').value;
 
-      const body = { name, description, environments: envs, tests };
+      const body = { name, description, environments: envs, tests, runner };
       try {
         const url = id ? '/api/dashboards/' + encodeURIComponent(id) : '/api/dashboards';
         const method = id ? 'PUT' : 'POST';

@@ -1,4 +1,5 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# Start the application once, then run all test runners against it.
+# This mirrors the real-world usage: tests execute against an already-running application.
 
 name: Node.js CI
 
@@ -14,8 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -29,18 +29,36 @@ jobs:
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    
-    - name: Run Playwright tests
-      run: npx playwright test --project="API Tests"
-      
-    - name: Run UI Tests
-      run: npx playwright test --project="UI Tests"
-      
-    - name: Upload test results
+
+    # Start the application once — all runners test against this instance
+    - name: Start application
+      run: node index.js &
+      env:
+        PORT: 8080
+
+    - name: Wait for application
+      run: npx wait-on http://localhost:8080 --timeout 30000
+
+    # Run all test runners against the running application
+    - name: Run Playwright Tests
+      run: npx playwright test
+
+    - name: Run Supertest Tests
+      run: npm run test:supertest
+
+    - name: Run Bruno Tests
+      run: npm run test:bruno
+
+    # Stop the application
+    - name: Stop application
+      if: always()
+      run: kill $(lsof -t -i:8080) 2>/dev/null || true
+
+    - name: Upload Playwright report
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: playwright-report-${{ matrix.node-version }}
-        path: playwright-report/
+        path: tests/playwright-report/
         retention-days: 30
 

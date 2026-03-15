@@ -23,7 +23,7 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 
-const ROOT = path.join(__dirname, "..");
+const ROOT = path.join(__dirname, "../..");
 
 /**
  * Parse Playwright JSON reporter output into a simplified stats object.

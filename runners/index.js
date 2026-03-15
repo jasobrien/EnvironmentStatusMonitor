@@ -61,5 +61,6 @@ function listRunners() {
 register('newman', require('./newman'));
 register('bruno', require('./bruno'));
 register('playwright', require('./playwright'));
+register('supertest', require('./supertest'));
 
 module.exports = { register, getRunner, listRunners };

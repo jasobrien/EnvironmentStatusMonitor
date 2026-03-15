@@ -17,17 +17,17 @@ RUN npm ci --omit=dev
 COPY . .
 
 # Create writable directories for volume mounts and set ownership to node user
-RUN mkdir -p results collections environments datafiles featuretests config bruno \
-    && chown -R node:node results collections environments datafiles featuretests config bruno
+RUN mkdir -p results tests/postman/collections tests/postman/environments tests/postman/datafiles tests/bruno/collections-api schedules config \
+    && chown -R node:node results tests/postman tests/bruno schedules config
 
 # Declare volumes for mutable data directories
 VOLUME ["/usr/src/app/results", \
-        "/usr/src/app/collections", \
-        "/usr/src/app/environments", \
-        "/usr/src/app/datafiles", \
-        "/usr/src/app/featuretests", \
-        "/usr/src/app/config", \
-        "/usr/src/app/bruno"]
+        "/usr/src/app/tests/postman/collections", \
+        "/usr/src/app/tests/postman/environments", \
+        "/usr/src/app/tests/postman/datafiles", \
+        "/usr/src/app/tests/bruno/collections-api", \
+        "/usr/src/app/schedules", \
+        "/usr/src/app/config"]
 
 # Run as non-root user for security
 USER node

@@ -61,10 +61,10 @@ function createUploadHandler(uploadMiddleware) {
 }
 
 // Create upload middleware for each destination
-const uploadcollection = createUploadMiddleware('/collections');
-const uploadenvironments = createUploadMiddleware('/environments');
-const uploaddata = createUploadMiddleware('/datafiles');
-const uploadtests = createUploadMiddleware('/featuretests');
+const uploadcollection = createUploadMiddleware('/tests/postman/collections');
+const uploadenvironments = createUploadMiddleware('/tests/postman/environments');
+const uploaddata = createUploadMiddleware('/tests/postman/datafiles');
+const uploadtests = createUploadMiddleware('/schedules');
 
 // Upload routes with consolidated handlers
 router.post('/collections', ...createUploadHandler(uploadcollection));

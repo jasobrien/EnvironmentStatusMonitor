@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 // Unit-style tests for functions.js business logic
 // We import the module directly since these are pure functions
-const fn = require('../functions');
+const fn = require('../../functions');
 
 test.describe('functions.js Unit Tests', () => {
 

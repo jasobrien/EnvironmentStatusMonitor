@@ -3,7 +3,10 @@ const currentPath = path.split("/");
 const lastTwoParts = currentPath.slice(-2);
 const [environmentName, days] = lastTwoParts;
 
-const URLKeys = `/histresultskeys/${environmentName}`;
+const runner = new URLSearchParams(window.location.search).get('runner');
+const runnerParam = runner ? `?runner=${encodeURIComponent(runner)}` : '';
+
+const URLKeys = `/histresultskeys/${environmentName}${runnerParam}`;
 const apiUrl = `/histresultsdays/${environmentName}/${days}`;
 
 // Fetch environment display names dynamically from config
@@ -26,11 +29,22 @@ async function loadEnvironmentNames() {
 function updatePageForCurrentEnvironment() {
   const displayName = environmentDisplayNames[environmentName] || environmentName;
   
-  // Update the main heading to show current environment
+  // Update the main heading to show current environment and runner if filtered
   const mainHeading = document.querySelector('header h1');
   if (mainHeading) {
     let timeDisplay = days === 'All' ? 'All Time' : `${days} day${days === '1' ? '' : 's'}`;
-    mainHeading.textContent = `${displayName} Performance - ${timeDisplay}`;
+    const runnerLabel = runner ? ` — ${runner.charAt(0).toUpperCase() + runner.slice(1)}` : '';
+    mainHeading.textContent = `${displayName} Performance - ${timeDisplay}${runnerLabel}`;
+  }
+
+  // Preserve runner query param on all day-filter nav links
+  if (runner) {
+    document.querySelectorAll('a[href*="/dashboard/performance/"]').forEach(link => {
+      const href = link.getAttribute('href');
+      if (!href.includes('?runner=')) {
+        link.setAttribute('href', `${href}?runner=${encodeURIComponent(runner)}`);
+      }
+    });
   }
   
   // Highlight the active environment section
@@ -82,7 +96,7 @@ async function createCharts() {
   }
 
   for (const value of transactions) {
-    const url = `/histresultsdays/${environmentName}/${value}/${days}`;
+    const url = `/histresultsdays/${environmentName}/${value}/${days}${runnerParam}`;
     const mydata = await fetchData(url);
 
     if (!mydata || mydata.length === 0) {

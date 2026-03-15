@@ -46,10 +46,10 @@ exports.config = {
   "CronLocation": "Australia/Sydney",
   "DefaultRunner": "newman",
   "ResultsFolder": "./results/",
-  "ScriptFolder": "./collections/",
-  "EnvironmentFolder": "./environments/",
-  "DataFolder": "./datafiles/",
-  "FeatureTestsFolder": "./featuretests/",
+  "ScriptFolder": "./tests/postman/collections/",
+  "EnvironmentFolder": "./tests/postman/environments/",
+  "DataFolder": "./tests/postman/datafiles/",
+  "FeatureTestsFolder": "./schedules/",
   "HistoryFilePrefix": "hist_",
   "ResultFileSuffix": "results"
 };

@@ -6,48 +6,102 @@
       "description": "Shows all environments and all tests",
       "environments": [],
       "tests": [],
+      "runner": "",
       "isDefault": true
     },
     {
-      "id": "demo-all-runners",
-      "name": "Demo — All Runners",
-      "description": "Dev environment showing results from all three runners: Newman, Playwright and Supertest",
-      "environments": ["dev"],
-      "tests": [],
-      "isDefault": false
-    },
-    {
-      "id": "newman-tests",
-      "name": "Newman Tests",
-      "description": "Postman/Newman collection results across all environments",
-      "environments": [],
+      "id": "newman",
+      "name": "Newman (Postman)",
+      "description": "Postman/Newman collection results — dashboard, data, deploy, performance across all environments",
+      "environments": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
+      ],
       "tests": [
         "dashboard",
+        "data",
         "deploy",
-        "performance",
-        "data"
+        "performance"
       ],
+      "runner": "newman",
       "isDefault": false
     },
     {
-      "id": "playwright-tests",
-      "name": "Playwright Tests",
-      "description": "Scheduled Playwright spec results",
-      "environments": ["dev"],
-      "tests": [
-        "example-health.spec"
+      "id": "playwright-api",
+      "name": "Playwright API",
+      "description": "Playwright API spec results — dashboard, data, deploy, performance across all environments",
+      "environments": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
       ],
+      "tests": [
+        "dashboard",
+        "data",
+        "deploy",
+        "performance"
+      ],
+      "runner": "playwright",
       "isDefault": false
     },
     {
-      "id": "supertest-dashboard",
-      "name": "Supertest Tests",
-      "description": "Mocha/Supertest API test suite results",
-      "environments": ["dev"],
-      "tests": [
-        "api-health.test",
-        "dashboard-routes.test"
+      "id": "playwright-ui",
+      "name": "Playwright UI",
+      "description": "Playwright browser-based UI test results using Page Object Models — dashboard, data, deploy, performance (Dev environment)",
+      "environments": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
       ],
+      "tests": [
+        "dashboard",
+        "data",
+        "deploy",
+        "performance"
+      ],
+      "runner": "playwright",
+      "isDefault": false
+    },
+    {
+      "id": "supertest",
+      "name": "Supertest",
+      "description": "Mocha/Supertest API test results — dashboard, data, deploy, performance across all environments",
+      "environments": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
+      ],
+      "tests": [
+        "dashboard",
+        "data",
+        "deploy",
+        "performance"
+      ],
+      "runner": "",
+      "isDefault": false
+    },
+    {
+      "id": "bruno",
+      "name": "Bruno",
+      "description": "Bruno API collection results — dashboard, data, deploy, performance (Dev environment)",
+      "environments": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
+      ],
+      "tests": [
+        "dashboard",
+        "data",
+        "deploy",
+        "performance"
+      ],
+      "runner": "bruno",
       "isDefault": false
     }
   ]

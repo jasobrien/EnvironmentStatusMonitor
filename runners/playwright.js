@@ -12,9 +12,13 @@ const fs = require("fs");
 module.exports = {
     run(options) {
         return new Promise((resolve, reject) => {
+            // Playwright CLI treats path args as glob patterns and does not normalize `../`,
+            // so resolve to an absolute path before passing.
+            const specFile = path.resolve(options.script);
             const args = [
                 "test",
-                options.script,
+                specFile,
+                "--config", path.join(__dirname, "..", "tests", "playwright-api", "schedule.config.js"),
                 "--reporter=json"
             ];
 

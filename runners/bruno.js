@@ -11,16 +11,21 @@ const path = require("path");
 module.exports = {
     run(options) {
         return new Promise((resolve, reject) => {
-            const args = ["run", options.script];
+            // Bruno must be run with cwd set to the collection root directory.
+            const collectionDir = path.resolve(options.script);
+            const args = ["run"];
 
             if (options.environment) {
-                args.push("--env", options.environment);
+                // Bruno uses named environments (e.g. "local"), not file paths.
+                // Extract just the basename without extension in case a file path was passed.
+                const envName = path.basename(options.environment, path.extname(options.environment));
+                args.push("--env", envName);
             }
 
             const bruPath = path.join(__dirname, '..', 'node_modules', '.bin', 'bru');
             const startTime = Date.now();
 
-            execFile(bruPath, args, { timeout: 120000 }, (err, stdout, stderr) => {
+            execFile(bruPath, args, { cwd: collectionDir, timeout: 120000 }, (err, stdout, stderr) => {
                 if (err && err.killed) {
                     return reject(new Error("Bruno test execution timed out"));
                 }

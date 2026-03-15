@@ -7,12 +7,12 @@ services:
       - "8080:8080"
     volumes:
       - ./results:/usr/src/app/results
-      - ./collections:/usr/src/app/collections
-      - ./environments:/usr/src/app/environments
-      - ./datafiles:/usr/src/app/datafiles
-      - ./featuretests:/usr/src/app/featuretests
+      - ./tests/postman/collections:/usr/src/app/tests/postman/collections
+      - ./tests/postman/environments:/usr/src/app/tests/postman/environments
+      - ./tests/postman/datafiles:/usr/src/app/tests/postman/datafiles
+      - ./tests/bruno/collections-api:/usr/src/app/tests/bruno/collections-api
+      - ./schedules:/usr/src/app/schedules
       - ./config:/usr/src/app/config
-      - ./bruno:/usr/src/app/bruno
     env_file:
       - path: .env
         required: false

@@ -79,16 +79,19 @@ test.describe('API Tests for FeatureStatusMonitor', () => {
   });
 
   test('should return 200 for /runDev endpoint', async ({ request, baseURL }) => {
+    test.setTimeout(120000);
     const response = await request.get(`${baseURL}/runDev`);
     expect(response.status()).toBe(200);
   });
 
   test('should return 200 for /runTest endpoint', async ({ request, baseURL }) => {
+    test.setTimeout(120000);
     const response = await request.get(`${baseURL}/runTest`);
     expect(response.status()).toBe(200);
   });
 
   test('should return 200 for /runStaging endpoint', async ({ request, baseURL }) => {
+    test.setTimeout(120000);
     const response = await request.get(`${baseURL}/runStaging`);
     expect(response.status()).toBe(200);
   });

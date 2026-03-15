@@ -1,10 +1,11 @@
 const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
-  testDir: './test',
+  testDir: './tests',
   timeout: 30000,
   retries: 1,
-  reporter: [['html', { open: 'never' }]],
+  reporter: [['html', { open: 'never', outputFolder: 'tests/playwright-report' }]],
+  outputDir: 'tests/test-results',
   use: {
     baseURL: 'http://localhost:8080',
     headless: true,
@@ -18,7 +19,7 @@ module.exports = defineConfig({
     },
     {
       name: 'API Tests',
-      testMatch: /.*api.*\.test\.js/,
+      testMatch: /.*playwright-api\/api.*\.test\.js/,
     },
     {
       name: 'Unit Tests',
@@ -36,9 +37,13 @@ module.exports = defineConfig({
       name: 'Collections API Tests',
       testMatch: /.*collections-api\.test\.js/,
     },
+    {
+      name: 'API Spec Tests',
+      testMatch: /.*specs\/.*\.spec\.js/,
+    },
   ],
-  globalSetup: './test/global-setup.js',
-  globalTeardown: './test/global-teardown.js',
+  globalSetup: './tests/global-setup.js',
+  globalTeardown: './tests/global-teardown.js',
   // Alternative: use webServer for automatic server management
   // webServer: {
   //   command: 'node index.js',

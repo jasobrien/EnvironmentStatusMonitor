@@ -32,6 +32,13 @@ async function fetchConfig() {
   fetchConfig()
     .then((data) => {
       setCredentials(data);
+      // Populate Results dropdown from environments config
+      const resultsMenu = document.getElementById('resultsMenu');
+      if (resultsMenu && data.environments && data.environments.length) {
+        resultsMenu.innerHTML = data.environments.map(env =>
+          `<li role="none"><a class="dropdown-item" href="/data/${env.id}results" role="menuitem">${env.displayName || env.name}</a></li>`
+        ).join('');
+      }
     })
     .catch(function (err) {
       console.log(err);
