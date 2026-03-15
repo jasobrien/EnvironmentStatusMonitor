@@ -62,21 +62,14 @@ exports.createJsonArrayFromFile = function (filename) {
 
 exports.clearCurrentLog = function (filename) {
   const resultsfile = `${ResultsFolder}${filename}.json`;
-
-  fs.access(resultsfile, fs.constants.F_OK, (err) => {
-    if (err) {
-      console.error(`${resultsfile} does not exist`);
-      return;
+  try {
+    if (fs.existsSync(resultsfile)) {
+      fs.unlinkSync(resultsfile);
+      console.log(`${resultsfile} Cleared`);
     }
-
-    fs.unlink(resultsfile, (err) => {
-      if (err) {
-        console.error("Error clearing file:", err);
-      } else {
-        console.log(`${resultsfile} Cleared`);
-      }
-    });
-  });
+  } catch (err) {
+    console.error("Error clearing file:", err);
+  }
 };
 
 exports.writeToCurrentLog = function (record, filename) {
@@ -131,6 +124,55 @@ exports.getHistFileName = function (ResultsEnv) {
 
 exports.getResultFileName = function (ResultsEnv) {
   return `${ResultsEnv}${ResultFileSuffix}`;
+};
+
+// Per-runner file helpers
+exports.getRunnerResultFileName = function (envId, runner) {
+  return `${envId}_${runner}`;
+};
+
+exports.getRunnerHistFileName = function (envId, runner) {
+  return `${HistoryFilePrefix}${envId}_${runner}`;
+};
+
+// Read and merge all per-runner current result files for an env
+exports.readAllRunnerResultFiles = function (envId) {
+  const prefix = `${envId}_`;
+  try {
+    const files = fs.readdirSync(ResultsFolder);
+    const matched = files.filter(f =>
+      f.startsWith(prefix) && f.endsWith('.json') && !f.startsWith('hist_') && !f.startsWith('_')
+    );
+    const all = [];
+    for (const file of matched) {
+      try {
+        const lines = fs.readFileSync(`${ResultsFolder}${file}`, 'utf8').split('\n').filter(l => l.trim());
+        lines.forEach(l => { try { all.push(JSON.parse(l)); } catch {} });
+      } catch {}
+    }
+    return all.sort((a, b) => a.key.toUpperCase().localeCompare(b.key.toUpperCase()));
+  } catch {
+    return [];
+  }
+};
+
+// Read and merge all per-runner history files for an env
+exports.readAllRunnerHistFiles = function (envId) {
+  const prefix = `${HistoryFilePrefix}${envId}_`;
+  try {
+    const files = fs.readdirSync(ResultsFolder);
+    const matched = files.filter(f => f.startsWith(prefix) && f.endsWith('.json'));
+    const all = [];
+    for (const file of matched) {
+      try {
+        const lines = fs.readFileSync(`${ResultsFolder}${file}`, 'utf8').split('\n').filter(l => l.trim());
+        lines.forEach(l => { try { all.push(JSON.parse(l)); } catch {} });
+      } catch {}
+    }
+    return all;
+  } catch {
+    return [];
+  }
 };
 
 /**

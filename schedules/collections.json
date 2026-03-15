@@ -6,76 +6,404 @@
       "Active": "1",
       "Name": "Dev",
       "tests": [
-        { "script_name": "dashboard.json",    "environment_name": "envstatus_dev.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "data.json",         "environment_name": "envstatus_dev.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "deploy.json",       "environment_name": "envstatus_dev.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "performance.json",  "environment_name": "envstatus_dev.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",   "environment_name": "envstatus_dev.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/data.spec.js",        "environment_name": "envstatus_dev.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",      "environment_name": "envstatus_dev.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/performance.spec.js", "environment_name": "envstatus_dev.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/dashboard.test.js",   "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/data.test.js",        "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/deploy.test.js",      "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/performance.test.js", "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/bruno/collections-api/dashboard",   "environment_name": "local", "Active": "1", "runner": "bruno", "schedule": "Every60" },
-        { "script_name": "../../../tests/bruno/collections-api/data",        "environment_name": "local", "Active": "1", "runner": "bruno", "schedule": "Every60" },
-        { "script_name": "../../../tests/bruno/collections-api/deploy",      "environment_name": "local", "Active": "1", "runner": "bruno", "schedule": "Every60" },
-        { "script_name": "../../../tests/bruno/collections-api/performance", "environment_name": "local", "Active": "1", "runner": "bruno", "schedule": "Every60" }
+        {
+          "script_name": "dashboard.json",
+          "environment_name": "envstatus_dev.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "data.json",
+          "environment_name": "envstatus_dev.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "deploy.json",
+          "environment_name": "envstatus_dev.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "performance.json",
+          "environment_name": "envstatus_dev.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",
+          "environment_name": "envstatus_dev.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/data.spec.js",
+          "environment_name": "envstatus_dev.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",
+          "environment_name": "envstatus_dev.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/performance.spec.js",
+          "environment_name": "envstatus_dev.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/dashboard.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/data.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/deploy.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/performance.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/bruno/collections-api/dashboard",
+          "environment_name": "dev",
+          "Active": "1",
+          "runner": "bruno",
+          "schedule": "Every60"
+        },
+        {
+          "script_name": "../../../tests/bruno/collections-api/data",
+          "environment_name": "dev",
+          "Active": "1",
+          "runner": "bruno",
+          "schedule": "Every60"
+        },
+        {
+          "script_name": "../../../tests/bruno/collections-api/deploy",
+          "environment_name": "dev",
+          "Active": "1",
+          "runner": "bruno",
+          "schedule": "Every60"
+        },
+        {
+          "script_name": "../../../tests/bruno/collections-api/performance",
+          "environment_name": "dev",
+          "Active": "1",
+          "runner": "bruno",
+          "schedule": "Every60"
+        }
       ]
     },
     {
       "Active": "1",
       "Name": "Test",
       "tests": [
-        { "script_name": "dashboard.json",    "environment_name": "envstatus_test.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "data.json",         "environment_name": "envstatus_test.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "deploy.json",       "environment_name": "envstatus_test.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "performance.json",  "environment_name": "envstatus_test.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",   "environment_name": "envstatus_test.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/data.spec.js",        "environment_name": "envstatus_test.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",      "environment_name": "envstatus_test.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/performance.spec.js", "environment_name": "envstatus_test.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/dashboard.test.js",   "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/data.test.js",        "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/deploy.test.js",      "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/performance.test.js", "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" }
+        {
+          "script_name": "dashboard.json",
+          "environment_name": "envstatus_test.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "data.json",
+          "environment_name": "envstatus_test.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "deploy.json",
+          "environment_name": "envstatus_test.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "performance.json",
+          "environment_name": "envstatus_test.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",
+          "environment_name": "envstatus_test.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/data.spec.js",
+          "environment_name": "envstatus_test.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",
+          "environment_name": "envstatus_test.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/performance.spec.js",
+          "environment_name": "envstatus_test.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/dashboard.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/data.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/deploy.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/performance.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        }
       ]
     },
     {
       "Active": "1",
       "Name": "Staging",
       "tests": [
-        { "script_name": "dashboard.json",    "environment_name": "envstatus_staging.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "data.json",         "environment_name": "envstatus_staging.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "deploy.json",       "environment_name": "envstatus_staging.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "performance.json",  "environment_name": "envstatus_staging.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",   "environment_name": "envstatus_staging.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/data.spec.js",        "environment_name": "envstatus_staging.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",      "environment_name": "envstatus_staging.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/performance.spec.js", "environment_name": "envstatus_staging.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/dashboard.test.js",   "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/data.test.js",        "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/deploy.test.js",      "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/performance.test.js", "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" }
+        {
+          "script_name": "dashboard.json",
+          "environment_name": "envstatus_staging.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "data.json",
+          "environment_name": "envstatus_staging.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "deploy.json",
+          "environment_name": "envstatus_staging.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "performance.json",
+          "environment_name": "envstatus_staging.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",
+          "environment_name": "envstatus_staging.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/data.spec.js",
+          "environment_name": "envstatus_staging.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",
+          "environment_name": "envstatus_staging.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/performance.spec.js",
+          "environment_name": "envstatus_staging.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/dashboard.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/data.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/deploy.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/performance.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        }
       ]
     },
     {
       "Active": "1",
       "Name": "Prod",
       "tests": [
-        { "script_name": "dashboard.json",    "environment_name": "envstatus_prod.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "data.json",         "environment_name": "envstatus_prod.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "deploy.json",       "environment_name": "envstatus_prod.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "performance.json",  "environment_name": "envstatus_prod.json", "datafile": "data.json", "Active": "1", "runner": "newman",     "schedule": "Every15" },
-        { "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",   "environment_name": "envstatus_prod.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/data.spec.js",        "environment_name": "envstatus_prod.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",      "environment_name": "envstatus_prod.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/playwright-api/specs/performance.spec.js", "environment_name": "envstatus_prod.json", "Active": "1", "runner": "playwright", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/dashboard.test.js",   "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/data.test.js",        "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/deploy.test.js",      "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" },
-        { "script_name": "../../../tests/supertest/specs/performance.test.js", "environment_name": "", "Active": "1", "runner": "supertest", "schedule": "Every30" }
+        {
+          "script_name": "dashboard.json",
+          "environment_name": "envstatus_prod.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "data.json",
+          "environment_name": "envstatus_prod.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "deploy.json",
+          "environment_name": "envstatus_prod.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "performance.json",
+          "environment_name": "envstatus_prod.json",
+          "datafile": "data.json",
+          "Active": "1",
+          "runner": "newman",
+          "schedule": "Every15"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/dashboard.spec.js",
+          "environment_name": "envstatus_prod.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/data.spec.js",
+          "environment_name": "envstatus_prod.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/deploy.spec.js",
+          "environment_name": "envstatus_prod.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/playwright-api/specs/performance.spec.js",
+          "environment_name": "envstatus_prod.json",
+          "Active": "1",
+          "runner": "playwright",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/dashboard.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/data.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/deploy.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        },
+        {
+          "script_name": "../../../tests/supertest/specs/performance.test.js",
+          "environment_name": "",
+          "Active": "1",
+          "runner": "supertest",
+          "schedule": "Every30"
+        }
       ]
     }
   ]

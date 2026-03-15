@@ -11,9 +11,12 @@ const path = require("path");
 module.exports = {
     run(options) {
         return new Promise((resolve, reject) => {
-            // Bruno must be run with cwd set to the collection root directory.
+            // Bruno must be run from the collection root (where bruno.json lives),
+            // with the subcollection folder passed as an argument.
             const collectionDir = path.resolve(options.script);
-            const args = ["run"];
+            const collectionRoot = path.dirname(collectionDir);
+            const subcollection = path.basename(collectionDir);
+            const args = ["run", subcollection];
 
             if (options.environment) {
                 // Bruno uses named environments (e.g. "local"), not file paths.
@@ -25,7 +28,7 @@ module.exports = {
             const bruPath = path.join(__dirname, '..', 'node_modules', '.bin', 'bru');
             const startTime = Date.now();
 
-            execFile(bruPath, args, { cwd: collectionDir, timeout: 120000 }, (err, stdout, stderr) => {
+            execFile(bruPath, args, { cwd: collectionRoot, timeout: 120000 }, (err, stdout, stderr) => {
                 if (err && err.killed) {
                     return reject(new Error("Bruno test execution timed out"));
                 }

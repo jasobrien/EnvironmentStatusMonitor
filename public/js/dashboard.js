@@ -544,10 +544,6 @@ function buildLegend() {
             <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>Red</span>
             <span class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span>N/A</span>
         </div>
-        <div class="legend-section">
-            <span class="legend-title">Rings (outer → inner)</span>
-            ${environments.map(e => `<span class="legend-item">${environmentLabels[e] || e}</span>`).join('')}
-        </div>
     `;
 }
 
