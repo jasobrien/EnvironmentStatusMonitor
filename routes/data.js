@@ -66,30 +66,39 @@ router.put("/editfile", requireAuth, (req, res) => {
 
 
 // Edit history files - Dynamic routes based on environment configuration
+// GET /data/{env}results            → serve results-editor.html
+// GET /data/editfile/{env}results?runner=newman  → read hist_{env}_newman.json
+// PUT /data/editfile/{env}results?runner=newman  → write hist_{env}_newman.json
 config.environments.forEach(env => {
   router.get(`/${env.id}results`, requireAuth, function (req, res) {
-    // Use generic template for all environments
     res.sendFile(myPath + `/pages/results-editor.html`);
   });
 
-  router.get(`/editfile/${env.id}results`, (req, res) => {
-    const filename = `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`;
+  router.get(`/editfile/${env.id}results`, requireAuth, (req, res) => {
+    const { runner } = req.query;
+    if (!runner) {
+      return res.status(400).send('runner query parameter required (e.g. ?runner=newman)');
+    }
+    const filename = `${HistoryFilePrefix}${env.id}_${runner}.json`;
     try {
-      const rawdata = fs.readFileSync(`${ResultsFolder}${filename}.json`);
+      const rawdata = fs.readFileSync(`${ResultsFolder}${filename}`);
       res.send(rawdata);
     } catch (error) {
-      res.status(404).send(`File not found for ${env.id} environment`);
+      res.status(404).send(`No history file found for ${env.id}/${runner}`);
     }
   });
 
-  router.put(`/editfile/${env.id}results`, (req, res) => {
+  router.put(`/editfile/${env.id}results`, requireAuth, (req, res) => {
+    const { runner } = req.query;
+    if (!runner) {
+      return res.status(400).send('runner query parameter required (e.g. ?runner=newman)');
+    }
+    const filename = `${HistoryFilePrefix}${env.id}_${runner}.json`;
     const data = req.body;
-    const filename = `${HistoryFilePrefix}${env.id}${ResultFileSuffix}`;
-    fs.writeFile(`${ResultsFolder}${filename}.json`, data, (err) => {
+    fs.writeFile(`${ResultsFolder}${filename}`, data, (err) => {
       if (err) {
         console.error('Error writing file:', err);
-        res.status(500).send('Error writing file');
-        return;
+        return res.status(500).send('Error writing file');
       }
       console.log('Data written to file');
       res.send('Data written to file');

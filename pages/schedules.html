@@ -1,81 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Collection Suite Editor</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <title>Schedule Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
+  <style>
+    .runner-newman     { background-color: #0d6efd; color: #fff; }
+    .runner-playwright { background-color: #6f42c1; color: #fff; }
+    .runner-supertest  { background-color: #fd7e14; color: #fff; }
+    .runner-bruno      { background-color: #198754; color: #fff; }
+    .runner-unknown    { background-color: #6c757d; color: #fff; }
+    .script-cell       { font-size: 0.82rem; font-family: monospace; white-space: nowrap; }
+    .sticky-bar        { position: sticky; top: 0; z-index: 200; background: #fff; border-bottom: 1px solid #dee2e6; padding: 0.6rem 1rem; }
+    .toast-container   { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; }
+    .filter-btn.active { background-color: #6c757d; color: #fff; border-color: #6c757d; }
+    .env-name-input    { min-width: 155px; }
+    .bulk-row select   { width: auto; }
+  </style>
 </head>
-<body class="p-4">
-    <div id="header-container"></div>
-    <main class="container-fluid">
-        <div class="row">
-            <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                <h1 class="text-center mb-4">Feature Test Suite Editor</h1>
-                <div class="card mb-3">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span class="font-weight-bold">Available Schedule Keys</span>
-                        <button class="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#scheduleRefBody">Show / Hide</button>
-                    </div>
-                    <div id="scheduleRefBody" class="collapse">
-                        <div class="card-body py-2">
-                            <small class="text-muted">Set the <code>"schedule"</code> field on each test entry to one of these keys. Omitting it defaults to <code>everyMinute</code>.</small>
-                            <table class="table table-sm table-bordered mt-2 mb-0">
-                                <thead class="thead-light"><tr><th>Key</th><th>Runs every</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>everyMinute</code></td><td>1 minute (default)</td></tr>
-                                    <tr><td><code>Every5</code></td><td>5 minutes</td></tr>
-                                    <tr><td><code>every10Minutes</code></td><td>10 minutes</td></tr>
-                                    <tr><td><code>Every15</code></td><td>15 minutes</td></tr>
-                                    <tr><td><code>Every30</code></td><td>30 minutes</td></tr>
-                                    <tr><td><code>Every60</code></td><td>60 minutes</td></tr>
-                                    <tr><td><code>every6hours</code></td><td>6 hours</td></tr>
-                                    <tr><td><code>every12hours</code></td><td>12 hours</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <label for="json-data" class="sr-only">Feature test suite JSON editor</label>
-                <textarea id="json-data" class="form-control" rows="100" style="font-size: 11px" aria-label="JSON data editor for feature test suite"></textarea>
-                <div class="text-center mt-4">
-                    <button id="save-button" class="btn btn-primary">Save</button>
-                </div>
-            </div>
+<body class="bg-light">
+  <div id="header-container"></div>
+
+  <main class="container-fluid pb-5">
+    <!-- Sticky top bar -->
+    <div class="sticky-bar d-flex align-items-center gap-3">
+      <h1 class="h5 mb-0 me-auto">Schedule Editor</h1>
+      <span class="text-muted small d-none d-sm-inline">Suite active:</span>
+      <div class="form-check form-switch mb-0">
+        <input class="form-check-input" type="checkbox" id="suiteActive" role="switch" aria-label="Suite active">
+      </div>
+      <button id="saveBtn" class="btn btn-primary btn-sm px-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16">
+          <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4.414A1 1 0 0 0 14.707 4L12 1.293A1 1 0 0 0 11.293 1H9v4.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V1zm5.5 0v4h-3V1zM4.5 12.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z"/>
+        </svg>
+        Save
+      </button>
+    </div>
+
+    <div id="envCards" class="px-2 pt-3"></div>
+
+    <!-- Collapsible raw JSON fallback -->
+    <div class="px-2 mt-2">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+          <span class="text-muted small fw-semibold">Advanced — Raw JSON</span>
+          <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#rawJsonBody">Show / Hide</button>
         </div>
-    </main>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-N+5bpyvQlOrCK9BzJk8+wwm1fY03n5m5w5MN5ql/Chj+SN/7zS9SxRn7CYuN+lAe" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        $(function () {
-            $("#header-container").load("/data/header");
-        });
+        <div id="rawJsonBody" class="collapse">
+          <div class="card-body p-2">
+            <textarea id="rawJson" class="form-control font-monospace" rows="20" style="font-size:11px" aria-label="Raw JSON editor"></textarea>
+            <button id="applyRawBtn" class="btn btn-sm btn-warning mt-2">Apply Raw JSON → refresh form</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 
-        fetch('/data/editfile')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('json-data').value = JSON.stringify(data, null, 2);
-            })
-            .catch(error => console.error(error));
+  <!-- Toast -->
+  <div class="toast-container">
+    <div id="saveToast" class="toast text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMsg">Saved!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
 
-        document.getElementById('save-button').addEventListener('click', () => {
-            const jsonData = document.getElementById('json-data').value;
-            fetch('/data/editfile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: jsonData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                alert('Data saved successfully!');
-            })
-            .catch(error => alert('An error has occurred and the data could not be saved. Check JSON format.'));
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(function () { $('#header-container').load('/data/header'); });
+
+    const SCHEDULES = [
+      { key: 'everyMinute',    label: 'Every 1 min'        },
+      { key: 'Every5',         label: 'Every 5 mins'       },
+      { key: 'every10Minutes', label: 'Every 10 mins'      },
+      { key: 'Every15',        label: 'Every 15 mins'      },
+      { key: 'Every30',        label: 'Every 30 mins'      },
+      { key: 'Every60',        label: 'Every 60 mins'      },
+      { key: 'every6hours',    label: 'Every 6 hours'      },
+      { key: 'every12hours',   label: 'Every 12 hours'     },
+    ];
+
+    const RUNNER_CLASSES = { newman: 'runner-newman', playwright: 'runner-playwright', supertest: 'runner-supertest', bruno: 'runner-bruno' };
+
+    let scheduleData = null;
+
+    // ── helpers ────────────────────────────────────────────────────────────
+
+    function scheduleOptions(selected) {
+      return SCHEDULES.map(s =>
+        `<option value="${s.key}"${s.key === (selected || 'everyMinute') ? ' selected' : ''}>${s.label}</option>`
+      ).join('');
+    }
+
+    function basename(p) {
+      return p.split('/').pop().replace(/\.(spec\.js|test\.js|json)$/i, '');
+    }
+
+    function runnerBadgeCls(runner) {
+      return RUNNER_CLASSES[runner] || 'runner-unknown';
+    }
+
+    // ── render ─────────────────────────────────────────────────────────────
+
+    function render(data) {
+      document.getElementById('suiteActive').checked = data.Active === '1';
+      document.getElementById('rawJson').value = JSON.stringify(data, null, 2);
+
+      const cards = data.ENV.map((env, ei) => {
+        const runners = [...new Set(env.tests.map(t => t.runner || 'newman'))];
+
+        const filterBtns = ['all', ...runners].map((r, idx) =>
+          `<button type="button" class="btn btn-sm btn-outline-secondary filter-btn${idx === 0 ? ' active' : ''}"
+            data-env="${ei}" data-runner="${r}">${r === 'all' ? 'All' : r}</button>`
+        ).join('');
+
+        const rows = env.tests.map((test, ti) => {
+          const runner = test.runner || 'newman';
+          const schedule = test.schedule || 'everyMinute';
+          const envNameCell = test.environment_name
+            ? `<input type="text" class="form-control form-control-sm env-name-input" value="${escHtml(test.environment_name)}"
+                 data-env="${ei}" data-test="${ti}" aria-label="Environment name">`
+            : `<span class="text-muted small">—</span>`;
+          return `
+            <tr data-env="${ei}" data-test="${ti}" data-runner="${runner}">
+              <td class="script-cell" title="${escHtml(test.script_name)}">${escHtml(basename(test.script_name))}</td>
+              <td>${envNameCell}</td>
+              <td><span class="badge rounded-pill ${runnerBadgeCls(runner)}">${runner}</span></td>
+              <td>
+                <select class="form-select form-select-sm schedule-select" data-env="${ei}" data-test="${ti}" style="min-width:155px">
+                  ${scheduleOptions(schedule)}
+                </select>
+              </td>
+              <td class="text-center">
+                <div class="form-check form-switch d-flex justify-content-center mb-0">
+                  <input class="form-check-input test-active" type="checkbox" role="switch"
+                    data-env="${ei}" data-test="${ti}" ${test.Active === '1' ? 'checked' : ''}
+                    aria-label="Test active">
+                </div>
+              </td>
+            </tr>`;
+        }).join('');
+
+        return `
+          <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex flex-wrap align-items-center gap-2 py-2">
+              <strong class="me-auto">${escHtml(env.Name)}</strong>
+
+              <!-- Runner filter -->
+              <div class="btn-group btn-group-sm" role="group" aria-label="Filter by runner">
+                ${filterBtns}
+              </div>
+
+              <!-- Bulk schedule setter -->
+              <div class="d-flex align-items-center gap-1 bulk-row ms-1">
+                <span class="text-muted small">Set</span>
+                <select class="form-select form-select-sm bulk-runner" data-env="${ei}">
+                  <option value="all">all runners</option>
+                  ${runners.map(r => `<option value="${r}">${r}</option>`).join('')}
+                </select>
+                <span class="text-muted small">→</span>
+                <select class="form-select form-select-sm bulk-schedule" data-env="${ei}">
+                  ${scheduleOptions(null)}
+                </select>
+                <button class="btn btn-sm btn-outline-primary bulk-apply" data-env="${ei}">Apply</button>
+              </div>
+
+              <!-- Env active toggle -->
+              <div class="form-check form-switch mb-0 ms-1 d-flex align-items-center gap-1">
+                <input class="form-check-input env-active" type="checkbox" role="switch"
+                  data-env="${ei}" ${env.Active === '1' ? 'checked' : ''}
+                  id="envActive${ei}" aria-label="${escHtml(env.Name)} active">
+                <label class="form-check-label text-muted small" for="envActive${ei}">Env active</label>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Script</th>
+                      <th>Env name</th>
+                      <th>Runner</th>
+                      <th>Schedule</th>
+                      <th class="text-center">Active</th>
+                    </tr>
+                  </thead>
+                  <tbody>${rows}</tbody>
+                </table>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('envCards').innerHTML = cards;
+      bindEvents();
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ── events ─────────────────────────────────────────────────────────────
+
+    function bindEvents() {
+      // Runner filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ei = btn.dataset.env;
+          document.querySelectorAll(`.filter-btn[data-env="${ei}"]`).forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const runner = btn.dataset.runner;
+          document.querySelectorAll(`tr[data-env="${ei}"]`).forEach(row => {
+            row.style.display = (runner === 'all' || row.dataset.runner === runner) ? '' : 'none';
+          });
         });
-    </script>
+      });
+
+      // Bulk apply
+      document.querySelectorAll('.bulk-apply').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ei = btn.dataset.env;
+          const targetRunner = document.querySelector(`.bulk-runner[data-env="${ei}"]`).value;
+          const targetSchedule = document.querySelector(`.bulk-schedule[data-env="${ei}"]`).value;
+          document.querySelectorAll(`tr[data-env="${ei}"]`).forEach(row => {
+            if (targetRunner === 'all' || row.dataset.runner === targetRunner) {
+              const sel = row.querySelector('.schedule-select');
+              if (sel) {
+                sel.value = targetSchedule;
+                scheduleData.ENV[+ei].tests[+row.dataset.test].schedule = targetSchedule;
+              }
+            }
+          });
+        });
+      });
+
+      // Schedule dropdowns
+      document.querySelectorAll('.schedule-select').forEach(sel => {
+        sel.addEventListener('change', () => {
+          scheduleData.ENV[+sel.dataset.env].tests[+sel.dataset.test].schedule = sel.value;
+          syncRaw();
+        });
+      });
+
+      // Env name inputs
+      document.querySelectorAll('.env-name-input').forEach(inp => {
+        inp.addEventListener('input', () => {
+          scheduleData.ENV[+inp.dataset.env].tests[+inp.dataset.test].environment_name = inp.value;
+          syncRaw();
+        });
+      });
+
+      // Test active
+      document.querySelectorAll('.test-active').forEach(chk => {
+        chk.addEventListener('change', () => {
+          scheduleData.ENV[+chk.dataset.env].tests[+chk.dataset.test].Active = chk.checked ? '1' : '0';
+          syncRaw();
+        });
+      });
+
+      // Env active
+      document.querySelectorAll('.env-active').forEach(chk => {
+        chk.addEventListener('change', () => {
+          scheduleData.ENV[+chk.dataset.env].Active = chk.checked ? '1' : '0';
+          syncRaw();
+        });
+      });
+    }
+
+    // Suite active
+    document.getElementById('suiteActive').addEventListener('change', function () {
+      if (scheduleData) { scheduleData.Active = this.checked ? '1' : '0'; syncRaw(); }
+    });
+
+    // Apply raw JSON
+    document.getElementById('applyRawBtn').addEventListener('click', () => {
+      try {
+        scheduleData = JSON.parse(document.getElementById('rawJson').value);
+        render(scheduleData);
+        showToast('Raw JSON applied — form refreshed.', 'bg-info');
+      } catch (e) {
+        showToast('Invalid JSON: ' + e.message, 'bg-danger');
+      }
+    });
+
+    function syncRaw() {
+      document.getElementById('rawJson').value = JSON.stringify(scheduleData, null, 2);
+    }
+
+    // ── save ───────────────────────────────────────────────────────────────
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      fetch('/data/editfile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scheduleData)
+      })
+      .then(r => {
+        if (!r.ok) throw new Error('Server returned ' + r.status);
+        showToast('Saved successfully!', 'bg-success');
+      })
+      .catch(err => showToast('Save failed: ' + err.message, 'bg-danger'))
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4.414A1 1 0 0 0 14.707 4L12 1.293A1 1 0 0 0 11.293 1H9v4.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V1zm5.5 0v4h-3V1zM4.5 12.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z"/></svg> Save';
+      });
+    });
+
+    function showToast(msg, colorCls) {
+      const el = document.getElementById('saveToast');
+      el.className = `toast text-white border-0 ${colorCls}`;
+      document.getElementById('toastMsg').textContent = msg;
+      bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 }).show();
+    }
+
+    // ── load ───────────────────────────────────────────────────────────────
+
+    fetch('/data/editfile')
+      .then(r => r.json())
+      .then(data => { scheduleData = data; render(data); })
+      .catch(err => {
+        document.getElementById('envCards').innerHTML =
+          `<div class="alert alert-danger">Failed to load schedule: ${err.message}</div>`;
+      });
+  </script>
 </body>
 </html>
