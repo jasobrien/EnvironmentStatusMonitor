@@ -20,19 +20,26 @@
 
 ## Ring Structure (from center outward)
 
+Rings are generated dynamically from the `environments` array in [config/config.js](config/config.js) — there is no hardcoded ring count. With the default 4-environment config the layout is:
+
 ```
-┌─────────────────────────────────────┐
+┌───────────────────────────────────┐
 │                                     │
 │  Ring 1 (Inner):  Development      │
-│  Ring 2 (Middle): Test              │
-│  Ring 3 (Outer):  Staging           │
+│  Ring 2:          Test              │
+│  Ring 3:          Staging           │
+│  Ring 4 (Outer):  Production        │
 │                                     │
-└─────────────────────────────────────┘
+│  (rings auto-add as you add envs)   │
+└───────────────────────────────────┘
 ```
+
+When viewing a saved dashboard (`/dashboard/view/:id`) the rings/segments are filtered to the dashboard's `environments`, `tests`, and `runner` selectors — see [MERGED_DASHBOARD_CHANGES.md](MERGED_DASHBOARD_CHANGES.md).
 
 ## Color Coding
 
 Each segment can be one of three colors based on test results:
+
 - 🟢 **Green**: All tests passing (100% success)
 - 🟡 **Amber**: Some tests failing (≥90% success)
 - 🔴 **Red**: Critical failures (<90% success)
@@ -103,32 +110,26 @@ When hovering over the "dashboard" segment in the "Test" ring:
 ## Data Flow
 
 ```
-API Endpoints
+API Endpoints (one set per configured environment)
      │
-     ├──> /results/dev ────────┐
-     ├──> /results/test ────────┤
-     ├──> /results/staging ─────┤
-     │                          │
-     ├──> /getSummaryStats/dev/1 ─┐
-     ├──> /getSummaryStats/dev/7 ─┤
-     ├──> /getSummaryStats/dev/30 ┤
-     │                            │
-     └──> (similar for test & staging)
-                                 │
-                                 ▼
-                         environmentData{}
-                                 │
-                                 ▼
-                        updateMergedChart()
-                                 │
-                                 ▼
-                        Polar Area Chart
-                        with Tooltips
+     ├──> /results/{env}/                      ┐
+     ├──> /results/{env}/{runner}/              │  (when a runner filter is active)
+     │                                          │
+     ├──> /getSummaryStats/{env}/1             │
+     ├──> /getSummaryStats/{env}/7             ├───> environmentData{}
+     ├──> /getSummaryStats/{env}/30            │         │
+     ├──> /getSummaryStats/{env}/{runner}/{N}  │         ▼
+     │                                          │   updateMergedChart()
+     └──> /histresultskeys/{env}?runner=...    ┘         │
+                                                          ▼
+                                                Polar Area Chart
+                                                with Tooltips
 ```
 
 ## Technical Details
 
 ### Chart.js Configuration
+
 ```javascript
 type: "polarArea"
 datasets: [
@@ -154,6 +155,7 @@ datasets: [
 ```
 
 ### Segment Order (Clockwise from top)
+
 1. dashboard
 2. data
 3. deploy

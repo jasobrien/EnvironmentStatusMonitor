@@ -27,6 +27,12 @@ jobs:
         cache: 'npm'
     - run: npm ci
 
+    - name: Audit dependencies
+      run: npm audit --audit-level=high
+
+    - name: Lint
+      run: npm run lint
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 

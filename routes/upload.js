@@ -8,13 +8,22 @@ const multer = require("multer");
 const { requireAuth } = require("../middleware/auth");
 const myPath = path.join(__dirname, "..");
 
+// Allowed filename characters: alphanumeric, hyphen, underscore, dot — must end in .json
+const SAFE_FILENAME_RE = /^[A-Za-z0-9_.-]+\.json$/;
+
 /**
  * Factory function to create multer storage configuration
  */
 function createMulterStorage(destinationFolder) {
   return multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(myPath, destinationFolder)),
-    filename: (req, file, cb) => cb(null, file.originalname)
+    filename: (req, file, cb) => {
+      const name = file.originalname;
+      if (!SAFE_FILENAME_RE.test(name)) {
+        return cb(new Error(`Unsafe filename rejected: "${name}". Only alphanumeric characters, hyphens, underscores, and dots are allowed.`));
+      }
+      cb(null, name);
+    }
   });
 }
 

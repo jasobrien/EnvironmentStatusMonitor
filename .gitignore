@@ -218,6 +218,9 @@ out/
 tmp/
 temp/
 
+# Backup files
+*.bak
+
 # Configuration files that might contain secrets
 config/local.json
 config/production.json

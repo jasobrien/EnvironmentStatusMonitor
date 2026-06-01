@@ -1,5 +1,6 @@
 const config = require('../config/config').config;
 const constants = require('../config/constants');
+const { listRunners } = require('../runners');
 
 /**
  * Validates that the environment ID is valid and prevents path traversal attacks
@@ -52,4 +53,32 @@ exports.validateRequiredFields = function(fields) {
     
     next();
   };
+};
+
+/**
+ * Validates that the runner name is registered.
+ * Pass as route middleware or call directly — returns the error response
+ * or calls next() on success.
+ * When used as middleware it reads req.query.runner; as a plain function
+ * it accepts an explicit runner string and returns true/false.
+ */
+exports.validateRunner = function(req, res, next) {
+  const runner = req.query.runner || req.params.runner;
+  const validRunners = listRunners();
+
+  if (!runner) {
+    return res.status(constants.HTTP_STATUS.BAD_REQUEST).json({
+      error: 'runner query parameter is required',
+      validRunners
+    });
+  }
+
+  if (!validRunners.includes(runner)) {
+    return res.status(constants.HTTP_STATUS.BAD_REQUEST).json({
+      error: 'Invalid runner',
+      validRunners
+    });
+  }
+
+  next();
 };

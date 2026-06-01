@@ -5,6 +5,7 @@ const fs = require("fs");
 const fn = require("../functions");
 const cf = require("../config/config");
 const { requireAuth } = require("../middleware/auth");
+const { validateRunner } = require("../middleware/validation");
 const myPath = path.join(__dirname, "..");
 const config = cf.config;
 const { ResultsFolder, HistoryFilePrefix, ResultFileSuffix, FeatureTestsFolder, ScriptFolder } = config;
@@ -74,11 +75,8 @@ config.environments.forEach(env => {
     res.sendFile(myPath + `/pages/results-editor.html`);
   });
 
-  router.get(`/editfile/${env.id}results`, requireAuth, (req, res) => {
+  router.get(`/editfile/${env.id}results`, requireAuth, validateRunner, (req, res) => {
     const { runner } = req.query;
-    if (!runner) {
-      return res.status(400).send('runner query parameter required (e.g. ?runner=newman)');
-    }
     const filename = `${HistoryFilePrefix}${env.id}_${runner}.json`;
     try {
       const rawdata = fs.readFileSync(`${ResultsFolder}${filename}`);
@@ -88,11 +86,8 @@ config.environments.forEach(env => {
     }
   });
 
-  router.put(`/editfile/${env.id}results`, requireAuth, (req, res) => {
+  router.put(`/editfile/${env.id}results`, requireAuth, validateRunner, (req, res) => {
     const { runner } = req.query;
-    if (!runner) {
-      return res.status(400).send('runner query parameter required (e.g. ?runner=newman)');
-    }
     const filename = `${HistoryFilePrefix}${env.id}_${runner}.json`;
     const data = req.body;
     fs.writeFile(`${ResultsFolder}${filename}`, data, (err) => {

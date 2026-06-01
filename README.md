@@ -2,7 +2,7 @@
 
 **What is EnvironmentStatus?**
 
-EnvironmentStatus is a monitoring/dashboard **platform** that allows development teams to run scheduled tests against their applications and display the results on dashboards. It is **not** a test suite — it is the solution that *runs* your tests and *visualizes* the results.
+EnvironmentStatus is a monitoring/dashboard **platform** that allows development teams to run scheduled tests against their applications and display the results on dashboards. It is **not** a test suite — it is the solution that _runs_ your tests and _visualizes_ the results.
 
 Teams choose their preferred test tools — **Postman (Newman)**, **Bruno**, **Supertest** for API testing, and **Playwright** for UI testing — and the platform executes them on a schedule, stores results, and presents uptime and performance dashboards.
 
@@ -34,25 +34,25 @@ Teams choose their preferred test tools — **Postman (Newman)**, **Bruno**, **S
 **Setup Instructions:**
 
 1. **Configure Environments:**
-
    - Edit `config/config.js` and define your environments:
+
    ```javascript
    environments: [
      { id: "dev", name: "Dev", displayName: "Development" },
      { id: "test", name: "Test", displayName: "Test" },
      { id: "staging", name: "Staging", displayName: "Staging" },
-     { id: "prod", name: "Prod", displayName: "Production" }
-   ]
+     { id: "prod", name: "Prod", displayName: "Production" },
+   ];
    ```
 
    - **OR** use the initialization script for new environments:
+
    ```bash
    node scripts/init-environment.js <env-id> <env-name> [display-name]
    # Example: node scripts/init-environment.js qa QA "Quality Assurance"
    ```
 
 2. **Add Test Files:**
-
    - Place Postman/Newman collections into `tests/postman/collections/`.
    - Place Postman environment files into `tests/postman/environments/`.
    - Place data files into `tests/postman/datafiles/`.
@@ -61,7 +61,6 @@ Teams choose their preferred test tools — **Postman (Newman)**, **Bruno**, **S
    - Place Bruno collection folders into `tests/bruno/collections-api/`.
 
 3. **Edit Schedule (`Edit Schedule` menu):**
-
    - Specify script name, environment, data file, and **runner** for each test.
    - Supported runners: `newman` (default), `bruno`, `playwright`, `supertest`.
    - Different tests in the same environment can use different runners.
@@ -69,7 +68,6 @@ Teams choose their preferred test tools — **Postman (Newman)**, **Bruno**, **S
    - The dashboard automatically detects all configured environments.
 
 4. **Customize Run Frequency:**
-   
    - Modify cron expressions in `config/config.js` (default: every minute).
    - Supports standard cron syntax for flexible scheduling.
 
@@ -88,18 +86,22 @@ Teams choose their preferred test tools — **Postman (Newman)**, **Bruno**, **S
 The app runs in Docker with mutable data (results, collections, config, etc.) stored on the host via volume mounts. This keeps the container stateless — you can rebuild or redeploy without losing data.
 
 1. **Using Docker Compose (recommended):**
+
    ```bash
    docker compose up -d
    ```
+
    This builds the image, starts the container, and mounts all data directories from your local project. Any changes to results, test collections, environments, datafiles, schedules, or config persist on your host.
 
 2. **Stop / restart:**
+
    ```bash
    docker compose down      # stop and remove container
    docker compose up -d     # start again (data is preserved)
    ```
 
 3. **Using plain Docker** (without Compose):
+
    ```bash
    docker build -f dockerfile -t env-status-monitor .
 
@@ -135,15 +137,15 @@ The app runs in Docker with mutable data (results, collections, config, etc.) st
 
 **Mounted Directories:**
 
-| Directory | Contents | Mutated at runtime |
-|-----------|----------|-------------------|
-| `results/` | Test results and history files | Yes — every cron cycle |
-| `tests/postman/collections/` | Postman/Newman collection files | Yes — via uploads |
-| `tests/postman/environments/` | Environment configuration files | Yes — via uploads |
-| `tests/postman/datafiles/` | Test data files | Yes — via uploads |
-| `schedules/` | Test schedule configuration | Yes — via schedule editor |
-| `config/` | Application configuration | Yes — via config API |
-| `tests/bruno/collections-api/` | Bruno collection directories | Yes — via uploads or manual edits |
+| Directory                      | Contents                        | Mutated at runtime                |
+| ------------------------------ | ------------------------------- | --------------------------------- |
+| `results/`                     | Test results and history files  | Yes — every cron cycle            |
+| `tests/postman/collections/`   | Postman/Newman collection files | Yes — via uploads                 |
+| `tests/postman/environments/`  | Environment configuration files | Yes — via uploads                 |
+| `tests/postman/datafiles/`     | Test data files                 | Yes — via uploads                 |
+| `schedules/`                   | Test schedule configuration     | Yes — via schedule editor         |
+| `config/`                      | Application configuration       | Yes — via config API              |
+| `tests/bruno/collections-api/` | Bruno collection directories    | Yes — via uploads or manual edits |
 
 The app will be available at `http://localhost:8080`.
 
@@ -152,6 +154,9 @@ The app will be available at `http://localhost:8080`.
 - `PORT=<Your desired port>` (default: 8080)
 - `SECRET=<Session management secret>` (required if session authentication is enabled)
 - `INFLUXDB_TOKEN=<InfluxDB API Token>` (required if InfluxDB integration is enabled)
+- `NODE_ENV=production` (recommended in production; suppresses error stack traces in API responses)
+
+> ⚠️ **Security warning — default credentials.** [config/config.js](config/config.js) ships with `user: "admin"` / `password: "password"`. **Change these before enabling `session: true`** and before exposing the app to any untrusted network. See [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md) for the full security checklist.
 
 **Configuration (config/config.js):**
 
@@ -168,18 +173,20 @@ The app will be available at `http://localhost:8080`.
 The application is fully dynamic - add as many environments as needed:
 
 1. **Quick setup** - Run the initialization script:
+
    ```bash
    node scripts/init-environment.js myenv MyEnv "My Environment"
    ```
 
 2. **Add to config** - Update `config/config.js`:
+
    ```javascript
    { id: "myenv", name: "MyEnv", displayName: "My Environment" }
    ```
 
 3. **Restart** - All routes, validation, cron jobs, and UI automatically adapt!
 
-See `ADDING_ENVIRONMENTS.md` for detailed documentation.
+The init script seeds empty result files and a Postman environment template for the new env. You must still add the corresponding entry to `config/config.js` and (optionally) schedule tests against it in `schedules/collections.json`.
 
 **Test Runners:**
 
@@ -200,15 +207,14 @@ Each test in the schedule can specify its own runner and schedule:
   "schedule": "Every15",
   "Active": "1"
 }
-}
 ```
 
-| Runner | Script type | Location | Environment file | Notes |
-|--------|-------------|----------|-----------------|-------|
-| `newman` | Postman collection JSON | `tests/postman/collections/` | `tests/postman/environments/` | Default. Uses Newman CLI. |
-| `bruno` | Bruno collection directory | `tests/bruno/collections-api/` | `tests/bruno/collections-api/environments/` | Requires `@usebruno/cli`. |
-| `playwright` | Playwright spec file (`.spec.js`) | `tests/playwright-api/specs/` | Passed via `TEST_ENVIRONMENT_FILE` env var | Requires `@playwright/test`. |
-| `supertest` | Mocha/Supertest spec file (`.test.js`) | `tests/supertest/specs/` | N/A (uses `MONITOR_BASE_URL` env var) | Requires `supertest` + `mocha`. |
+| Runner       | Script type                            | Location                       | Environment file                            | Notes                           |
+| ------------ | -------------------------------------- | ------------------------------ | ------------------------------------------- | ------------------------------- |
+| `newman`     | Postman collection JSON                | `tests/postman/collections/`   | `tests/postman/environments/`               | Default. Uses Newman CLI.       |
+| `bruno`      | Bruno collection directory             | `tests/bruno/collections-api/` | `tests/bruno/collections-api/environments/` | Requires `@usebruno/cli`.       |
+| `playwright` | Playwright spec file (`.spec.js`)      | `tests/playwright-api/specs/`  | Passed via `TEST_ENVIRONMENT_FILE` env var  | Requires `@playwright/test`.    |
+| `supertest`  | Mocha/Supertest spec file (`.test.js`) | `tests/supertest/specs/`       | N/A (uses `MONITOR_BASE_URL` env var)       | Requires `supertest` + `mocha`. |
 
 To add a custom runner, create a module in `runners/` that exports a `run(options)` method returning `{ passed, totalTests, failedTests, avgResponseTime, executionNames, rawResult }`, then register it in `runners/index.js`.
 
@@ -216,20 +222,30 @@ To add a custom runner, create a module in `runners/` that exports a `run(option
 
 Dynamic endpoints available for each configured environment:
 
-| Endpoint | Description |
-|----------|-------------|
-| `GET /results/{env}/` | All current test results for an environment |
-| `GET /results/{env}/{runner}/` | Current results filtered by runner |
-| `GET /getSummaryStats/{env}[/{days}]` | Summary statistics (last N days) |
-| `GET /getSummaryStats/{env}/{runner}/{days}` | Summary statistics filtered by runner |
-| `GET /histresultskeys/{env}[?runner={runner}]` | Available historical test keys, optionally filtered by runner |
-| `GET /histresults/{env}/{key}[/{days}]` | Historical results for a key |
+| Endpoint                                                    | Description                                                              |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `GET /results/{env}/`                                       | All current test results for an environment                              |
+| `GET /results/{env}/{runner}/`                              | Current results filtered by runner                                       |
+| `GET /getSummaryStats/{env}[/{days}]`                       | Summary statistics (last N days)                                         |
+| `GET /getSummaryStats/{env}/{runner}/{days}`                | Summary statistics filtered by runner                                    |
+| `GET /histresultskeys/{env}[?runner={runner}]`              | Available historical test keys, optionally filtered by runner            |
+| `GET /histresults/{env}/{key}[/{days}]`                     | Historical results for a key                                             |
 | `GET /histresultsdays/{env}/{key}/{days}[?runner={runner}]` | Historical results for a key by day count, optionally filtered by runner |
-| `GET /getStats/{env}/{key}` | Feature-specific statistics |
-| `GET /readyToDeploy/{env}[/{key}]` | Deployment readiness check |
-| `GET /api/runners` | List of registered runner adapters |
-| `GET /run{EnvName}` | Manually trigger tests (e.g., `/runDev`) |
-| `GET /data/{env}results` | Results editor interface |
+| `GET /getStats/{env}/{key}`                                 | Feature-specific statistics                                              |
+| `GET /readyToDeploy/{env}[/{key}]`                          | Deployment readiness check                                               |
+| `GET /api/runners`                                          | List of registered runner adapters                                       |
+| `GET /run{EnvName}`                                         | Manually trigger tests (e.g., `/runDev`)                                 |
+| `GET /data/{env}results`                                    | Results editor interface                                                 |
+| `GET /api/dashboards`                                       | List all configured dashboards                                           |
+| `GET /api/dashboards/:id`                                   | Get a single dashboard definition                                        |
+| `POST /api/dashboards`                                      | Create a new dashboard (auth required)                                   |
+| `PUT /api/dashboards/:id`                                   | Update a dashboard (auth required)                                       |
+| `DELETE /api/dashboards/:id`                                | Delete a dashboard; default dashboards cannot be deleted (auth required) |
+| `GET /dashboard/view/:id`                                   | Render a saved dashboard view (filtered by env/test/runner)              |
+| `GET /dashboard/manage`                                     | Dashboard CRUD UI                                                        |
+| `GET /config`                                               | Public config (page title + environments only — no credentials)          |
+| `GET /api/config`                                           | Full config minus credentials (auth required)                            |
+| `POST /api/config`                                          | Update config; writes to `config/config.js` (auth required)              |
 
 All endpoints include automatic validation and security checks.
 
@@ -304,12 +320,12 @@ npx playwright test --project="Collections API Tests"
 
 **Collection Test Coverage:**
 
-| Postman Collection | Endpoints | UI Tests | API Tests |
-|---|---|---|---|
-| Dashboard | `GET /dashboard` | 1 | 1 |
-| Data | `GET /data/directory`, `GET /data/schedule` | 2 | 2 |
-| Deploy | `GET /readyToDeploy/:env`, `GET /readyToDeploy/:env/:trans` | 2 | 2 |
-| Performance | `GET /dashboard/performance/:env/All`, `GET /dashboard/performance/:env/30` | 2 | 2 |
+| Postman Collection | Endpoints                                                                   | UI Tests | API Tests |
+| ------------------ | --------------------------------------------------------------------------- | -------- | --------- |
+| Dashboard          | `GET /dashboard`                                                            | 1        | 1         |
+| Data               | `GET /data/directory`, `GET /data/schedule`                                 | 2        | 2         |
+| Deploy             | `GET /readyToDeploy/:env`, `GET /readyToDeploy/:env/:trans`                 | 2        | 2         |
+| Performance        | `GET /dashboard/performance/:env/All`, `GET /dashboard/performance/:env/30` | 2        | 2         |
 
 Page Object Models are located in `tests/playwright-ui/pages/` with classes for each page (DashboardPage, DataPage, DeployPage, PerformancePage).
 
@@ -336,15 +352,16 @@ Bruno collections are in `tests/bruno/collections-api/` organized by collection 
 
 ### All Test Commands
 
-| Command | Runner | Description |
-|---------|--------|-------------|
-| `npx playwright test` | Playwright | All Playwright tests (UI + API) |
-| `npx playwright test --project="Collections UI Tests"` | Playwright | Collection UI tests with Page Object Model |
-| `npx playwright test --project="Collections API Tests"` | Playwright | Collection API tests with Playwright request |
-| `npm run test:supertest` | Supertest | Collection API tests with Mocha/Supertest/Chai |
-| `npm run test:bruno` | Bruno | Collection API tests with Bruno CLI |
+| Command                                                 | Runner     | Description                                    |
+| ------------------------------------------------------- | ---------- | ---------------------------------------------- |
+| `npx playwright test`                                   | Playwright | All Playwright tests (UI + API)                |
+| `npx playwright test --project="Collections UI Tests"`  | Playwright | Collection UI tests with Page Object Model     |
+| `npx playwright test --project="Collections API Tests"` | Playwright | Collection API tests with Playwright request   |
+| `npm run test:supertest`                                | Supertest  | Collection API tests with Mocha/Supertest/Chai |
+| `npm run test:bruno`                                    | Bruno      | Collection API tests with Bruno CLI            |
 
 **Test Coverage:**
+
 - 12 core API functionality tests
 - 29 error handling and security tests
 - Environment validation and path traversal prevention
@@ -361,6 +378,7 @@ npx playwright test --headed
 #### 6. Running Tests in CI
 
 The GitHub Actions workflow automatically:
+
 - Installs dependencies
 - Installs Playwright browsers
 - Creates necessary test data files
@@ -384,6 +402,7 @@ The Playwright tests use global setup and teardown scripts to start and stop the
 ### Playwright Configuration
 
 The Playwright configuration is defined in `playwright.config.js`. It includes:
+
 - Separate projects for UI and API tests
 - BaseURL configuration for all tests
 - 30 second timeout per test
@@ -490,12 +509,14 @@ Tests require sample data files in the `results/` directory. These are automatic
 ## Recent Improvements
 
 **Security Enhancements:**
+
 - ✅ Path traversal prevention on all environment routes
 - ✅ Input validation middleware with environment whitelisting
 - ✅ Secure session secret validation
 - ✅ Standardized error handling without information leakage
 
 **Code Quality:**
+
 - ✅ Eliminated 250+ lines of duplicated code
 - ✅ Created reusable middleware (auth, validation, error handling)
 - ✅ Factory patterns for upload configurations
@@ -503,21 +524,25 @@ Tests require sample data files in the `results/` directory. These are automatic
 - ✅ Shared frontend API utilities
 
 **Dynamic Architecture:**
+
 - ✅ All routes generated from config (no hardcoded environments)
 - ✅ Generic HTML templates work for unlimited environments
 - ✅ Automatic validation for new environments
 - ✅ One-command environment initialization script
 
 **Dashboard & Performance:**
+
 - ✅ Performance graphs filter by runner when accessed from a runner-specific dashboard
 - ✅ Dashboard config cleaned up to 6 semantic entries (default, newman, playwright-api, playwright-ui, supertest, bruno)
 - ✅ Runner filter dropdown in dashboard editor includes all 4 runners (newman, playwright, supertest, bruno)
 - ✅ `?runner=` query param supported on `/histresultskeys` and `/histresultsdays` endpoints
 
 **Runner Reliability:**
+
 - ✅ Supertest/Mocha runner now passes `--exit --timeout 30000` to prevent hang on keep-alive connections
 
 **Testing:**
+
 - ✅ Increased test coverage by 241% (12 → 41 tests)
 - ✅ Comprehensive error scenario testing
 - ✅ Security validation tests
@@ -528,6 +553,32 @@ Tests require sample data files in the `results/` directory. These are automatic
 
 ---
 
+## Multi-Dashboard Views
+
+The platform supports multiple saved dashboard views, each filtered to a subset of environments, tests, and/or a specific runner. Views are defined in [config/dashboards.json](config/dashboards.json) and can be managed at `/dashboard/manage`.
+
+A dashboard definition looks like:
+
+```json
+{
+  "id": "newman",
+  "name": "Newman (Postman)",
+  "description": "Postman/Newman results only",
+  "environments": ["dev", "test", "staging", "prod"],
+  "tests": ["dashboard", "data", "deploy", "performance"],
+  "runner": "newman",
+  "isDefault": false
+}
+```
+
+Empty arrays / empty `runner` mean "no filter" (show everything). The dashboard marked `isDefault: true` cannot be deleted.
+
+---
+
 **Documentation:**
-- See `TESTING_IMPROVEMENTS.md` for testing strategy
-- See `MERGED_DASHBOARD_CHANGES.md` for dashboard features
+
+- [CHART_STRUCTURE.md](CHART_STRUCTURE.md) — polar area chart layout reference
+- [MERGED_DASHBOARD_CHANGES.md](MERGED_DASHBOARD_CHANGES.md) — history of the unified dashboard
+- [ENVIRONMENT_CONSOLIDATION.md](ENVIRONMENT_CONSOLIDATION.md) — history of the environments-array refactor
+- [TESTING_IMPROVEMENTS.md](TESTING_IMPROVEMENTS.md) — CI/test infrastructure notes
+- [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md) — security & reusability roadmap

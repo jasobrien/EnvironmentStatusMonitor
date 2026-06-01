@@ -8,14 +8,20 @@
     "test:ui": "playwright test --config=playwright.config.js --project=\"UI Tests\" --project=\"Collections UI Tests\"",
     "test:api": "playwright test --config=playwright.config.js --project=\"API Tests\" --project=\"Collections API Tests\"",
     "test:supertest": "mocha tests/supertest/collections-supertest.test.js --timeout 10000 --exit",
-    "test:bruno": "cd tests/bruno/collections-api && bru run --env dev"
+    "test:bruno": "cd tests/bruno/collections-api && bru run --env dev",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "Jim O'Brien",
   "license": "ISC",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@influxdata/influxdb3-client": "^0.8.0",
     "@usebruno/cli": "^1.40.0",
+    "bcryptjs": "^3.0.3",
     "body-parser": "^1.20.4",
     "cron": "^3.5.0",
     "dotenv": "^16.6.1",
@@ -27,10 +33,15 @@
     "newman": "^6.2.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.58.2",
     "chai": "^4.5.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
     "mocha": "^10.8.2",
     "mochawesome": "^7.1.4",
+    "prettier": "^3.8.3",
     "supertest": "^6.3.4",
     "wait-on": "^8.0.5"
   }

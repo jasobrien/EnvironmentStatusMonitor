@@ -24,7 +24,7 @@ exports.logAndRespond = function(res, statusCode, error, context) {
 /**
  * Global error handling middleware
  */
-exports.globalErrorHandler = function(err, req, res, next) {
+exports.globalErrorHandler = function(err, req, res, _next) {
   fn.logOutput(constants.LOG_LEVELS.ERROR, `Unhandled error: ${err.message}`);
   console.error(err.stack);
   
